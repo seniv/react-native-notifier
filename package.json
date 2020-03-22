@@ -49,12 +49,14 @@
     "prettier": "^1.19.1",
     "react": "~16.9.0",
     "react-native": "~0.61.5",
+    "react-native-gesture-handler": "^1.6.1",
     "release-it": "^12.6.3",
     "typescript": "^3.7.5"
   },
   "peerDependencies": {
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-gesture-handler": "*"
   },
   "jest": {
     "preset": "react-native",
@@ -86,12 +88,16 @@
       ]
     }
   },
-  "eslintIgnore": ["node_modules/", "lib/"],
+  "eslintIgnore": [
+    "node_modules/",
+    "lib/"
+  ],
   "prettier": {
     "singleQuote": true,
     "tabWidth": 2,
     "trailingComma": "es5",
-    "useTabs": false
+    "useTabs": false,
+    "printWidth": 100
   },
   "release-it": {
     "git": {
@@ -113,6 +119,10 @@
   "@react-native-community/bob": {
     "source": "src",
     "output": "lib",
-    "targets": ["commonjs", "module", "typescript"]
+    "targets": [
+      "commonjs",
+      "module",
+      "typescript"
+    ]
   }
 }

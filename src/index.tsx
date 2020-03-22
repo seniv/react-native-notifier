@@ -1,9 +1,5 @@
-import { NativeModules } from 'react-native';
+import * as NotifierComponents from './components';
 
-type NotifierType = {
-  getDeviceName(): Promise<string>;
-};
-
-const { Notifier } = NativeModules;
-
-export default Notifier as NotifierType;
+export { NotifierComponents };
+export { Notifier, NotifierRoot } from './Notifier';
+export { Easing } from 'react-native';
