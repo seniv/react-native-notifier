@@ -2,6 +2,10 @@
 
 Fast and simple in-app notifications for React Native
 
+[![npm](https://img.shields.io/npm/v/react-native-notifier)](https://www.npmjs.com/package/react-native-notifier)
+[![npm bundle size](https://img.shields.io/bundlephobia/min/react-native-notifier)](https://bundlephobia.com/result?p=react-native-notifier)
+[![license MIT](https://img.shields.io/badge/license-MIT-brightgreen)](https://github.com/seniv/react-native-notifier/blob/master/LICENSE)
+
 ## Requirements
 
 This library uses [react-native-gesture-handler](https://github.com/software-mansion/react-native-gesture-handler), perfect library for swipes and other gesture events.
