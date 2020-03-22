@@ -15,6 +15,7 @@ import {
   MIN_TRANSLATE_Y,
   SWIPE_ANIMATION_DURATION,
   SWIPE_PIXELS_TO_CLOSE,
+  DEFAULT_SWIPE_ENABLED,
 } from './constants';
 import { ShowParams, ShowNotification, StateInterface, EndCallback } from './types';
 
@@ -37,6 +38,7 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
 
     this.state = {
       Component: MainComponent,
+      swipeEnabled: DEFAULT_SWIPE_ENABLED,
     };
     this.isShown = false;
     this.hideTimer = null;
@@ -97,12 +99,19 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
       return;
     }
 
-    const { duration = DEFAULT_DURATION, title, description, Component, ...restParams } =
-      params ?? {};
+    const {
+      duration = DEFAULT_DURATION,
+      title,
+      description,
+      swipeEnabled,
+      Component,
+      ...restParams
+    } = params ?? {};
     this.setState({
       title,
       description,
       Component: Component ?? MainComponent,
+      swipeEnabled: swipeEnabled ?? DEFAULT_SWIPE_ENABLED,
     });
     this.showParams = restParams;
     if (duration && !isNaN(duration)) {
@@ -156,9 +165,10 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
   }
 
   render() {
-    const { title, description, Component } = this.state;
+    const { title, description, swipeEnabled, Component } = this.state;
     return (
       <PanGestureHandler
+        enabled={swipeEnabled}
         onGestureEvent={this.onGestureEvent}
         onHandlerStateChange={this.onHandlerStateChange}
       >

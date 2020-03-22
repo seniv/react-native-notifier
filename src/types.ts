@@ -17,15 +17,17 @@ export interface ShowParams {
 }
 
 export interface ShowNotification extends ShowParams {
-  Component?: Function;
   title?: string; // null
   description?: string; // null
+  swipeEnabled?: boolean; // true
+  Component?: Function;
   duration?: number; // 3000
 }
 
 export interface StateInterface {
   title?: string;
   description?: string;
+  swipeEnabled: boolean;
   Component: Function;
 }
 
