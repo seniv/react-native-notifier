@@ -20,8 +20,8 @@ export interface ShowNotification extends ShowParams {
   title?: string; // null
   description?: string; // null
   swipeEnabled?: boolean; // true
-  Component?: Function;
   duration?: number; // 3000
+  Component?: Function;
 }
 
 export interface StateInterface {
