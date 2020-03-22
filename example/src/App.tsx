@@ -110,7 +110,6 @@ export default function App() {
         }
       />
       <Button title="Hide" onPress={() => Notifier.hideNotification()} />
-      <NotifierRoot ref={notifierRef} />
       {isAndroid && (
         <>
           <Button title="Toggle Status Bar" onPress={() => setStatusBar(v => !v)} />
@@ -120,6 +119,7 @@ export default function App() {
           />
         </>
       )}
+      <NotifierRoot ref={notifierRef} />
     </View>
   );
 }
