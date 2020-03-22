@@ -35,7 +35,9 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
   constructor(props: {}) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      Component: MainComponent,
+    };
     this.isShown = false;
     this.hideTimer = null;
     this.showParams = null;
@@ -95,10 +97,12 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
       return;
     }
 
-    const { duration = DEFAULT_DURATION, title, description, ...restParams } = params ?? {};
+    const { duration = DEFAULT_DURATION, title, description, Component, ...restParams } =
+      params ?? {};
     this.setState({
       title,
       description,
+      Component: Component ?? MainComponent,
     });
     this.showParams = restParams;
     if (duration && !isNaN(duration)) {
@@ -152,7 +156,7 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
   }
 
   render() {
-    const { title, description } = this.state;
+    const { title, description, Component } = this.state;
     return (
       <PanGestureHandler
         onGestureEvent={this.onGestureEvent}
@@ -172,7 +176,7 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
         >
           <TouchableWithoutFeedback onPress={this.onPress}>
             <View>
-              <MainComponent title={title} description={description} />
+              <Component title={title} description={description} />
             </View>
           </TouchableWithoutFeedback>
         </Animated.View>
@@ -180,5 +184,3 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
     );
   }
 }
-
-export default Notifier;

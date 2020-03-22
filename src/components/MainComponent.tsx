@@ -38,7 +38,7 @@ interface MainComponentProps {
   description?: string;
 }
 
-const MainComponent = ({ title, description }: MainComponentProps) => {
+const MainComponent: React.FunctionComponent<MainComponentProps> = ({ title, description }) => {
   return (
     <SafeAreaView>
       <View style={s.container}>

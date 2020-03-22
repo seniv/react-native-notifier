@@ -1,6 +1,6 @@
 # react-native-notifier
 
-Fast and simple notifications for React Native
+Fast and simple in-app notifications for React Native
 
 ## Installation
 

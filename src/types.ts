@@ -17,6 +17,7 @@ export interface ShowParams {
 }
 
 export interface ShowNotification extends ShowParams {
+  Component?: Function;
   title?: string; // null
   description?: string; // null
   duration?: number; // 3000
@@ -25,6 +26,7 @@ export interface ShowNotification extends ShowParams {
 export interface StateInterface {
   title?: string;
   description?: string;
+  Component: Function;
 }
 
 export type EndResult = { finished: boolean };

@@ -6,6 +6,8 @@ import {
   StatusBar,
   Platform,
   ButtonProps,
+  Text,
+  SafeAreaView,
 } from 'react-native';
 import { Easing, Notifier, NotifierRoot } from 'react-native-notifier';
 
@@ -13,6 +15,27 @@ const Button = (props: ButtonProps) => (
   <View style={styles.button}>
     <RNButton {...props} />
   </View>
+);
+
+const customStyles = StyleSheet.create({
+  safeArea: { backgroundColor: 'orange', padding: 20 },
+  container: {
+    padding: 20,
+  },
+  title: { color: 'white', fontWeight: 'bold' },
+  description: { color: 'white' },
+});
+interface CustomComponentProps {
+  title?: string;
+  description?: string;
+}
+const CustomComponent = ({ title, description }: CustomComponentProps) => (
+  <SafeAreaView style={customStyles.safeArea}>
+    <View style={customStyles.container}>
+      <Text style={customStyles.title}>{title}</Text>
+      <Text style={customStyles.description}>{description}</Text>
+    </View>
+  </SafeAreaView>
 );
 
 const isAndroid = Platform.OS === 'android';
@@ -64,6 +87,16 @@ export default function App() {
         onPress={() =>
           Notifier.showNotification({
             title: 'Here some very useful information',
+          })
+        }
+      />
+      <Button
+        title="Custom component"
+        onPress={() =>
+          notifierRef.current?.showNotification({
+            title: 'Custom Component',
+            description: 'You can pass component that you want to render',
+            Component: CustomComponent,
           })
         }
       />
