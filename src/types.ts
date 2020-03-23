@@ -1,3 +1,5 @@
+import { ImageSourcePropType } from 'react-native';
+
 export interface ShowParams {
   animationDuration?: number; // 300
   showAnimationDuration?: number; // animationDuration || 300
@@ -23,6 +25,7 @@ export interface ShowNotification extends ShowParams {
   duration?: number; // 3000
   Component?: Function;
   componentProps?: object;
+  imageSource?: ImageSourcePropType;
 }
 
 export interface StateInterface {
@@ -31,6 +34,7 @@ export interface StateInterface {
   swipeEnabled: boolean;
   Component: Function;
   componentProps: object;
+  imageSource?: ImageSourcePropType;
 }
 
 export type EndResult = { finished: boolean };

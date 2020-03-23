@@ -83,6 +83,16 @@ export default function App() {
         }
       />
       <Button
+        title="With Image"
+        onPress={() =>
+          Notifier.showNotification({
+            title: 'Check this image!',
+            description: 'Cool, right?',
+            imageSource: require('./react.jpg'),
+          })
+        }
+      />
+      <Button
         title="Without Description"
         onPress={() =>
           Notifier.showNotification({

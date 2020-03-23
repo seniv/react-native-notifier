@@ -71,6 +71,7 @@ swipeEnabled          | Boolean  | true                       | Can notification
 duration              | Number   | 3000                       | Time after notification will disappear. Set to `0` to not hide notification automatically
 Component             | Component| MainComponent              | Your custom component of notification body
 componentProps        | Object   | {}                         | Additional props that will be passed to `Component`. Use it for customization or if using custom `Component`.
+imageSource           | Object   | null                       | Passed to `<Image />` as `source` param. __Passed to `Component`.__
 animationDuration     | Number   | 300                        | How fast notification will appear/disappear
 showAnimationDuration | Number   | animationDuration \|\| 300 | How fast notification will appear.
 hideAnimationDuration | Number   | animationDuration \|\| 300 | How fast notification will disappear.

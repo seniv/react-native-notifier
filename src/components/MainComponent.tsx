@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, SafeAreaView } from 'react-native';
+import { StyleSheet, View, Text, SafeAreaView, ImageSourcePropType, Image } from 'react-native';
 
 const s = StyleSheet.create({
   container: {
@@ -18,7 +18,20 @@ const s = StyleSheet.create({
     marginTop: 10,
     marginHorizontal: 10,
     paddingVertical: 10,
-    paddingHorizontal: 15,
+    paddingHorizontal: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  image: {
+    alignItems: 'center',
+    marginRight: 5,
+    borderRadius: 5,
+    height: 45,
+    width: 45,
+  },
+  content: {
+    flex: 1,
+    marginHorizontal: 5,
   },
   title: {
     fontWeight: 'bold',
@@ -36,17 +49,23 @@ const s = StyleSheet.create({
 interface MainComponentProps {
   title?: string;
   description?: string;
+  imageSource?: ImageSourcePropType;
 }
 
-const MainComponent: React.FunctionComponent<MainComponentProps> = ({ title, description }) => {
-  return (
-    <SafeAreaView>
-      <View style={s.container}>
+const MainComponent: React.FunctionComponent<MainComponentProps> = ({
+  title,
+  description,
+  imageSource,
+}) => (
+  <SafeAreaView>
+    <View style={s.container}>
+      {!!imageSource && <Image style={s.image} source={imageSource} />}
+      <View style={s.content}>
         {!!title && <Text style={s.title}>{title}</Text>}
         {!!description && <Text style={s.description}>{description}</Text>}
       </View>
-    </SafeAreaView>
-  );
-};
+    </View>
+  </SafeAreaView>
+);
 
 export default MainComponent;
