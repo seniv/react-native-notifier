@@ -1,42 +1,8 @@
 import * as React from 'react';
-import {
-  StyleSheet,
-  View,
-  Button as RNButton,
-  StatusBar,
-  Platform,
-  ButtonProps,
-  Text,
-  SafeAreaView,
-} from 'react-native';
+import { StyleSheet, View, StatusBar, Platform } from 'react-native';
 import { Easing, Notifier, NotifierRoot } from 'react-native-notifier';
-
-const Button = (props: ButtonProps) => (
-  <View style={styles.button}>
-    <RNButton {...props} />
-  </View>
-);
-
-const customStyles = StyleSheet.create({
-  safeArea: { backgroundColor: 'orange', padding: 20 },
-  container: {
-    padding: 20,
-  },
-  title: { color: 'white', fontWeight: 'bold' },
-  description: { color: 'white' },
-});
-interface CustomComponentProps {
-  title?: string;
-  description?: string;
-}
-const CustomComponent = ({ title, description }: CustomComponentProps) => (
-  <SafeAreaView style={customStyles.safeArea}>
-    <View style={customStyles.container}>
-      <Text style={customStyles.title}>{title}</Text>
-      <Text style={customStyles.description}>{description}</Text>
-    </View>
-  </SafeAreaView>
-);
+import Button from './Button';
+import CustomComponent from './CustomComponent';
 
 const isAndroid = Platform.OS === 'android';
 
@@ -53,7 +19,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Button
-        title="showEasing: Easing.bounce"
+        title="Easing: bounce"
         onPress={() =>
           Notifier.showNotification({
             title: 'John Doe',
@@ -138,9 +104,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#f1f1f1',
     flex: 1,
-    paddingTop: 260,
-  },
-  button: {
-    marginTop: isAndroid ? 10 : 0,
+    justifyContent: 'center',
   },
 });
