@@ -22,6 +22,7 @@ export interface ShowNotification extends ShowParams {
   swipeEnabled?: boolean; // true
   duration?: number; // 3000
   Component?: Function;
+  componentProps?: object;
 }
 
 export interface StateInterface {
@@ -29,6 +30,7 @@ export interface StateInterface {
   description?: string;
   swipeEnabled: boolean;
   Component: Function;
+  componentProps: object;
 }
 
 export type EndResult = { finished: boolean };

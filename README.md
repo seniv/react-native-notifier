@@ -1,10 +1,10 @@
 # react-native-notifier
 
-Fast and simple in-app notifications for React Native
-
 [![npm](https://img.shields.io/npm/v/react-native-notifier)](https://www.npmjs.com/package/react-native-notifier)
 [![npm bundle size](https://img.shields.io/bundlephobia/min/react-native-notifier)](https://bundlephobia.com/result?p=react-native-notifier)
 [![license MIT](https://img.shields.io/badge/license-MIT-brightgreen)](https://github.com/seniv/react-native-notifier/blob/master/LICENSE)
+
+Fast and simple in-app notifications for React Native
 
 ## Requirements
 
@@ -65,11 +65,12 @@ Notifier.showNotification({
 
 Name                  | Type     | Default                    | Description
 ----------------------|----------|----------------------------|-------------
-title                 | String   | null                       | Title of notification
-description           | String   | null                       | Description of notification
-swipeEnabled          | Boolean  | true                       | Can notification be swiped-out
-duration              | Number   | 3000                       | Time after notification will disappear
+title                 | String   | null                       | Title of notification. __Passed to `Component`.__
+description           | String   | null                       | Description of notification. __Passed to `Component`.__
+swipeEnabled          | Boolean  | true                       | Can notification be hidden by swiping it out
+duration              | Number   | 3000                       | Time after notification will disappear. Set to `0` to not hide notification automatically
 Component             | Component| MainComponent              | Your custom component of notification body
+componentProps        | Object   | {}                         | Additional props that will be passed to `Component`. Use it for customization or if using custom `Component`.
 animationDuration     | Number   | 300                        | How fast notification will appear/disappear
 showAnimationDuration | Number   | animationDuration \|\| 300 | How fast notification will appear.
 hideAnimationDuration | Number   | animationDuration \|\| 300 | How fast notification will disappear.

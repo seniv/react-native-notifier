@@ -39,6 +39,7 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
     this.state = {
       Component: MainComponent,
       swipeEnabled: DEFAULT_SWIPE_ENABLED,
+      componentProps: {},
     };
     this.isShown = false;
     this.hideTimer = null;
@@ -105,6 +106,7 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
       description,
       swipeEnabled,
       Component,
+      componentProps,
       ...restParams
     } = params ?? {};
     this.setState({
@@ -112,6 +114,7 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
       description,
       Component: Component ?? MainComponent,
       swipeEnabled: swipeEnabled ?? DEFAULT_SWIPE_ENABLED,
+      componentProps: componentProps ?? {},
     });
     this.showParams = restParams;
     if (duration && !isNaN(duration)) {
@@ -165,7 +168,7 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
   }
 
   render() {
-    const { title, description, swipeEnabled, Component } = this.state;
+    const { title, description, swipeEnabled, Component, componentProps } = this.state;
     return (
       <PanGestureHandler
         enabled={swipeEnabled}
@@ -186,7 +189,7 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
         >
           <TouchableWithoutFeedback onPress={this.onPress}>
             <View>
-              <Component title={title} description={description} />
+              <Component title={title} description={description} {...componentProps} />
             </View>
           </TouchableWithoutFeedback>
         </Animated.View>
