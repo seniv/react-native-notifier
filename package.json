@@ -1,6 +1,6 @@
 {
   "name": "react-native-notifier",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Fast and simple in-app notifications for React Native",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
