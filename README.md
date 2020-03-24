@@ -63,7 +63,16 @@ Notifier.showNotification({
 ```
 
 
-## `Notifier.showNotification` params
+## API
+
+### `showNotification`
+
+```
+Notifier.showNotification(params: object);
+```
+Show notification with params.
+
+`params`
 
 Name                  | Type     | Default                    | Description
 ----------------------|----------|----------------------------|-------------
@@ -87,7 +96,13 @@ swipePixelsToClose    | Number   | 20                         | How many pixels 
 swipeEasing           | Easing   | null                       | Animation easing after user finished swiping
 swipeAnimationDuration| Number   | 200                        | How fast should be animation after user finished swiping
 
+### `hideNotification`
 
+```
+Notifier.hideNotification(onHiddenCallback?: Function);
+```
+
+Hide notification and run callback function when notification completely hidden.
 
 ## License
 
