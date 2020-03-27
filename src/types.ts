@@ -37,5 +37,10 @@ export interface StateInterface {
   imageSource?: ImageSourcePropType;
 }
 
+export interface NotifierInterface {
+  showNotification: (params: ShowNotification) => void;
+  hideNotification: () => void;
+}
+
 export type EndResult = { finished: boolean };
 export type EndCallback = (result: EndResult) => void;

@@ -17,21 +17,35 @@ import {
   SWIPE_PIXELS_TO_CLOSE,
   DEFAULT_SWIPE_ENABLED,
 } from './constants';
-import { ShowParams, ShowNotification, StateInterface, EndCallback } from './types';
+import {
+  ShowParams,
+  ShowNotification,
+  StateInterface,
+  EndCallback,
+  NotifierInterface,
+} from './types';
 
-export const Notifier = {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  showNotification: (params: ShowNotification) => {},
-  hideNotification: () => {},
+export const Notifier: NotifierInterface = {
+  showNotification: (): void => {},
+  hideNotification: (): void => {},
 };
 
 export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
-  private isShown: boolean;
-  private hideTimer: any;
-  private showParams: ShowParams | null;
-  private translateY: Animated.Value;
-  private translateYInterpolated: Animated.AnimatedInterpolation;
-  private onGestureEvent: (...args: any[]) => void;
+  private isShown = false;
+  private hideTimer: any = null;
+  private showParams: ShowParams | null = null;
+  private readonly translateY: Animated.Value = new Animated.Value(MIN_TRANSLATE_Y);
+  private readonly translateYInterpolated: Animated.AnimatedInterpolation = this.translateY.interpolate(
+    {
+      inputRange: [MIN_TRANSLATE_Y, MAX_TRANSLATE_Y],
+      outputRange: [MIN_TRANSLATE_Y, MAX_TRANSLATE_Y],
+      extrapolate: 'clamp',
+    }
+  );
+  private readonly onGestureEvent = Animated.event(
+    [{ nativeEvent: { translationY: this.translateY } }],
+    { useNativeDriver: true }
+  );
 
   constructor(props: {}) {
     super(props);
@@ -41,25 +55,6 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
       swipeEnabled: DEFAULT_SWIPE_ENABLED,
       componentProps: {},
     };
-    this.isShown = false;
-    this.hideTimer = null;
-    this.showParams = null;
-
-    this.translateY = new Animated.Value(MIN_TRANSLATE_Y);
-    this.translateYInterpolated = this.translateY.interpolate({
-      inputRange: [MIN_TRANSLATE_Y, MAX_TRANSLATE_Y],
-      outputRange: [MIN_TRANSLATE_Y, MAX_TRANSLATE_Y],
-      extrapolate: 'clamp',
-    });
-
-    this.onGestureEvent = Animated.event(
-      [
-        {
-          nativeEvent: { translationY: this.translateY },
-        },
-      ],
-      { useNativeDriver: true }
-    );
 
     this.onPress = this.onPress.bind(this);
     this.onHandlerStateChange = this.onHandlerStateChange.bind(this);
@@ -171,6 +166,7 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
 
   render() {
     const { title, description, swipeEnabled, Component, componentProps, imageSource } = this.state;
+
     return (
       <PanGestureHandler
         enabled={swipeEnabled}
@@ -178,16 +174,7 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
         onHandlerStateChange={this.onHandlerStateChange}
       >
         <Animated.View
-          style={[
-            s.container,
-            {
-              transform: [
-                {
-                  translateY: this.translateYInterpolated,
-                },
-              ],
-            },
-          ]}
+          style={[s.container, { transform: [{ translateY: this.translateYInterpolated }] }]}
         >
           <TouchableWithoutFeedback onPress={this.onPress}>
             <View>
