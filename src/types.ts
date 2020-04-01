@@ -39,3 +39,8 @@ export interface StateInterface {
 
 export type EndResult = { finished: boolean };
 export type EndCallback = (result: EndResult) => void;
+
+export interface NotifierInterface {
+  showNotification: (params: ShowNotification) => void;
+  hideNotification: (onHidden?: EndCallback) => void;
+}
