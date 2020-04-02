@@ -17,11 +17,16 @@ import {
   SWIPE_PIXELS_TO_CLOSE,
   DEFAULT_SWIPE_ENABLED,
 } from './constants';
-import { ShowParams, ShowNotification, StateInterface, EndCallback } from './types';
+import {
+  ShowParams,
+  ShowNotification,
+  StateInterface,
+  EndCallback,
+  NotifierInterface,
+} from './types';
 
-export const Notifier = {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  showNotification: (params: ShowNotification) => {},
+export const Notifier: NotifierInterface = {
+  showNotification: () => {},
   hideNotification: () => {},
 };
 
@@ -29,9 +34,9 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
   private isShown: boolean;
   private hideTimer: any;
   private showParams: ShowParams | null;
-  private translateY: Animated.Value;
-  private translateYInterpolated: Animated.AnimatedInterpolation;
-  private onGestureEvent: (...args: any[]) => void;
+  private readonly translateY: Animated.Value;
+  private readonly translateYInterpolated: Animated.AnimatedInterpolation;
+  private readonly onGestureEvent: (...args: any[]) => void;
 
   constructor(props: {}) {
     super(props);
@@ -171,6 +176,7 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
 
   render() {
     const { title, description, swipeEnabled, Component, componentProps, imageSource } = this.state;
+
     return (
       <PanGestureHandler
         enabled={swipeEnabled}
