@@ -35,17 +35,6 @@ const App = () => (
   </NotifierWrapper>
 );
 ```
-Or add `NotifierRoot` at end of your App.js component. Note that `NotifierRoot` should the last component to display notifications correctly
-```js
-import { NotifierRoot } from 'react-native-notifier';
-
-const App = () => (
-  <>
-    <Navigation />
-    <NotifierRoot />
-  </>
-);
-```
 Then call `Notifier.showNotification()` anywhere in code
 ```js
 import { Notifier, Easing } from 'react-native-notifier';
@@ -61,7 +50,27 @@ Notifier.showNotification({
   hideOnPress: false,
 });
 ```
+---
 
+Or add `NotifierRoot` at end of your App.js component. With this approach you can show notification using reference to the `NotifierRoot`.
+
+Note that `NotifierRoot` should be the last component to display notifications correctly. `Notifier.showNotification` is also available.
+```js
+import { NotifierRoot } from 'react-native-notifier';
+
+function App() {
+  const notifierRef = useRef();
+  return (
+    <>
+      <Button
+        title="Show Notification"
+        onPress={() => notifierRef.current?.showNotification({ title: 'Using refs' })}
+      />
+      <NotifierRoot ref={notifierRef} />
+    </>
+  );
+}
+```
 
 ## API
 
@@ -108,12 +117,12 @@ Hide notification and run callback function when notification completely hidden.
 
 To customize look of the notification you can pass your own `Component` to [`showNotification`](#showNotification) function.
 
-This make customization much simpler than passing "style" params. With custom components you can make notification look exactly like you want.
+This makes customization much simpler than passing "style" params. With custom components you can make notification look exactly like you want.
 
 This component will receive props `title`, `description`, `imageSource` and anything else that you pass to `componentProps` object when calling [`showNotification`](#showNotification).
 
 ### Example
-```javascript
+```js
 import React from 'react';
 import { StyleSheet, View, Text, SafeAreaView } from 'react-native';
 
