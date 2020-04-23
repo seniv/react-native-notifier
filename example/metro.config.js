@@ -4,9 +4,7 @@ const blacklist = require('metro-config/src/defaults/blacklist');
 const escape = require('escape-string-regexp');
 
 const root = path.resolve(__dirname, '..');
-const pak = JSON.parse(
-  fs.readFileSync(path.join(root, 'package.json'), 'utf8')
-);
+const pak = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
 
 const modules = [
   '@babel/runtime',
@@ -21,9 +19,7 @@ module.exports = {
   watchFolders: [root],
 
   resolver: {
-    blacklistRE: blacklist([
-      new RegExp(`^${escape(path.join(root, 'node_modules'))}\\/.*$`),
-    ]),
+    blacklistRE: blacklist([new RegExp(`^${escape(path.join(root, 'node_modules'))}\\/.*$`)]),
 
     extraNodeModules: modules.reduce((acc, name) => {
       acc[name] = path.join(__dirname, 'node_modules', name);
