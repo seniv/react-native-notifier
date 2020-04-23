@@ -1,5 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, Text, SafeAreaView, ImageSourcePropType, Image } from 'react-native';
+import { StyleSheet, View, Text, ImageSourcePropType, Image } from 'react-native';
+
+import SafeContainer from './SafeContainer';
 
 const s = StyleSheet.create({
   container: {
@@ -50,22 +52,27 @@ interface MainComponentProps {
   title?: string;
   description?: string;
   imageSource?: ImageSourcePropType;
+  ContainerComponent?: Function;
 }
 
 const MainComponent: React.FunctionComponent<MainComponentProps> = ({
   title,
   description,
   imageSource,
-}) => (
-  <SafeAreaView>
-    <View style={s.container}>
-      {!!imageSource && <Image style={s.image} source={imageSource} />}
-      <View style={s.content}>
-        {!!title && <Text style={s.title}>{title}</Text>}
-        {!!description && <Text style={s.description}>{description}</Text>}
+  ContainerComponent,
+}) => {
+  const Container = ContainerComponent ?? SafeContainer;
+  return (
+    <Container>
+      <View style={s.container}>
+        {!!imageSource && <Image style={s.image} source={imageSource} />}
+        <View style={s.content}>
+          {!!title && <Text style={s.title}>{title}</Text>}
+          {!!description && <Text style={s.description}>{description}</Text>}
+        </View>
       </View>
-    </View>
-  </SafeAreaView>
-);
+    </Container>
+  );
+};
 
 export default MainComponent;
