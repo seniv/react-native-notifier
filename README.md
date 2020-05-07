@@ -6,7 +6,7 @@
 
 Fast and simple in-app notifications for React Native
 
-![Demo of package](demo.gif)
+![Demo of package](https://raw.githubusercontent.com/seniv/react-native-notifier/master/demo.gif)
 
 ## Requirements
 
@@ -156,7 +156,7 @@ Notifier.showNotification({
   Component: CustomComponent,
 });
 ```
-![Demo of custom component](custom-component.jpg)
+![Demo of custom component](https://raw.githubusercontent.com/seniv/react-native-notifier/master/custom-component.jpg)
 
 ## License
 
