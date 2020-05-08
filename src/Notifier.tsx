@@ -8,6 +8,7 @@ import {
 
 import s from './Notifier.styles';
 import { MainComponent } from './components';
+import { NotifierInterface } from './types';
 import {
   DEFAULT_ANIMATION_DURATION,
   DEFAULT_DURATION,
@@ -19,10 +20,9 @@ import {
 } from './constants';
 import { ShowParams, ShowNotification, StateInterface, EndCallback } from './types';
 
-export const Notifier = {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  showNotification: (params: ShowNotification) => {},
-  hideNotification: () => {},
+export const Notifier: NotifierInterface = {
+  showNotification: (): void => {},
+  hideNotification: (): void => {},
 };
 
 export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
