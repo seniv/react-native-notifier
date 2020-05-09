@@ -92,7 +92,10 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
         this.showParams?.animationDuration ??
         DEFAULT_ANIMATION_DURATION,
       useNativeDriver: true,
-    }).start(callback);
+    }).start(result => {
+      this.onHidden();
+      callback?.(result);
+    });
 
     this.onHide();
   }
@@ -143,6 +146,10 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
   private onHide() {
     this.showParams?.onHide?.();
     clearTimeout(this.hideTimer);
+  }
+
+  private onHidden() {
+    this.showParams?.onHidden?.();
     this.isShown = false;
     this.showParams = null;
   }
@@ -160,7 +167,11 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
       easing: this.showParams?.swipeEasing,
       duration: this.showParams?.swipeAnimationDuration ?? SWIPE_ANIMATION_DURATION,
       useNativeDriver: true,
-    }).start();
+    }).start(() => {
+      if (isSwipedOut) {
+        this.onHidden();
+      }
+    });
 
     if (isSwipedOut) {
       this.onHide();
