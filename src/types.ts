@@ -19,6 +19,8 @@ export interface ShowParams {
   swipeAnimationDuration?: number; // 200
 }
 
+export type QueueMode = 'immediate' | 'next' | 'standby' | 'reset';
+
 export interface ShowNotification extends ShowParams {
   title?: string; // null
   description?: string; // null
@@ -27,6 +29,7 @@ export interface ShowNotification extends ShowParams {
   Component?: Function;
   componentProps?: object;
   imageSource?: ImageSourcePropType;
+  queueMode?: QueueMode;
 }
 
 export interface StateInterface {

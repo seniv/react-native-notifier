@@ -32,8 +32,10 @@ export const Notifier: NotifierInterface = {
 
 export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
   private isShown: boolean;
+  private isHiding: boolean;
   private hideTimer: any;
   private showParams: ShowParams | null;
+  private callStack: Array<ShowNotification>;
   private readonly translateY: Animated.Value;
   private readonly translateYInterpolated: Animated.AnimatedInterpolation;
   private readonly onGestureEvent: (...args: any[]) => void;
@@ -47,8 +49,10 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
       componentProps: {},
     };
     this.isShown = false;
+    this.isHiding = false;
     this.hideTimer = null;
     this.showParams = null;
+    this.callStack = [];
 
     this.translateY = new Animated.Value(MIN_TRANSLATE_Y);
     this.translateYInterpolated = this.translateY.interpolate({
@@ -80,7 +84,7 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
   }
 
   public hideNotification(callback?: EndCallback) {
-    if (!this.isShown) {
+    if (!this.isShown || this.isHiding) {
       return;
     }
 
@@ -102,9 +106,26 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
 
   public showNotification(params: ShowNotification) {
     if (this.isShown) {
-      this.hideNotification(() => {
-        this.showNotification(params);
-      });
+      switch (params.queueMode) {
+        case 'standby': {
+          this.callStack.push(params);
+          break;
+        }
+        case 'next': {
+          this.callStack.unshift(params);
+          break;
+        }
+        case 'immediate': {
+          this.callStack.unshift(params);
+          this.hideNotification();
+          break;
+        }
+        default: {
+          this.callStack = [params];
+          this.hideNotification();
+          break;
+        }
+      }
       return;
     }
 
@@ -145,13 +166,20 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
 
   private onHide() {
     this.showParams?.onHide?.();
+    this.isHiding = true;
     clearTimeout(this.hideTimer);
   }
 
   private onHidden() {
     this.showParams?.onHidden?.();
     this.isShown = false;
+    this.isHiding = false;
     this.showParams = null;
+
+    const nextNotification = this.callStack.shift();
+    if (nextNotification) {
+      this.showNotification(nextNotification);
+    }
   }
 
   private onHandlerStateChange({ nativeEvent }: PanGestureHandlerStateChangeEvent) {
