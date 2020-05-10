@@ -101,7 +101,7 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
       callback?.(result);
     });
 
-    this.onHide();
+    this.onStartHiding();
   }
 
   public showNotification(params: ShowNotification) {
@@ -164,8 +164,8 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
     }).start();
   }
 
-  private onHide() {
-    this.showParams?.onHide?.();
+  private onStartHiding() {
+    this.showParams?.onStartHiding?.();
     this.isHiding = true;
     clearTimeout(this.hideTimer);
   }
@@ -202,7 +202,7 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
     });
 
     if (isSwipedOut) {
-      this.onHide();
+      this.onStartHiding();
     }
   }
 

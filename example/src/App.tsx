@@ -29,8 +29,9 @@ export default function App() {
             showEasing: Easing.bounce,
             hideEasing: Easing.circle,
 
-            onHide: () => console.log('onHide'),
-            onPress: () => console.log('press'),
+            onStartHiding: () => console.log('Start Hiding'),
+            onHidden: () => console.log('Hidden'),
+            onPress: () => console.log('Press'),
             hideOnPress: false,
 
             swipePixelsToClose: 10,

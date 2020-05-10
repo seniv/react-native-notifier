@@ -9,7 +9,7 @@ export interface ShowParams {
   showEasing?: (value: number) => number; // easing || null
   hideEasing?: (value: number) => number; // easing || null
 
-  onHide?: Function; // null
+  onStartHiding?: Function; // null
   onHidden?: Function; // null
   onPress?: Function; // null
   hideOnPress?: boolean; // true

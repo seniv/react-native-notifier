@@ -45,7 +45,7 @@ Notifier.showNotification({
   duration: 0,
   showAnimationDuration: 800,
   showEasing: Easing.bounce,
-  onHide: () => console.log('onHide'),
+  onHidden: () => console.log('Hidden'),
   onPress: () => console.log('Press'),
   hideOnPress: false,
 });
@@ -98,7 +98,7 @@ hideAnimationDuration | Number   | animationDuration \|\| 300 | How fast notific
 easing                | Easing   | null                       | Animation easing. Details: https://reactnative.dev/docs/easing
 showEasing            | Easing   | easing \|\| null           | Show Animation easing.
 hideEasing            | Easing   | easing \|\| null           | Hide Animation easing.
-onHide                | Function | null                       | Function called when notification started hiding
+onStartHiding         | Function | null                       | Function called when notification started hiding
 onHidden              | Function | null                       | Function called when notification completely hidden
 onPress               | Function | null                       | Function called when user press on notification
 hideOnPress           | Boolean  | true                       | Should notification hide when user press on it
