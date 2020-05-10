@@ -10,9 +10,9 @@ Fast and simple in-app notifications for React Native
 
 ## Requirements
 
-This library uses [react-native-gesture-handler](https://github.com/software-mansion/react-native-gesture-handler), perfect library for swipes and other gesture events.
+This library uses [react-native-gesture-handler](https://github.com/software-mansion/react-native-gesture-handler), a perfect library for swipes, and other gesture events.
 
-If you are using [react-navigation](https://reactnavigation.org/) then you already have it. If you don't, check Getting Stated guide: https://software-mansion.github.io/react-native-gesture-handler/docs/getting-started.html
+If you are using [react-navigation](https://reactnavigation.org/) then you already have `gesture-handler` installed. If you don't, check Getting Started guide to install it: https://software-mansion.github.io/react-native-gesture-handler/docs/getting-started.html
 
 ## Installation
 ```sh
@@ -92,6 +92,7 @@ duration              | Number   | 3000                       | Time after notif
 Component             | Component| MainComponent              | Your [custom component](#custom-component) of notification body
 componentProps        | Object   | {}                         | Additional props that will be passed to `Component`. Use it for customization or if using custom `Component`.
 imageSource           | Object   | null                       | Passed to `<Image />` as `source` param. __Passed to `Component`.__
+queueMode             | String   | 'reset'                    | Determines how the notification will change the notifications queue. Read more in the [Queue Mode](#queue-mode) section.
 animationDuration     | Number   | 300                        | How fast notification will appear/disappear
 showAnimationDuration | Number   | animationDuration \|\| 300 | How fast notification will appear.
 hideAnimationDuration | Number   | animationDuration \|\| 300 | How fast notification will disappear.
@@ -113,6 +114,24 @@ Notifier.hideNotification(onHiddenCallback?: Function);
 ```
 
 Hide notification and run callback function when notification completely hidden.
+
+## Queue Mode
+
+Queue mode is used to define the order in which the notification appears in case other notifications are being displayed at the moment.
+
+For example, if you have some important information like chat messages and you want the user to see all the notifications, then you can use `standby` mode. Or if you want to display something like an error message, then you can use `reset` mode.
+
+By default, `reset` mode is used, which means every new notification clears the queue and gets displayed immediately.
+
+In most cases, you will probably use only `reset` or `standby` modes.
+
+All possible modes:
+Mode       | Effect
+-----------|---------
+reset      | Clear notification queue and immediately display the new notification. Used by default.
+standby    | Add notification to the end of the queue.
+next       | Put notification in the first place in the queue. Will be shown right after the current notification disappears.
+immediate  | Similar to `next`, but also it will hide currently displayed notification.
 
 ## Custom Component
 
