@@ -30,7 +30,7 @@ export const Notifier: NotifierInterface = {
   hideNotification: () => {},
 };
 
-export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
+export class NotifierRoot extends React.PureComponent<ShowNotification, StateInterface> {
   private isShown: boolean;
   private isHiding: boolean;
   private hideTimer: any;
@@ -40,7 +40,7 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
   private readonly translateYInterpolated: Animated.AnimatedInterpolation;
   private readonly onGestureEvent: (...args: any[]) => void;
 
-  constructor(props: {}) {
+  constructor(props: ShowNotification) {
     super(props);
 
     this.state = {
@@ -104,7 +104,9 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
     this.onStartHiding();
   }
 
-  public showNotification(params: ShowNotification) {
+  public showNotification(functionParams: ShowNotification) {
+    const params = { ...this.props, ...functionParams };
+
     if (this.isShown) {
       switch (params.queueMode) {
         case 'standby': {

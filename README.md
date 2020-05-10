@@ -72,6 +72,8 @@ function App() {
 }
 ```
 
+All props passed to `NotifierWrapper` or `NotifierRoot` will be used as default params of [`showNotification`](#showNotification) function. This can be useful to set default [`Component`](#custom-component) param.
+
 ## API
 
 ### `showNotification`
@@ -92,7 +94,7 @@ duration              | Number   | 3000                       | Time after notif
 Component             | Component| MainComponent              | Your [custom component](#custom-component) of notification body
 componentProps        | Object   | {}                         | Additional props that will be passed to `Component`. Use it for customization or if using custom `Component`.
 imageSource           | Object   | null                       | Passed to `<Image />` as `source` param. __Passed to `Component`.__
-queueMode             | String   | 'reset'                    | Determines how the notification will change the notifications queue. Read more in the [Queue Mode](#queue-mode) section.
+queueMode             | String   | 'reset'                    | Determines the order in which notifications are shown. Read more in the [Queue Mode](#queue-mode) section.
 animationDuration     | Number   | 300                        | How fast notification will appear/disappear
 showAnimationDuration | Number   | animationDuration \|\| 300 | How fast notification will appear.
 hideAnimationDuration | Number   | animationDuration \|\| 300 | How fast notification will disappear.
