@@ -99,6 +99,7 @@ easing                | Easing   | null                       | Animation easing
 showEasing            | Easing   | easing \|\| null           | Show Animation easing.
 hideEasing            | Easing   | easing \|\| null           | Hide Animation easing.
 onHide                | Function | null                       | Function called when notification started hiding
+onHidden              | Function | null                       | Function called when notification completely hidden
 onPress               | Function | null                       | Function called when user press on notification
 hideOnPress           | Boolean  | true                       | Should notification hide when user press on it
 swipePixelsToClose    | Number   | 20                         | How many pixels user should swipe-up notification to dismiss it
