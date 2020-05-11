@@ -1,4 +1,5 @@
-import { ImageSourcePropType } from 'react-native';
+import { NotificationComponentProps } from './components/Notification';
+import { AlertComponentProps } from './components/Alert';
 
 export interface ShowParams {
   animationDuration?: number; // 300
@@ -21,14 +22,15 @@ export interface ShowParams {
 
 export type QueueMode = 'immediate' | 'next' | 'standby' | 'reset';
 
+type ComponentProps = NotificationComponentProps | AlertComponentProps | object;
+
 export interface ShowNotification extends ShowParams {
   title?: string; // null
   description?: string; // null
   swipeEnabled?: boolean; // true
   duration?: number; // 3000
   Component?: Function;
-  componentProps?: object;
-  imageSource?: ImageSourcePropType;
+  componentProps?: ComponentProps;
   queueMode?: QueueMode;
 }
 
@@ -37,8 +39,7 @@ export interface StateInterface {
   description?: string;
   swipeEnabled: boolean;
   Component: Function;
-  componentProps: object;
-  imageSource?: ImageSourcePropType;
+  componentProps: ComponentProps;
 }
 
 export type EndResult = { finished: boolean };

@@ -7,7 +7,7 @@ import {
 } from 'react-native-gesture-handler';
 
 import s from './Notifier.styles';
-import { MainComponent } from './components';
+import { Notification as NotificationComponent } from './components';
 import {
   DEFAULT_ANIMATION_DURATION,
   DEFAULT_DURATION,
@@ -44,7 +44,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotification, StateInt
     super(props);
 
     this.state = {
-      Component: MainComponent,
+      Component: NotificationComponent,
       swipeEnabled: DEFAULT_SWIPE_ENABLED,
       componentProps: {},
     };
@@ -138,16 +138,14 @@ export class NotifierRoot extends React.PureComponent<ShowNotification, StateInt
       swipeEnabled,
       Component,
       componentProps,
-      imageSource,
       ...restParams
     } = params ?? {};
     this.setState({
       title,
       description,
-      Component: Component ?? MainComponent,
+      Component: Component ?? NotificationComponent,
       swipeEnabled: swipeEnabled ?? DEFAULT_SWIPE_ENABLED,
       componentProps: componentProps ?? {},
-      imageSource,
     });
     this.showParams = restParams;
     if (duration && !isNaN(duration)) {
@@ -216,7 +214,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotification, StateInt
   }
 
   render() {
-    const { title, description, swipeEnabled, Component, componentProps, imageSource } = this.state;
+    const { title, description, swipeEnabled, Component, componentProps } = this.state;
 
     return (
       <PanGestureHandler
@@ -238,12 +236,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotification, StateInt
         >
           <TouchableWithoutFeedback onPress={this.onPress}>
             <View>
-              <Component
-                title={title}
-                description={description}
-                imageSource={imageSource}
-                {...componentProps}
-              />
+              <Component title={title} description={description} {...componentProps} />
             </View>
           </TouchableWithoutFeedback>
         </Animated.View>

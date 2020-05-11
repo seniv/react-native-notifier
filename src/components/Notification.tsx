@@ -48,14 +48,17 @@ const s = StyleSheet.create({
   },
 });
 
-interface MainComponentProps {
-  title?: string;
-  description?: string;
+export interface NotificationComponentProps {
   imageSource?: ImageSourcePropType;
   ContainerComponent?: Function;
 }
 
-const MainComponent: React.FunctionComponent<MainComponentProps> = ({
+interface NotificationComponentAllProps extends NotificationComponentProps {
+  title?: string;
+  description?: string;
+}
+
+const NotificationComponent: React.FunctionComponent<NotificationComponentAllProps> = ({
   title,
   description,
   imageSource,
@@ -75,4 +78,4 @@ const MainComponent: React.FunctionComponent<MainComponentProps> = ({
   );
 };
 
-export default MainComponent;
+export default NotificationComponent;
