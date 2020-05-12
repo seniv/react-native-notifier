@@ -7,7 +7,7 @@ import {
 } from 'react-native-gesture-handler';
 
 import s from './Notifier.styles';
-import { MainComponent } from './components';
+import { Notification as NotificationComponent } from './components';
 import {
   DEFAULT_ANIMATION_DURATION,
   DEFAULT_DURATION,
@@ -30,25 +30,29 @@ export const Notifier: NotifierInterface = {
   hideNotification: () => {},
 };
 
-export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
+export class NotifierRoot extends React.PureComponent<ShowNotification, StateInterface> {
   private isShown: boolean;
+  private isHiding: boolean;
   private hideTimer: any;
   private showParams: ShowParams | null;
+  private callStack: Array<ShowNotification>;
   private readonly translateY: Animated.Value;
   private readonly translateYInterpolated: Animated.AnimatedInterpolation;
   private readonly onGestureEvent: (...args: any[]) => void;
 
-  constructor(props: {}) {
+  constructor(props: ShowNotification) {
     super(props);
 
     this.state = {
-      Component: MainComponent,
+      Component: NotificationComponent,
       swipeEnabled: DEFAULT_SWIPE_ENABLED,
       componentProps: {},
     };
     this.isShown = false;
+    this.isHiding = false;
     this.hideTimer = null;
     this.showParams = null;
+    this.callStack = [];
 
     this.translateY = new Animated.Value(MIN_TRANSLATE_Y);
     this.translateYInterpolated = this.translateY.interpolate({
@@ -80,7 +84,7 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
   }
 
   public hideNotification(callback?: EndCallback) {
-    if (!this.isShown) {
+    if (!this.isShown || this.isHiding) {
       return;
     }
 
@@ -92,16 +96,38 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
         this.showParams?.animationDuration ??
         DEFAULT_ANIMATION_DURATION,
       useNativeDriver: true,
-    }).start(callback);
+    }).start(result => {
+      this.onHidden();
+      callback?.(result);
+    });
 
-    this.onHide();
+    this.onStartHiding();
   }
 
-  public showNotification(params: ShowNotification) {
+  public showNotification(functionParams: ShowNotification) {
+    const params = { ...this.props, ...functionParams };
+
     if (this.isShown) {
-      this.hideNotification(() => {
-        this.showNotification(params);
-      });
+      switch (params.queueMode) {
+        case 'standby': {
+          this.callStack.push(params);
+          break;
+        }
+        case 'next': {
+          this.callStack.unshift(params);
+          break;
+        }
+        case 'immediate': {
+          this.callStack.unshift(params);
+          this.hideNotification();
+          break;
+        }
+        default: {
+          this.callStack = [params];
+          this.hideNotification();
+          break;
+        }
+      }
       return;
     }
 
@@ -112,16 +138,14 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
       swipeEnabled,
       Component,
       componentProps,
-      imageSource,
       ...restParams
     } = params ?? {};
     this.setState({
       title,
       description,
-      Component: Component ?? MainComponent,
+      Component: Component ?? NotificationComponent,
       swipeEnabled: swipeEnabled ?? DEFAULT_SWIPE_ENABLED,
       componentProps: componentProps ?? {},
-      imageSource,
     });
     this.showParams = restParams;
     if (duration && !isNaN(duration)) {
@@ -140,11 +164,22 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
     }).start();
   }
 
-  private onHide() {
-    this.showParams?.onHide?.();
+  private onStartHiding() {
+    this.showParams?.onStartHiding?.();
+    this.isHiding = true;
     clearTimeout(this.hideTimer);
+  }
+
+  private onHidden() {
+    this.showParams?.onHidden?.();
     this.isShown = false;
+    this.isHiding = false;
     this.showParams = null;
+
+    const nextNotification = this.callStack.shift();
+    if (nextNotification) {
+      this.showNotification(nextNotification);
+    }
   }
 
   private onHandlerStateChange({ nativeEvent }: PanGestureHandlerStateChangeEvent) {
@@ -160,10 +195,14 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
       easing: this.showParams?.swipeEasing,
       duration: this.showParams?.swipeAnimationDuration ?? SWIPE_ANIMATION_DURATION,
       useNativeDriver: true,
-    }).start();
+    }).start(() => {
+      if (isSwipedOut) {
+        this.onHidden();
+      }
+    });
 
     if (isSwipedOut) {
-      this.onHide();
+      this.onStartHiding();
     }
   }
 
@@ -175,7 +214,7 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
   }
 
   render() {
-    const { title, description, swipeEnabled, Component, componentProps, imageSource } = this.state;
+    const { title, description, swipeEnabled, Component, componentProps } = this.state;
 
     return (
       <PanGestureHandler
@@ -197,12 +236,7 @@ export class NotifierRoot extends React.PureComponent<{}, StateInterface> {
         >
           <TouchableWithoutFeedback onPress={this.onPress}>
             <View>
-              <Component
-                title={title}
-                description={description}
-                imageSource={imageSource}
-                {...componentProps}
-              />
+              <Component title={title} description={description} {...componentProps} />
             </View>
           </TouchableWithoutFeedback>
         </Animated.View>

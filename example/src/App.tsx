@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, View, StatusBar, Platform } from 'react-native';
-import { Easing, Notifier, NotifierRoot } from 'react-native-notifier';
+import { Easing, Notifier, NotifierRoot, NotifierComponents } from 'react-native-notifier';
 import Button from './Button';
 import CustomComponent from './CustomComponent';
 
@@ -12,7 +12,7 @@ export default function App() {
   const [statusBarTranslucent, setStatusBarTranslucent] = React.useState(false);
 
   if (isAndroid) {
-    StatusBar.setHidden(statusBar);
+    StatusBar.setHidden(!statusBar);
     StatusBar.setTranslucent(statusBarTranslucent);
   }
 
@@ -29,8 +29,9 @@ export default function App() {
             showEasing: Easing.bounce,
             hideEasing: Easing.circle,
 
-            onHide: () => console.log('onHide'),
-            onPress: () => console.log('press'),
+            onStartHiding: () => console.log('Start Hiding'),
+            onHidden: () => console.log('Hidden'),
+            onPress: () => console.log('Press'),
             hideOnPress: false,
 
             swipePixelsToClose: 10,
@@ -54,15 +55,34 @@ export default function App() {
           Notifier.showNotification({
             title: 'Check this image!',
             description: 'Cool, right?',
-            imageSource: require('./react.jpg'),
+            componentProps: {
+              imageSource: require('./react.jpg'),
+            },
           })
         }
       />
       <Button
-        title="Without Description"
+        title="Error Alert"
         onPress={() =>
           Notifier.showNotification({
-            title: 'Here some very useful information',
+            title: 'The request was failed',
+            description: 'Check your internet connection, please',
+            Component: NotifierComponents.Alert,
+            componentProps: {
+              alertType: 'error',
+            },
+          })
+        }
+      />
+      <Button
+        title="Successful Alert"
+        onPress={() =>
+          Notifier.showNotification({
+            title: 'Your profile was successfully saved!',
+            Component: NotifierComponents.Alert,
+            componentProps: {
+              alertType: 'success',
+            },
           })
         }
       />
