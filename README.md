@@ -140,7 +140,7 @@ Currently, there are 2 components out of the box. If none of them fits your need
 
 ### `NotifierComponents.Notification`
 
-![Demo of Notification component](notification-component.png)
+![Demo of Notification component](https://raw.githubusercontent.com/seniv/react-native-notifier/master/notification-component.png)
 
 Perfect for something like chat messages and notifications like "Someone left a comment". This component is used by default.
 
@@ -166,7 +166,7 @@ componentProps.ContainerComponent | Object   | SafeAreaView | A container of the
 
 ### `NotifierComponents.Alert`
 
-![Demo of Alert component](alert-component.png)
+![Demo of Alert component](https://raw.githubusercontent.com/seniv/react-native-notifier/master/alert-component.png)
 
 Perfect to use as a system alerts, like "Something went wrong" or "Operation was succeed".
 
