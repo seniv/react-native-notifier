@@ -85,29 +85,28 @@ Show notification with params.
 
 `params`
 
-Name                  | Type     | Default                    | Description
-----------------------|----------|----------------------------|-------------
-title                 | String   | null                       | Title of notification. __Passed to `Component`.__
-description           | String   | null                       | Description of notification. __Passed to `Component`.__
-swipeEnabled          | Boolean  | true                       | Can notification be hidden by swiping it out
-duration              | Number   | 3000                       | Time after notification will disappear. Set to `0` to not hide notification automatically
-Component             | Component| MainComponent              | Your [custom component](#custom-component) of notification body
-componentProps        | Object   | {}                         | Additional props that will be passed to `Component`. Use it for customization or if using custom `Component`.
-imageSource           | Object   | null                       | Passed to `<Image />` as `source` param. __Passed to `Component`.__
-queueMode             | String   | 'reset'                    | Determines the order in which notifications are shown. Read more in the [Queue Mode](#queue-mode) section.
-animationDuration     | Number   | 300                        | How fast notification will appear/disappear
-showAnimationDuration | Number   | animationDuration \|\| 300 | How fast notification will appear.
-hideAnimationDuration | Number   | animationDuration \|\| 300 | How fast notification will disappear.
-easing                | Easing   | null                       | Animation easing. Details: https://reactnative.dev/docs/easing
-showEasing            | Easing   | easing \|\| null           | Show Animation easing.
-hideEasing            | Easing   | easing \|\| null           | Hide Animation easing.
-onStartHiding         | Function | null                       | Function called when notification started hiding
-onHidden              | Function | null                       | Function called when notification completely hidden
-onPress               | Function | null                       | Function called when user press on notification
-hideOnPress           | Boolean  | true                       | Should notification hide when user press on it
-swipePixelsToClose    | Number   | 20                         | How many pixels user should swipe-up notification to dismiss it
-swipeEasing           | Easing   | null                       | Animation easing after user finished swiping
-swipeAnimationDuration| Number   | 200                        | How fast should be animation after user finished swiping
+Name                  | Type     | Default                       | Description
+----------------------|----------|-------------------------------|-------------
+title                 | String   | null                          | Title of notification. __Passed to `Component`.__
+description           | String   | null                          | Description of notification. __Passed to `Component`.__
+duration              | Number   | 3000                          | Time after notification will disappear. Set to `0` to not hide notification automatically
+Component             | Component| NotifierComponents.Notification | Component of the notification body. You can use one of the [built-in components](#components), or your [custom component](#custom-component).
+componentProps        | Object   | {}                            | Additional props that are passed to `Component`. See all available props of built-in components in the [components section](#components).
+queueMode             | String   | 'reset'                       | Determines the order in which notifications are shown. Read more in the [Queue Mode](#queue-mode) section.
+swipeEnabled          | Boolean  | true                          | Can notification be hidden by swiping it out
+animationDuration     | Number   | 300                           | How fast notification will appear/disappear
+showAnimationDuration | Number   | animationDuration \|\| 300    | How fast notification will appear.
+hideAnimationDuration | Number   | animationDuration \|\| 300    | How fast notification will disappear.
+easing                | Easing   | null                          | Animation easing. Details: https://reactnative.dev/docs/easing
+showEasing            | Easing   | easing \|\| null              | Show Animation easing.
+hideEasing            | Easing   | easing \|\| null              | Hide Animation easing.
+onStartHiding         | Function | null                          | Function called when notification started hiding
+onHidden              | Function | null                          | Function called when notification completely hidden
+onPress               | Function | null                          | Function called when user press on notification
+hideOnPress           | Boolean  | true                          | Should notification hide when user press on it
+swipePixelsToClose    | Number   | 20                            | How many pixels user should swipe-up notification to dismiss it
+swipeEasing           | Easing   | null                          | Animation easing after user finished swiping
+swipeAnimationDuration| Number   | 200                           | How fast should be animation after user finished swiping
 
 ### `hideNotification`
 
@@ -135,13 +134,71 @@ standby    | Add notification to the end of the queue.
 next       | Put notification in the first place in the queue. Will be shown right after the current notification disappears.
 immediate  | Similar to `next`, but also it will hide currently displayed notification.
 
+## Components
+
+Currently, there are 2 components out of the box. If none of them fits your needs, then you can easily create your [Custom Component](#custom-component).
+
+### `NotifierComponents.Notification`
+
+![Demo of Notification component](notification-component.png)
+
+Perfect for something like chat messages and notifications like "Someone left a comment". This component is used by default.
+
+```js
+import { Notifier, NotifierComponents } from 'react-native-notifier';
+
+Notifier.showNotification({
+  title: 'Check this image!',
+  description: 'Cool, right?',
+  Component: NotifierComponents.Notification,
+  componentProps: {
+    imageSource: require('./react.jpg'),
+  },
+});
+```
+Available params:
+Name                              | Type     | Default      | Description
+----------------------------------|----------|--------------|-------------
+title                             | String   | null         | Title of notification.
+description                       | String   | null         | Description of notification.
+componentProps.imageSource        | Object   | null         | Passed to `<Image />` as `source` param.
+componentProps.ContainerComponent | Object   | SafeAreaView | A container of the component. Set it in case you use different SafeAreaView than the standard
+
+### `NotifierComponents.Alert`
+
+![Demo of Alert component](alert-component.png)
+
+Perfect to use as a system alerts, like "Something went wrong" or "Operation was succeed".
+
+```js
+import { Notifier, NotifierComponents } from 'react-native-notifier';
+
+Notifier.showNotification({
+  title: 'The request was failed',
+  description: 'Check your internet connection, please',
+  Component: NotifierComponents.Alert,
+  componentProps: {
+    alertType: 'error',
+  },
+});
+```
+Available params:
+Name                              | Type     | Default      | Description
+----------------------------------|----------|--------------|-------------
+title                             | String   | null         | Title of notification.
+description                       | String   | null         | Description of notification.
+componentProps.alertType          | String   | 'success'    | Background color will be changed depending on the type. Available values: `error`(red), `success`(green), `warn`(orange) and `info`(blue).
+componentProps.backgroundColor    | String   | null         | While the background of the alert depends on `alertType`, you can also set the other color you want.
+componentProps.textColor          | String   | 'white'      | Color of `title` and `description`.
+componentProps.ContainerComponent | Object   | SafeAreaView | A container of the component. Set it in case you use different SafeAreaView than the standard
+
 ## Custom Component
 
 To customize look of the notification you can pass your own `Component` to [`showNotification`](#showNotification) function.
 
 This makes customization much simpler than passing "style" params. With custom components you can make notification look exactly like you want.
 
-This component will receive props `title`, `description`, `imageSource` and anything else that you pass to `componentProps` object when calling [`showNotification`](#showNotification).
+This component will receive props `title`, `description` and anything else that you pass to `componentProps` object when calling [`showNotification`](#showNotification).
 
 ### Example
 ```js
