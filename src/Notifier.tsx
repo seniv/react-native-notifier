@@ -105,7 +105,11 @@ export class NotifierRoot extends React.PureComponent<ShowNotification, StateInt
   }
 
   public showNotification(functionParams: ShowNotification) {
-    const params = { ...this.props, ...functionParams };
+    const params = {
+      ...this.props,
+      ...functionParams,
+      componentProps: { ...this.props?.componentProps, ...functionParams?.componentProps },
+    };
 
     if (this.isShown) {
       switch (params.queueMode) {
@@ -139,13 +143,13 @@ export class NotifierRoot extends React.PureComponent<ShowNotification, StateInt
       Component,
       componentProps,
       ...restParams
-    } = params ?? {};
+    } = params;
     this.setState({
       title,
       description,
       Component: Component ?? NotificationComponent,
       swipeEnabled: swipeEnabled ?? DEFAULT_SWIPE_ENABLED,
-      componentProps: componentProps ?? {},
+      componentProps: componentProps,
     });
     this.showParams = restParams;
     if (duration && !isNaN(duration)) {
@@ -226,11 +230,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotification, StateInt
           style={[
             s.container,
             {
-              transform: [
-                {
-                  translateY: this.translateYInterpolated,
-                },
-              ],
+              transform: [{ translateY: this.translateYInterpolated }],
             },
           ]}
         >
