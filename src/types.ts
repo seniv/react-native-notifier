@@ -24,7 +24,7 @@ export type QueueMode = 'immediate' | 'next' | 'standby' | 'reset';
 
 type ComponentProps = NotificationComponentProps | AlertComponentProps | object;
 
-export interface ShowNotification extends ShowParams {
+export interface ShowNotificationParams extends ShowParams {
   title?: string; // null
   description?: string; // null
   swipeEnabled?: boolean; // true
@@ -46,6 +46,6 @@ export type EndResult = { finished: boolean };
 export type EndCallback = (result: EndResult) => void;
 
 export interface NotifierInterface {
-  showNotification: (params: ShowNotification) => void;
+  showNotification: (params: ShowNotificationParams) => void;
   hideNotification: (onHidden?: EndCallback) => void;
 }
