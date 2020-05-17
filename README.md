@@ -2,6 +2,7 @@
 
 [![npm](https://img.shields.io/npm/v/react-native-notifier)](https://www.npmjs.com/package/react-native-notifier)
 [![npm bundle size](https://img.shields.io/bundlephobia/min/react-native-notifier)](https://bundlephobia.com/result?p=react-native-notifier)
+![platforms: ios, android, web](https://img.shields.io/badge/platform-ios%2C%20android%2C%20web-blue)
 [![license MIT](https://img.shields.io/badge/license-MIT-brightgreen)](https://github.com/seniv/react-native-notifier/blob/master/LICENSE)
 
 Fast and simple in-app notifications for React Native
@@ -162,7 +163,7 @@ Name                              | Type     | Default      | Description
 title                             | String   | null         | Title of notification.
 description                       | String   | null         | Description of notification.
 componentProps.imageSource        | Object   | null         | Passed to `<Image />` as `source` param.
-componentProps.ContainerComponent | Object   | SafeAreaView | A container of the component. Set it in case you use different SafeAreaView than the standard
+componentProps.ContainerComponent | Component| SafeAreaView | A container of the component. Set it in case you use different SafeAreaView than the standard
 
 ### `NotifierComponents.Alert`
 
@@ -190,7 +191,7 @@ description                       | String   | null         | Description of not
 componentProps.alertType          | String   | 'success'    | Background color will be changed depending on the type. Available values: `error`(red), `success`(green), `warn`(orange) and `info`(blue).
 componentProps.backgroundColor    | String   | null         | While the background of the alert depends on `alertType`, you can also set the other color you want.
 componentProps.textColor          | String   | 'white'      | Color of `title` and `description`.
-componentProps.ContainerComponent | Object   | SafeAreaView | A container of the component. Set it in case you use different SafeAreaView than the standard
+componentProps.ContainerComponent | Component| SafeAreaView | A container of the component. Set it in case you use different SafeAreaView than the standard
 
 ## Custom Component
 
