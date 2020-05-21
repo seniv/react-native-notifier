@@ -1,5 +1,5 @@
 import React from 'react';
-import { Animated, View, TouchableWithoutFeedback } from 'react-native';
+import { Animated, View, TouchableWithoutFeedback, LayoutChangeEvent } from 'react-native';
 import {
   PanGestureHandler,
   State,
@@ -16,6 +16,7 @@ import {
   SWIPE_ANIMATION_DURATION,
   SWIPE_PIXELS_TO_CLOSE,
   DEFAULT_SWIPE_ENABLED,
+  DEFAULT_COMPONENT_HEIGHT,
 } from './constants';
 import {
   ShowParams,
@@ -36,8 +37,9 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
   private hideTimer: any;
   private showParams: ShowParams | null;
   private callStack: Array<ShowNotificationParams>;
+  private hiddenComponentValue: number;
   private readonly translateY: Animated.Value;
-  private readonly translateYInterpolated: Animated.AnimatedInterpolation;
+  private readonly translateYClamped: Animated.AnimatedDiffClamp;
   private readonly onGestureEvent: (...args: any[]) => void;
 
   constructor(props: ShowNotificationParams) {
@@ -53,13 +55,10 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
     this.hideTimer = null;
     this.showParams = null;
     this.callStack = [];
+    this.hiddenComponentValue = -DEFAULT_COMPONENT_HEIGHT;
 
     this.translateY = new Animated.Value(MIN_TRANSLATE_Y);
-    this.translateYInterpolated = this.translateY.interpolate({
-      inputRange: [MIN_TRANSLATE_Y, MAX_TRANSLATE_Y],
-      outputRange: [MIN_TRANSLATE_Y, MAX_TRANSLATE_Y],
-      extrapolate: 'clamp',
-    });
+    this.translateYClamped = Animated.diffClamp(this.translateY, MIN_TRANSLATE_Y, MAX_TRANSLATE_Y);
 
     this.onGestureEvent = Animated.event(
       [
@@ -72,6 +71,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
 
     this.onPress = this.onPress.bind(this);
     this.onHandlerStateChange = this.onHandlerStateChange.bind(this);
+    this.onLayout = this.onLayout.bind(this);
     this.showNotification = this.showNotification.bind(this);
     this.hideNotification = this.hideNotification.bind(this);
 
@@ -89,7 +89,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
     }
 
     Animated.timing(this.translateY, {
-      toValue: MIN_TRANSLATE_Y,
+      toValue: this.hiddenComponentValue,
       easing: this.showParams?.hideEasing ?? this.showParams?.easing,
       duration:
         this.showParams?.hideAnimationDuration ??
@@ -144,6 +144,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
       componentProps,
       ...restParams
     } = params;
+
     this.setState({
       title,
       description,
@@ -151,12 +152,15 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
       swipeEnabled: swipeEnabled ?? DEFAULT_SWIPE_ENABLED,
       componentProps: componentProps,
     });
+
     this.showParams = restParams;
+    this.isShown = true;
+
     if (duration && !isNaN(duration)) {
       this.hideTimer = setTimeout(this.hideNotification, duration);
     }
-    this.isShown = true;
 
+    this.translateY.setValue(-DEFAULT_COMPONENT_HEIGHT);
     Animated.timing(this.translateY, {
       toValue: MAX_TRANSLATE_Y,
       easing: this.showParams?.showEasing ?? this.showParams?.easing,
@@ -179,6 +183,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
     this.isShown = false;
     this.isHiding = false;
     this.showParams = null;
+    this.translateY.setValue(MIN_TRANSLATE_Y);
 
     const nextNotification = this.callStack.shift();
     if (nextNotification) {
@@ -195,7 +200,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
     const isSwipedOut = nativeEvent.translationY < swipePixelsToClose;
 
     Animated.timing(this.translateY, {
-      toValue: isSwipedOut ? MIN_TRANSLATE_Y : MAX_TRANSLATE_Y,
+      toValue: isSwipedOut ? this.hiddenComponentValue : MAX_TRANSLATE_Y,
       easing: this.showParams?.swipeEasing,
       duration: this.showParams?.swipeAnimationDuration ?? SWIPE_ANIMATION_DURATION,
       useNativeDriver: true,
@@ -217,6 +222,11 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
     }
   }
 
+  private onLayout({ nativeEvent }: LayoutChangeEvent) {
+    const heightWithMargin = nativeEvent.layout.height + 50;
+    this.hiddenComponentValue = -Math.max(heightWithMargin, DEFAULT_COMPONENT_HEIGHT);
+  }
+
   render() {
     const { title, description, swipeEnabled, Component, componentProps } = this.state;
 
@@ -230,12 +240,12 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
           style={[
             s.container,
             {
-              transform: [{ translateY: this.translateYInterpolated }],
+              transform: [{ translateY: this.translateYClamped }],
             },
           ]}
         >
           <TouchableWithoutFeedback onPress={this.onPress}>
-            <View>
+            <View onLayout={this.onLayout}>
               <Component title={title} description={description} {...componentProps} />
             </View>
           </TouchableWithoutFeedback>
