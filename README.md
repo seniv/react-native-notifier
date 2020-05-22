@@ -1,8 +1,8 @@
 # react-native-notifier
 
 [![npm](https://img.shields.io/npm/v/react-native-notifier)](https://www.npmjs.com/package/react-native-notifier)
-[![npm bundle size](https://img.shields.io/bundlephobia/min/react-native-notifier)](https://bundlephobia.com/result?p=react-native-notifier)
-![platforms: ios, android, web](https://img.shields.io/badge/platform-ios%2C%20android%2C%20web-blue)
+[![npm bundle size](https://img.shields.io/bundlephobia/min/react-native-notifier?color=yellow)](https://bundlephobia.com/result?p=react-native-notifier)
+![platforms: ios, android, web](https://img.shields.io/badge/platform-ios%2C%20android%2C%20web%2C%20expo-orange)
 [![license MIT](https://img.shields.io/badge/license-MIT-brightgreen)](https://github.com/seniv/react-native-notifier/blob/master/LICENSE)
 
 Fast and simple in-app notifications for React Native
