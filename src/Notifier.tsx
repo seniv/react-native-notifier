@@ -39,7 +39,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
   private callStack: Array<ShowNotificationParams>;
   private hiddenComponentValue: number;
   private readonly translateY: Animated.Value;
-  private readonly translateYClamped: Animated.AnimatedDiffClamp;
+  private readonly translateYInterpolated: Animated.AnimatedInterpolation;
   private readonly onGestureEvent: (...args: any[]) => void;
 
   constructor(props: ShowNotificationParams) {
@@ -58,7 +58,11 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
     this.hiddenComponentValue = -DEFAULT_COMPONENT_HEIGHT;
 
     this.translateY = new Animated.Value(MIN_TRANSLATE_Y);
-    this.translateYClamped = Animated.diffClamp(this.translateY, MIN_TRANSLATE_Y, MAX_TRANSLATE_Y);
+    this.translateYInterpolated = this.translateY.interpolate({
+      inputRange: [MIN_TRANSLATE_Y, MAX_TRANSLATE_Y],
+      outputRange: [MIN_TRANSLATE_Y, MAX_TRANSLATE_Y],
+      extrapolate: 'clamp',
+    });
 
     this.onGestureEvent = Animated.event(
       [
@@ -240,7 +244,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
           style={[
             s.container,
             {
-              transform: [{ translateY: this.translateYClamped }],
+              transform: [{ translateY: this.translateYInterpolated }],
             },
           ]}
         >
