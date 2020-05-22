@@ -49,3 +49,8 @@ export interface NotifierInterface {
   showNotification: (params: ShowNotificationParams) => void;
   hideNotification: (onHidden?: EndCallback) => void;
 }
+
+export enum AnimationState {
+  Hidden = -1,
+  Shown = 0,
+}
