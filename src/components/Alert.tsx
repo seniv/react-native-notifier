@@ -32,9 +32,20 @@ const s = StyleSheet.create({
 });
 
 export interface AlertComponentProps {
+  /** Background color will be changed depending on the type. Available values: `error`(red), `success`(green), `warn`(orange) and `info`(blue).
+   * @default 'success' */
   alertType: AlertTypes;
+
+  /** While the background of the alert depends on `alertType`, you can also set the other color you want.
+   * @default null */
   backgroundColor?: string;
+
+  /** Color of `title` and `description`.
+   * @default 'white' */
   textColor?: string;
+
+  /** A container of the component. Set it in case you use different SafeAreaView than the standard
+   * @default SafeAreaView */
   ContainerComponent?: Function;
 }
 

@@ -49,7 +49,12 @@ const s = StyleSheet.create({
 });
 
 export interface NotificationComponentProps {
+  /** Passed to `<Image />` as `source` param.
+   * @default null */
   imageSource?: ImageSourcePropType;
+
+  /** A container of the component. Set it in case you use different SafeAreaView than the standard
+   * @default SafeAreaView */
   ContainerComponent?: Function;
 }
 
