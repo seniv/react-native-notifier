@@ -53,6 +53,14 @@ export interface NotificationComponentProps {
    * @default null */
   imageSource?: ImageSourcePropType;
 
+  /** The maximum number of lines to use for rendering title.
+   * @default null */
+  maxTitleLines?: number;
+
+  /** The maximum number of lines to use for rendering description.
+   * @default null */
+  maxDescriptionLines?: number;
+
   /** A container of the component. Set it in case you use different SafeAreaView than the standard
    * @default SafeAreaView */
   ContainerComponent?: Function;
@@ -68,6 +76,8 @@ const NotificationComponent: React.FunctionComponent<NotificationComponentAllPro
   description,
   imageSource,
   ContainerComponent,
+  maxTitleLines,
+  maxDescriptionLines,
 }) => {
   const Container = ContainerComponent ?? SafeContainer;
   return (
@@ -75,8 +85,16 @@ const NotificationComponent: React.FunctionComponent<NotificationComponentAllPro
       <View style={s.container}>
         {!!imageSource && <Image style={s.image} source={imageSource} />}
         <View style={s.content}>
-          {!!title && <Text style={s.title}>{title}</Text>}
-          {!!description && <Text style={s.description}>{description}</Text>}
+          {!!title && (
+            <Text style={s.title} numberOfLines={maxTitleLines}>
+              {title}
+            </Text>
+          )}
+          {!!description && (
+            <Text style={s.description} numberOfLines={maxDescriptionLines}>
+              {description}
+            </Text>
+          )}
         </View>
       </View>
     </Container>

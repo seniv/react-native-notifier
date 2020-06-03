@@ -44,6 +44,14 @@ export interface AlertComponentProps {
    * @default 'white' */
   textColor?: string;
 
+  /** The maximum number of lines to use for rendering title.
+   * @default null */
+  maxTitleLines?: number;
+
+  /** The maximum number of lines to use for rendering description.
+   * @default null */
+  maxDescriptionLines?: number;
+
   /** A container of the component. Set it in case you use different SafeAreaView than the standard
    * @default SafeAreaView */
   ContainerComponent?: Function;
@@ -61,14 +69,24 @@ const AlertComponent: React.FunctionComponent<AlertComponentAllProps> = ({
   backgroundColor,
   textColor,
   ContainerComponent,
+  maxTitleLines,
+  maxDescriptionLines,
 }) => {
   const Container = ContainerComponent ?? SafeContainer;
   const textStyle = textColor ? { color: textColor } : null;
   return (
     <Container style={{ backgroundColor: backgroundColor || bgColors[alertType] }}>
       <View style={s.container}>
-        {!!title && <Text style={[s.title, textStyle]}>{title}</Text>}
-        {!!description && <Text style={[s.description, textStyle]}>{description}</Text>}
+        {!!title && (
+          <Text style={[s.title, textStyle]} numberOfLines={maxTitleLines}>
+            {title}
+          </Text>
+        )}
+        {!!description && (
+          <Text style={[s.description, textStyle]} numberOfLines={maxDescriptionLines}>
+            {description}
+          </Text>
+        )}
       </View>
     </Container>
   );

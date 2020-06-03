@@ -158,12 +158,14 @@ Notifier.showNotification({
 });
 ```
 Available params:
-Name                              | Type     | Default      | Description
-----------------------------------|----------|--------------|-------------
-title                             | String   | null         | Title of notification.
-description                       | String   | null         | Description of notification.
-componentProps.imageSource        | Object   | null         | Passed to `<Image />` as `source` param.
-componentProps.ContainerComponent | Component| SafeAreaView | A container of the component. Set it in case you use different SafeAreaView than the standard
+Name                               | Type      | Default      | Description
+-----------------------------------|-----------|--------------|-------------
+title                              | String    | null         | Title of notification.
+description                        | String    | null         | Description of notification.
+componentProps.imageSource         | Object    | null         | Passed to `<Image />` as `source` param.
+componentProps.ContainerComponent  | Component | SafeAreaView | A container of the component. Set it in case you use different SafeAreaView than the standard
+componentProps.maxTitleLines       | number    | null         | The maximum number of lines to use for rendering title.
+componentProps.maxDescriptionLines | number    | null         | The maximum number of lines to use for rendering description.
 
 ### `NotifierComponents.Alert`
 
@@ -184,14 +186,16 @@ Notifier.showNotification({
 });
 ```
 Available params:
-Name                              | Type     | Default      | Description
-----------------------------------|----------|--------------|-------------
-title                             | String   | null         | Title of notification.
-description                       | String   | null         | Description of notification.
-componentProps.alertType          | String   | 'success'    | Background color will be changed depending on the type. Available values: `error`(red), `success`(green), `warn`(orange) and `info`(blue).
-componentProps.backgroundColor    | String   | null         | While the background of the alert depends on `alertType`, you can also set the other color you want.
-componentProps.textColor          | String   | 'white'      | Color of `title` and `description`.
-componentProps.ContainerComponent | Component| SafeAreaView | A container of the component. Set it in case you use different SafeAreaView than the standard
+Name                               | Type      | Default      | Description
+-----------------------------------|-----------|--------------|-------------
+title                              | String    | null         | Title of notification.
+description                        | String    | null         | Description of notification.
+componentProps.alertType           | String    | 'success'    | Background color will be changed depending on the type. Available values: `error`(red), `success`(green), `warn`(orange) and `info`(blue).
+componentProps.backgroundColor     | String    | null         | While the background of the alert depends on `alertType`, you can also set the other color you want.
+componentProps.textColor           | String    | 'white'      | Color of `title` and `description`.
+componentProps.ContainerComponent  | Component | SafeAreaView | A container of the component. Set it in case you use different SafeAreaView than the standard
+componentProps.maxTitleLines       | number    | null         | The maximum number of lines to use for rendering title.
+componentProps.maxDescriptionLines | number    | null         | The maximum number of lines to use for rendering description.
 
 ## Custom Component
 
