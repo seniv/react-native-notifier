@@ -1,5 +1,13 @@
 import React from 'react';
-import { StyleSheet, View, Text, ImageSourcePropType, Image, TextStyle } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  ImageSourcePropType,
+  Image,
+  TextStyle,
+  ImageStyle,
+} from 'react-native';
 
 import SafeContainer from './SafeContainer';
 
@@ -72,6 +80,10 @@ export interface NotificationComponentProps {
   /** The style to use for rendering description
    * @default null */
   descriptionStyle?: TextStyle;
+
+  /** The style to use for rendering image
+   * @default null */
+  imageStyle?: ImageStyle;
 }
 
 interface NotificationComponentAllProps extends NotificationComponentProps {
@@ -85,6 +97,7 @@ const NotificationComponent: React.FunctionComponent<NotificationComponentAllPro
   description,
   descriptionStyle,
   imageSource,
+  imageStyle,
   ContainerComponent,
   maxTitleLines,
   maxDescriptionLines,
@@ -93,7 +106,7 @@ const NotificationComponent: React.FunctionComponent<NotificationComponentAllPro
   return (
     <Container>
       <View style={s.container}>
-        {!!imageSource && <Image style={s.image} source={imageSource} />}
+        {!!imageSource && <Image style={[s.image, imageStyle]} source={imageSource} />}
         <View style={s.content}>
           {!!title && (
             <Text style={[s.title, titleStyle]} numberOfLines={maxTitleLines}>
