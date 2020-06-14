@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, TextStyle } from 'react-native';
 
 import SafeContainer from './SafeContainer';
 
@@ -55,6 +55,14 @@ export interface AlertComponentProps {
   /** A container of the component. Set it in case you use different SafeAreaView than the standard
    * @default SafeAreaView */
   ContainerComponent?: Function;
+
+  /** The style to use for rendering title
+   * @default null */
+  titleStyle?: TextStyle;
+
+  /** The style to use for rendering description
+   * @default null */
+  descriptionStyle?: TextStyle;
 }
 
 interface AlertComponentAllProps extends AlertComponentProps {
@@ -64,7 +72,9 @@ interface AlertComponentAllProps extends AlertComponentProps {
 
 const AlertComponent: React.FunctionComponent<AlertComponentAllProps> = ({
   title,
+  titleStyle,
   description,
+  descriptionStyle,
   alertType = 'success',
   backgroundColor,
   textColor,
@@ -78,12 +88,15 @@ const AlertComponent: React.FunctionComponent<AlertComponentAllProps> = ({
     <Container style={{ backgroundColor: backgroundColor || bgColors[alertType] }}>
       <View style={s.container}>
         {!!title && (
-          <Text style={[s.title, textStyle]} numberOfLines={maxTitleLines}>
+          <Text style={[s.title, textStyle, titleStyle]} numberOfLines={maxTitleLines}>
             {title}
           </Text>
         )}
         {!!description && (
-          <Text style={[s.description, textStyle]} numberOfLines={maxDescriptionLines}>
+          <Text
+            style={[s.description, textStyle, descriptionStyle]}
+            numberOfLines={maxDescriptionLines}
+          >
             {description}
           </Text>
         )}

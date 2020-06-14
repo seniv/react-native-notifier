@@ -89,7 +89,9 @@ Show notification with params.
 Name                  | Type     | Default                       | Description
 ----------------------|----------|-------------------------------|-------------
 title                 | String   | null                          | Title of notification. __Passed to `Component`.__
+titleStyle            | TextStyle| null                          | The style to use for rendering title.
 description           | String   | null                          | Description of notification. __Passed to `Component`.__
+descriptionStyle      | TextStyle| null                          | The style to use for rendering description.
 duration              | Number   | 3000                          | Time after notification will disappear. Set to `0` to not hide notification automatically
 Component             | Component| NotifierComponents.Notification | Component of the notification body. You can use one of the [built-in components](#components), or your [custom component](#custom-component).
 componentProps        | Object   | {}                            | Additional props that are passed to `Component`. See all available props of built-in components in the [components section](#components).
@@ -161,7 +163,9 @@ Available params:
 Name                               | Type      | Default      | Description
 -----------------------------------|-----------|--------------|-------------
 title                              | String    | null         | Title of notification.
+titleStyle                         | TextStyle | null         | The style to use for rendering title.
 description                        | String    | null         | Description of notification.
+descriptionStyle                   | TextStyle | null         | The style to use for rendering description.
 componentProps.imageSource         | Object    | null         | Passed to `<Image />` as `source` param.
 componentProps.ContainerComponent  | Component | SafeAreaView | A container of the component. Set it in case you use different SafeAreaView than the standard
 componentProps.maxTitleLines       | number    | null         | The maximum number of lines to use for rendering title.
@@ -189,7 +193,9 @@ Available params:
 Name                               | Type      | Default      | Description
 -----------------------------------|-----------|--------------|-------------
 title                              | String    | null         | Title of notification.
+titleStyle                         | TextStyle | null         | The style to use for rendering title.
 description                        | String    | null         | Description of notification.
+descriptionStyle                   | TextStyle | null         | The style to use for rendering description.
 componentProps.alertType           | String    | 'success'    | Background color will be changed depending on the type. Available values: `error`(red), `success`(green), `warn`(orange) and `info`(blue).
 componentProps.backgroundColor     | String    | null         | While the background of the alert depends on `alertType`, you can also set the other color you want.
 componentProps.textColor           | String    | 'white'      | Color of `title` and `description`.
