@@ -59,6 +59,10 @@ export interface AlertComponentProps {
   /** The style to use for rendering title
    * @default null */
   titleStyle?: TextStyle;
+
+  /** The style to use for rendering description
+   * @default null */
+  descriptionStyle?: TextStyle;
 }
 
 interface AlertComponentAllProps extends AlertComponentProps {
@@ -70,6 +74,7 @@ const AlertComponent: React.FunctionComponent<AlertComponentAllProps> = ({
   title,
   titleStyle,
   description,
+  descriptionStyle,
   alertType = 'success',
   backgroundColor,
   textColor,
@@ -88,7 +93,10 @@ const AlertComponent: React.FunctionComponent<AlertComponentAllProps> = ({
           </Text>
         )}
         {!!description && (
-          <Text style={[s.description, textStyle]} numberOfLines={maxDescriptionLines}>
+          <Text
+            style={[s.description, textStyle, descriptionStyle]}
+            numberOfLines={maxDescriptionLines}
+          >
             {description}
           </Text>
         )}

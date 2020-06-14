@@ -68,6 +68,10 @@ export interface NotificationComponentProps {
   /** The style to use for rendering title
    * @default null */
   titleStyle?: TextStyle;
+
+  /** The style to use for rendering description
+   * @default null */
+  descriptionStyle?: TextStyle;
 }
 
 interface NotificationComponentAllProps extends NotificationComponentProps {
@@ -79,6 +83,7 @@ const NotificationComponent: React.FunctionComponent<NotificationComponentAllPro
   title,
   titleStyle,
   description,
+  descriptionStyle,
   imageSource,
   ContainerComponent,
   maxTitleLines,
@@ -96,7 +101,7 @@ const NotificationComponent: React.FunctionComponent<NotificationComponentAllPro
             </Text>
           )}
           {!!description && (
-            <Text style={s.description} numberOfLines={maxDescriptionLines}>
+            <Text style={[s.description, descriptionStyle]} numberOfLines={maxDescriptionLines}>
               {description}
             </Text>
           )}
