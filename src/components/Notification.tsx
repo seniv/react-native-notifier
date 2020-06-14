@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, ImageSourcePropType, Image } from 'react-native';
+import { StyleSheet, View, Text, ImageSourcePropType, Image, TextStyle } from 'react-native';
 
 import SafeContainer from './SafeContainer';
 
@@ -64,6 +64,10 @@ export interface NotificationComponentProps {
   /** A container of the component. Set it in case you use different SafeAreaView than the standard
    * @default SafeAreaView */
   ContainerComponent?: Function;
+
+  /** The style to use for rendering title
+   * @default null */
+  titleStyle?: TextStyle;
 }
 
 interface NotificationComponentAllProps extends NotificationComponentProps {
@@ -73,6 +77,7 @@ interface NotificationComponentAllProps extends NotificationComponentProps {
 
 const NotificationComponent: React.FunctionComponent<NotificationComponentAllProps> = ({
   title,
+  titleStyle,
   description,
   imageSource,
   ContainerComponent,
@@ -86,7 +91,7 @@ const NotificationComponent: React.FunctionComponent<NotificationComponentAllPro
         {!!imageSource && <Image style={s.image} source={imageSource} />}
         <View style={s.content}>
           {!!title && (
-            <Text style={s.title} numberOfLines={maxTitleLines}>
+            <Text style={[s.title, titleStyle]} numberOfLines={maxTitleLines}>
               {title}
             </Text>
           )}
