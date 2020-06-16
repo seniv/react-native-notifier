@@ -53,6 +53,10 @@ export interface ShowParams {
   /** How fast should be animation after user finished swiping
    * @default 200 */
   swipeAnimationDuration?: number;
+
+  /** Time after notification will disappear. Set to `0` to not hide notification automatically
+   * @default 3000 */
+  duration?: number;
 }
 
 export type QueueMode = 'immediate' | 'next' | 'standby' | 'reset';
@@ -71,10 +75,6 @@ export interface ShowNotificationParams extends ShowParams {
   /** Can notification be hidden by swiping it out
    * @default true */
   swipeEnabled?: boolean;
-
-  /** Time after notification will disappear. Set to `0` to not hide notification automatically
-   * @default 3000 */
-  duration?: number;
 
   /** Component of the notification body. You can use one of the [built-in components](https://github.com/seniv/react-native-notifier#components), or your [custom component](https://github.com/seniv/react-native-notifier#custom-component).
    * @default NotifierComponents.Notification */
