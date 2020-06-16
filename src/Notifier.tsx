@@ -167,7 +167,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
   }
 
   private setHideTimer() {
-    const { duration = DEFAULT_DURATION } = this.props;
+    const { duration = DEFAULT_DURATION } = this.showParams ?? {};
     clearTimeout(this.hideTimer);
     if (duration && !isNaN(duration)) {
       this.hideTimer = setTimeout(this.hideNotification, duration);
