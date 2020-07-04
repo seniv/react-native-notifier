@@ -247,6 +247,11 @@ Notifier.showNotification({
 ```
 ![Demo of custom component](https://raw.githubusercontent.com/seniv/react-native-notifier/master/custom-component.jpg)
 
+## Using with `react-native-navigation`
+If you are using `react-native-navigation`, this issue might be helpful to use notifier with native-navigation: https://github.com/seniv/react-native-notifier/issues/16
+
+If you have any solutions or improvements in how to use notifier with native-navigation, then feel free to write comments in that thread!
+
 ## License
 
 MIT
