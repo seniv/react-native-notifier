@@ -2,6 +2,7 @@ import { StyleSheet, Platform } from 'react-native';
 
 export default StyleSheet.create({
   container: {
+    zIndex: 2,
     width: '100%',
     // @ts-ignore
     position: Platform.select({
