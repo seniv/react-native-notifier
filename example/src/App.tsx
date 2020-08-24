@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { StyleSheet, View, StatusBar, Platform } from 'react-native';
+import { StyleSheet, View, StatusBar, Platform, Text } from 'react-native';
 import { Easing, Notifier, NotifierRoot, NotifierComponents } from 'react-native-notifier';
+import Modal from 'react-native-modal';
 import Button from './Button';
 import CustomComponent from './CustomComponent';
 
@@ -10,6 +11,7 @@ export default function App() {
   const notifierRef = React.useRef<NotifierRoot>(null);
   const [statusBar, setStatusBar] = React.useState(true);
   const [statusBarTranslucent, setStatusBarTranslucent] = React.useState(false);
+  const [isModalVisible, setModalVisible] = React.useState(false);
 
   if (isAndroid) {
     StatusBar.setHidden(!statusBar);
@@ -115,6 +117,27 @@ export default function App() {
           />
         </>
       )}
+
+      <Button title="Open react-native-modal" onPress={() => setModalVisible(true)} />
+      <Modal isVisible={isModalVisible} coverScreen={false}>
+        <View style={styles.modalContainer}>
+          <Text>
+            Property "coverScreen" set to "false" does the trick and notification should be rendered
+            above the modal!
+          </Text>
+
+          <Button
+            title="Show notification"
+            onPress={() =>
+              Notifier.showNotification({
+                title: 'Hello react-native-modal!',
+                description: 'Modal + Notifier = ❤️',
+              })
+            }
+          />
+          <Button title="Hide modal" onPress={() => setModalVisible(false)} />
+        </View>
+      </Modal>
       <NotifierRoot ref={notifierRef} />
     </View>
   );
@@ -125,5 +148,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#f1f1f1',
     flex: 1,
     justifyContent: 'center',
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    borderRadius: 25,
+    maxHeight: 500,
+    paddingHorizontal: 30,
   },
 });
