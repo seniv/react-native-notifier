@@ -136,15 +136,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
       return;
     }
 
-    const {
-      duration = DEFAULT_DURATION,
-      title,
-      description,
-      swipeEnabled,
-      Component,
-      componentProps,
-      ...restParams
-    } = params;
+    const { title, description, swipeEnabled, Component, componentProps, ...restParams } = params;
 
     this.setState({
       title,
@@ -157,9 +149,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
     this.showParams = restParams;
     this.isShown = true;
 
-    if (duration && !isNaN(duration)) {
-      this.hideTimer = setTimeout(this.hideNotification, duration);
-    }
+    this.setHideTimer();
 
     this.translateY.setValue(-DEFAULT_COMPONENT_HEIGHT);
     Animated.timing(this.translateY, {
@@ -178,6 +168,14 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
 
     if (hideDisplayedNotification) {
       this.hideNotification();
+    }
+  }
+
+  private setHideTimer() {
+    const { duration = DEFAULT_DURATION } = this.showParams ?? {};
+    clearTimeout(this.hideTimer);
+    if (duration && !isNaN(duration)) {
+      this.hideTimer = setTimeout(this.hideNotification, duration);
     }
   }
 
@@ -201,9 +199,13 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
   }
 
   private onHandlerStateChange({ nativeEvent }: PanGestureHandlerStateChangeEvent) {
+    if (nativeEvent.state === State.ACTIVE) {
+      clearTimeout(this.hideTimer);
+    }
     if (nativeEvent.oldState !== State.ACTIVE) {
       return;
     }
+    this.setHideTimer();
 
     const swipePixelsToClose = -(this.showParams?.swipePixelsToClose ?? SWIPE_PIXELS_TO_CLOSE);
     const isSwipedOut = nativeEvent.translationY < swipePixelsToClose;

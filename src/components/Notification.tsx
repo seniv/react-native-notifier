@@ -1,5 +1,13 @@
 import React from 'react';
-import { StyleSheet, View, Text, ImageSourcePropType, Image } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  ImageSourcePropType,
+  Image,
+  TextStyle,
+  ImageStyle,
+} from 'react-native';
 
 import SafeContainer from './SafeContainer';
 
@@ -49,8 +57,33 @@ const s = StyleSheet.create({
 });
 
 export interface NotificationComponentProps {
+  /** Passed to `<Image />` as `source` param.
+   * @default null */
   imageSource?: ImageSourcePropType;
+
+  /** The maximum number of lines to use for rendering title.
+   * @default null */
+  maxTitleLines?: number;
+
+  /** The maximum number of lines to use for rendering description.
+   * @default null */
+  maxDescriptionLines?: number;
+
+  /** A container of the component. Set it in case you use different SafeAreaView than the standard
+   * @default SafeAreaView */
   ContainerComponent?: Function;
+
+  /** The style to use for rendering title
+   * @default null */
+  titleStyle?: TextStyle;
+
+  /** The style to use for rendering description
+   * @default null */
+  descriptionStyle?: TextStyle;
+
+  /** The style to use for rendering image
+   * @default null */
+  imageStyle?: ImageStyle;
 }
 
 interface NotificationComponentAllProps extends NotificationComponentProps {
@@ -60,18 +93,31 @@ interface NotificationComponentAllProps extends NotificationComponentProps {
 
 const NotificationComponent: React.FunctionComponent<NotificationComponentAllProps> = ({
   title,
+  titleStyle,
   description,
+  descriptionStyle,
   imageSource,
+  imageStyle,
   ContainerComponent,
+  maxTitleLines,
+  maxDescriptionLines,
 }) => {
   const Container = ContainerComponent ?? SafeContainer;
   return (
     <Container>
       <View style={s.container}>
-        {!!imageSource && <Image style={s.image} source={imageSource} />}
+        {!!imageSource && <Image style={[s.image, imageStyle]} source={imageSource} />}
         <View style={s.content}>
-          {!!title && <Text style={s.title}>{title}</Text>}
-          {!!description && <Text style={s.description}>{description}</Text>}
+          {!!title && (
+            <Text style={[s.title, titleStyle]} numberOfLines={maxTitleLines}>
+              {title}
+            </Text>
+          )}
+          {!!description && (
+            <Text style={[s.description, descriptionStyle]} numberOfLines={maxDescriptionLines}>
+              {description}
+            </Text>
+          )}
         </View>
       </View>
     </Container>
