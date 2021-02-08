@@ -1,5 +1,6 @@
 import { NotificationComponentProps } from './components/Notification';
 import { AlertComponentProps } from './components/Alert';
+import { Animated } from 'react-native';
 
 export interface ShowParams {
   /** How fast notification will appear/disappear
@@ -16,15 +17,15 @@ export interface ShowParams {
 
   /** Animation easing. Details: https://reactnative.dev/docs/easing
    * @default null */
-  easing?: (value: number) => number;
+  easing?: Animated.TimingAnimationConfig['easing'];
 
   /** Show Animation easing.
    * @default easing || null */
-  showEasing?: (value: number) => number;
+  showEasing?: Animated.TimingAnimationConfig['easing'];
 
   /** Hide Animation easing.
    * @default easing || null */
-  hideEasing?: (value: number) => number;
+  hideEasing?: Animated.TimingAnimationConfig['easing'];
 
   /** Function called when notification started hiding
    * @default null */
@@ -48,7 +49,7 @@ export interface ShowParams {
 
   /** Animation easing after user finished swiping
    * @default null */
-  swipeEasing?: (value: number) => number;
+  swipeEasing?: Animated.TimingAnimationConfig['easing'];
 
   /** How fast should be animation after user finished swiping
    * @default 200 */
@@ -97,10 +98,8 @@ export interface StateInterface {
   componentProps: ComponentProps;
 }
 
-export type EndResult = { finished: boolean };
-export type EndCallback = (result: EndResult) => void;
-
 export interface NotifierInterface {
-  showNotification: (params: ShowNotificationParams) => void;
-  hideNotification: (onHidden?: EndCallback) => void;
+  showNotification(params: ShowNotificationParams): void;
+  hideNotification(onHidden?: Animated.EndCallback): void;
+  clearQueue(hideDisplayedNotification?: boolean): void;
 }

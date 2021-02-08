@@ -18,17 +18,12 @@ import {
   DEFAULT_SWIPE_ENABLED,
   DEFAULT_COMPONENT_HEIGHT,
 } from './constants';
-import {
-  ShowParams,
-  ShowNotificationParams,
-  StateInterface,
-  EndCallback,
-  NotifierInterface,
-} from './types';
+import { ShowParams, ShowNotificationParams, StateInterface, NotifierInterface } from './types';
 
 export const Notifier: NotifierInterface = {
   showNotification: () => {},
   hideNotification: () => {},
+  clearQueue: () => {},
 };
 
 export class NotifierRoot extends React.PureComponent<ShowNotificationParams, StateInterface> {
@@ -78,16 +73,18 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
     this.onLayout = this.onLayout.bind(this);
     this.showNotification = this.showNotification.bind(this);
     this.hideNotification = this.hideNotification.bind(this);
+    this.clearQueue = this.clearQueue.bind(this);
 
     Notifier.showNotification = this.showNotification;
     Notifier.hideNotification = this.hideNotification;
+    Notifier.clearQueue = this.clearQueue;
   }
 
   componentWillUnmount() {
     clearTimeout(this.hideTimer);
   }
 
-  public hideNotification(callback?: EndCallback) {
+  public hideNotification(callback?: Animated.EndCallback) {
     if (!this.isShown || this.isHiding) {
       return;
     }
@@ -164,6 +161,14 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
         DEFAULT_ANIMATION_DURATION,
       useNativeDriver: true,
     }).start();
+  }
+
+  public clearQueue(hideDisplayedNotification?: boolean) {
+    this.callStack = [];
+
+    if (hideDisplayedNotification) {
+      this.hideNotification();
+    }
   }
 
   private setHideTimer() {
