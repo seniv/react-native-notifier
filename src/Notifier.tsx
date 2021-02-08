@@ -18,13 +18,7 @@ import {
   DEFAULT_SWIPE_ENABLED,
   DEFAULT_COMPONENT_HEIGHT,
 } from './constants';
-import {
-  ShowParams,
-  ShowNotificationParams,
-  StateInterface,
-  EndCallback,
-  NotifierInterface,
-} from './types';
+import { ShowParams, ShowNotificationParams, StateInterface, NotifierInterface } from './types';
 
 export const Notifier: NotifierInterface = {
   showNotification: () => {},
@@ -90,7 +84,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
     clearTimeout(this.hideTimer);
   }
 
-  public hideNotification(callback?: EndCallback) {
+  public hideNotification(callback?: Animated.EndCallback) {
     if (!this.isShown || this.isHiding) {
       return;
     }

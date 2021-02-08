@@ -1,22 +1,23 @@
 import { NotificationComponentProps } from './components/Notification';
 import { AlertComponentProps } from './components/Alert';
+import { Animated } from 'react-native';
 
 export interface ShowParams {
   animationDuration?: number; // 300
   showAnimationDuration?: number; // animationDuration || 300
   hideAnimationDuration?: number; // animationDuration || 300
 
-  easing?: (value: number) => number; // null
-  showEasing?: (value: number) => number; // easing || null
-  hideEasing?: (value: number) => number; // easing || null
+  easing?: Animated.TimingAnimationConfig['easing']; // null
+  showEasing?: Animated.TimingAnimationConfig['easing']; // easing || null
+  hideEasing?: Animated.TimingAnimationConfig['easing']; // easing || null
 
-  onStartHiding?: Function; // null
-  onHidden?: Function; // null
-  onPress?: Function; // null
+  onStartHiding?: () => void; // null
+  onHidden?: () => void; // null
+  onPress?: () => void; // null
   hideOnPress?: boolean; // true
 
   swipePixelsToClose?: number; // 20
-  swipeEasing?: (value: number) => number; // null
+  swipeEasing?: Animated.TimingAnimationConfig['easing']; // null
   swipeAnimationDuration?: number; // 200
 }
 
@@ -42,11 +43,8 @@ export interface StateInterface {
   componentProps: ComponentProps;
 }
 
-export type EndResult = { finished: boolean };
-export type EndCallback = (result: EndResult) => void;
-
 export interface NotifierInterface {
   showNotification(params: ShowNotificationParams): void;
-  hideNotification(onHidden?: EndCallback): void;
+  hideNotification(onHidden?: Animated.EndCallback): void;
   clearQueue(hideDisplayedNotification?: boolean): void;
 }
