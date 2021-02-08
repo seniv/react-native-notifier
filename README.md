@@ -86,36 +86,43 @@ Show notification with params.
 
 `params`
 
-Name                  | Type     | Default                       | Description
-----------------------|----------|-------------------------------|-------------
-title                 | String   | null                          | Title of notification. __Passed to `Component`.__
-description           | String   | null                          | Description of notification. __Passed to `Component`.__
-duration              | Number   | 3000                          | Time after notification will disappear. Set to `0` to not hide notification automatically
-Component             | Component| NotifierComponents.Notification | Component of the notification body. You can use one of the [built-in components](#components), or your [custom component](#custom-component).
-componentProps        | Object   | {}                            | Additional props that are passed to `Component`. See all available props of built-in components in the [components section](#components).
-queueMode             | String   | 'reset'                       | Determines the order in which notifications are shown. Read more in the [Queue Mode](#queue-mode) section.
-swipeEnabled          | Boolean  | true                          | Can notification be hidden by swiping it out
-animationDuration     | Number   | 300                           | How fast notification will appear/disappear
-showAnimationDuration | Number   | animationDuration \|\| 300    | How fast notification will appear.
-hideAnimationDuration | Number   | animationDuration \|\| 300    | How fast notification will disappear.
-easing                | Easing   | null                          | Animation easing. Details: https://reactnative.dev/docs/easing
-showEasing            | Easing   | easing \|\| null              | Show Animation easing.
-hideEasing            | Easing   | easing \|\| null              | Hide Animation easing.
-onStartHiding         | Function | null                          | Function called when notification started hiding
-onHidden              | Function | null                          | Function called when notification completely hidden
-onPress               | Function | null                          | Function called when user press on notification
-hideOnPress           | Boolean  | true                          | Should notification hide when user press on it
-swipePixelsToClose    | Number   | 20                            | How many pixels user should swipe-up notification to dismiss it
-swipeEasing           | Easing   | null                          | Animation easing after user finished swiping
-swipeAnimationDuration| Number   | 200                           | How fast should be animation after user finished swiping
+Name                  | Type       | Default                       | Description
+----------------------|------------|-------------------------------|-------------
+title                 | String     | null                          | Title of notification. __Passed to `Component`.__
+description           | String     | null                          | Description of notification. __Passed to `Component`.__
+duration              | Number     | 3000                          | Time after notification will disappear. Set to `0` to not hide notification automatically
+Component             | Component  | NotifierComponents.Notification | Component of the notification body. You can use one of the [built-in components](#components), or your [custom component](#custom-component).
+componentProps        | Object     | {}                            | Additional props that are passed to `Component`. See all available props of built-in components in the [components section](#components).
+queueMode             | String     | 'reset'                       | Determines the order in which notifications are shown. Read more in the [Queue Mode](#queue-mode) section.
+swipeEnabled          | Boolean    | true                          | Can notification be hidden by swiping it out
+animationDuration     | Number     | 300                           | How fast notification will appear/disappear
+showAnimationDuration | Number     | animationDuration \|\| 300    | How fast notification will appear.
+hideAnimationDuration | Number     | animationDuration \|\| 300    | How fast notification will disappear.
+easing                | Easing     | null                          | Animation easing. Details: https://reactnative.dev/docs/easing
+showEasing            | Easing     | easing \|\| null              | Show Animation easing.
+hideEasing            | Easing     | easing \|\| null              | Hide Animation easing.
+onStartHiding         | () => void | null                          | Function called when notification started hiding
+onHidden              | () => void | null                          | Function called when notification completely hidden
+onPress               | () => void | null                          | Function called when user press on notification
+hideOnPress           | Boolean    | true                          | Should notification hide when user press on it
+swipePixelsToClose    | Number     | 20                            | How many pixels user should swipe-up notification to dismiss it
+swipeEasing           | Easing     | null                          | Animation easing after user finished swiping
+swipeAnimationDuration| Number     | 200                           | How fast should be animation after user finished swiping
 
 ### `hideNotification`
 
 ```
-Notifier.hideNotification(onHiddenCallback?: Function);
+Notifier.hideNotification(onHiddenCallback?: (result: Animated.EndResult) => void);
 ```
 
 Hide notification and run callback function when notification completely hidden.
+### `clearQueue`
+
+```
+Notifier.clearQueue(hideDisplayedNotification?: boolean);
+```
+
+Clear [notifications queue](#queue-mode) and optionally hide currently displayed notification. Might be useful to run after logout, after which queued notifications should not be displayed.
 
 ## Queue Mode
 
