@@ -46,6 +46,7 @@ export type EndResult = { finished: boolean };
 export type EndCallback = (result: EndResult) => void;
 
 export interface NotifierInterface {
-  showNotification: (params: ShowNotificationParams) => void;
-  hideNotification: (onHidden?: EndCallback) => void;
+  showNotification(params: ShowNotificationParams): void;
+  hideNotification(onHidden?: EndCallback): void;
+  clearQueue(hideDisplayedNotification?: boolean): void;
 }

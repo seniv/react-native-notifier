@@ -29,6 +29,7 @@ import {
 export const Notifier: NotifierInterface = {
   showNotification: () => {},
   hideNotification: () => {},
+  clearQueue: () => {},
 };
 
 export class NotifierRoot extends React.PureComponent<ShowNotificationParams, StateInterface> {
@@ -78,9 +79,11 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
     this.onLayout = this.onLayout.bind(this);
     this.showNotification = this.showNotification.bind(this);
     this.hideNotification = this.hideNotification.bind(this);
+    this.clearQueue = this.clearQueue.bind(this);
 
     Notifier.showNotification = this.showNotification;
     Notifier.hideNotification = this.hideNotification;
+    Notifier.clearQueue = this.clearQueue;
   }
 
   componentWillUnmount() {
@@ -174,6 +177,14 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
         DEFAULT_ANIMATION_DURATION,
       useNativeDriver: true,
     }).start();
+  }
+
+  public clearQueue(hideDisplayedNotification?: boolean) {
+    this.callStack = [];
+
+    if (hideDisplayedNotification) {
+      this.hideNotification();
+    }
   }
 
   private onStartHiding() {
