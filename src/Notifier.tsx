@@ -105,7 +105,9 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
     this.onStartHiding();
   }
 
-  public showNotification(functionParams: ShowNotificationParams) {
+  public showNotification<Component extends React.ElementType = typeof NotificationComponent>(
+    functionParams: ShowNotificationParams<Component>
+  ) {
     const params = {
       ...this.props,
       ...functionParams,

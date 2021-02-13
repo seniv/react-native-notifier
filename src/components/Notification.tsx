@@ -71,7 +71,7 @@ export interface NotificationComponentProps {
 
   /** A container of the component. Set it in case you use different SafeAreaView than the standard
    * @default SafeAreaView */
-  ContainerComponent?: Function;
+  ContainerComponent?: React.ElementType;
 
   /** The style to use for rendering title
    * @default null */

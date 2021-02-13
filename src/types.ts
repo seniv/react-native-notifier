@@ -1,6 +1,6 @@
-import { NotificationComponentProps } from './components/Notification';
-import { AlertComponentProps } from './components/Alert';
+import NotificationComponent from './components/Notification';
 import { Animated } from 'react-native';
+import { ElementType } from 'react';
 
 export interface ShowParams {
   /** How fast notification will appear/disappear
@@ -29,15 +29,15 @@ export interface ShowParams {
 
   /** Function called when notification started hiding
    * @default null */
-  onStartHiding?: Function;
+  onStartHiding?: () => void;
 
   /** Function called when notification completely hidden
    * @default null */
-  onHidden?: Function;
+  onHidden?: () => void;
 
   /** Function called when user press on notification
    * @default null */
-  onPress?: Function;
+  onPress?: () => void;
 
   /** Should notification hide when user press on it
    * @default true */
@@ -62,9 +62,8 @@ export interface ShowParams {
 
 export type QueueMode = 'immediate' | 'next' | 'standby' | 'reset';
 
-type ComponentProps = NotificationComponentProps | AlertComponentProps | object;
-
-export interface ShowNotificationParams extends ShowParams {
+export interface ShowNotificationParams<Component extends ElementType = ElementType>
+  extends ShowParams {
   /** Title of notification. __Passed to `Component`.__
    * @default null */
   title?: string;
@@ -79,11 +78,11 @@ export interface ShowNotificationParams extends ShowParams {
 
   /** Component of the notification body. You can use one of the [built-in components](https://github.com/seniv/react-native-notifier#components), or your [custom component](https://github.com/seniv/react-native-notifier#custom-component).
    * @default NotifierComponents.Notification */
-  Component?: Function;
+  Component?: Component;
 
   /** Additional props that are passed to `Component`. See all available props of built-in components in the [components section](https://github.com/seniv/react-native-notifier#components)
    * @default {} */
-  componentProps?: ComponentProps;
+  componentProps?: Omit<React.ComponentPropsWithoutRef<Component>, 'title' | 'description'>;
 
   /** Determines the order in which notifications are shown. Read more in the [Queue Mode](https://github.com/seniv/react-native-notifier#queue-mode) section.
    * @default 'reset' */
@@ -94,12 +93,14 @@ export interface StateInterface {
   title?: string;
   description?: string;
   swipeEnabled: boolean;
-  Component: Function;
-  componentProps: ComponentProps;
+  Component: ElementType;
+  componentProps: Record<string, any>;
 }
 
 export interface NotifierInterface {
-  showNotification(params: ShowNotificationParams): void;
+  showNotification<Component extends ElementType = typeof NotificationComponent>(
+    params: ShowNotificationParams<Component>
+  ): void;
   hideNotification(onHidden?: Animated.EndCallback): void;
   clearQueue(hideDisplayedNotification?: boolean): void;
 }
