@@ -27,7 +27,7 @@ yarn example android
 To run the example app on iOS:
 
 ```sh
-yarn example android
+yarn example ios
 ```
 
 Make sure your code passes TypeScript and ESLint. Run the following to verify:
@@ -61,6 +61,8 @@ We follow the [conventional commits specification](https://www.conventionalcommi
 - `chore`: tooling changes, e.g. change CI config.
 
 Our pre-commit hooks verify that your commit message matches this format when committing.
+
+Please add footer with `BREAKING CHANGE: <description>` if commit contains any breaking changes.
 
 ### Linting and tests
 
