@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, TextStyle } from 'react-native';
+import { StyleSheet, View, Text, TextStyle, StyleProp } from 'react-native';
 
 import SafeContainer from './SafeContainer';
 
@@ -58,11 +58,11 @@ export interface AlertComponentProps {
 
   /** The style to use for rendering title
    * @default null */
-  titleStyle?: TextStyle;
+  titleStyle?: StyleProp<TextStyle>;
 
   /** The style to use for rendering description
    * @default null */
-  descriptionStyle?: TextStyle;
+  descriptionStyle?: StyleProp<TextStyle>;
 }
 
 interface AlertComponentAllProps extends AlertComponentProps {

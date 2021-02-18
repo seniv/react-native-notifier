@@ -120,6 +120,26 @@ export default function App() {
               })
             }
           />
+          <Button
+            title="Styled Notification"
+            onPress={() =>
+              notifierRef.current?.showNotification({
+                title: 'Styled Notification',
+                description: 'Background should be green and title is white!',
+                componentProps: {
+                  containerStyle: {
+                    backgroundColor: 'green',
+                  },
+                  titleStyle: {
+                    color: 'white',
+                  },
+                  descriptionStyle: {
+                    color: '#fafafa',
+                  },
+                },
+              })
+            }
+          />
           <Button title="Hide" onPress={() => Notifier.hideNotification()} />
           <Button title="Open react-native-modal" onPress={() => setModalVisible(true)} />
           {isAndroid && (

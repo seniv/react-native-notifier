@@ -7,6 +7,8 @@ import {
   Image,
   TextStyle,
   ImageStyle,
+  ViewStyle,
+  StyleProp,
 } from 'react-native';
 
 import SafeContainer from './SafeContainer';
@@ -75,15 +77,20 @@ export interface NotificationComponentProps {
 
   /** The style to use for rendering title
    * @default null */
-  titleStyle?: TextStyle;
+  titleStyle?: StyleProp<TextStyle>;
 
   /** The style to use for rendering description
    * @default null */
-  descriptionStyle?: TextStyle;
+  descriptionStyle?: StyleProp<TextStyle>;
+
+  /** The style to use for notification container.
+   * Might be useful to change background color, shadows, paddings or margins
+   * @default null */
+  containerStyle?: StyleProp<ViewStyle>;
 
   /** The style to use for rendering image
    * @default null */
-  imageStyle?: ImageStyle;
+  imageStyle?: StyleProp<ImageStyle>;
 }
 
 interface NotificationComponentAllProps extends NotificationComponentProps {
@@ -101,11 +108,12 @@ const NotificationComponent: React.FunctionComponent<NotificationComponentAllPro
   ContainerComponent,
   maxTitleLines,
   maxDescriptionLines,
+  containerStyle,
 }) => {
   const Container = ContainerComponent ?? SafeContainer;
   return (
     <Container>
-      <View style={s.container}>
+      <View style={[s.container, containerStyle]}>
         {!!imageSource && <Image style={[s.image, imageStyle]} source={imageSource} />}
         <View style={s.content}>
           {!!title && (
