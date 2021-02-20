@@ -97,7 +97,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
         this.showParams?.animationDuration ??
         DEFAULT_ANIMATION_DURATION,
       useNativeDriver: true,
-    }).start(result => {
+    }).start((result) => {
       this.onHidden();
       callback?.(result);
     });

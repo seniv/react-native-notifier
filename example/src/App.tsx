@@ -144,10 +144,10 @@ export default function App() {
           <Button title="Open react-native-modal" onPress={() => setModalVisible(true)} />
           {isAndroid && (
             <>
-              <Button title="Toggle Status Bar" onPress={() => setStatusBar(v => !v)} />
+              <Button title="Toggle Status Bar" onPress={() => setStatusBar((v) => !v)} />
               <Button
                 title="Toggle Status Bar Translucent"
-                onPress={() => setStatusBarTranslucent(v => !v)}
+                onPress={() => setStatusBarTranslucent((v) => !v)}
               />
             </>
           )}
