@@ -1,12 +1,18 @@
 import React from 'react';
-import { Animated, View, TouchableWithoutFeedback, LayoutChangeEvent } from 'react-native';
+import {
+  Animated,
+  View,
+  TouchableWithoutFeedback,
+  LayoutChangeEvent,
+  Platform,
+} from 'react-native';
 import {
   PanGestureHandler,
   State,
   PanGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 
-import s from './Notifier.styles';
+import styles from './Notifier.styles';
 import { Notification as NotificationComponent } from './components';
 import {
   DEFAULT_ANIMATION_DURATION,
@@ -97,7 +103,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
         this.showParams?.animationDuration ??
         DEFAULT_ANIMATION_DURATION,
       useNativeDriver: true,
-    }).start(result => {
+    }).start((result) => {
       this.onHidden();
       callback?.(result);
     });
@@ -138,7 +144,15 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
       return;
     }
 
-    const { title, description, swipeEnabled, Component, componentProps, ...restParams } = params;
+    const {
+      title,
+      description,
+      swipeEnabled,
+      Component,
+      componentProps,
+      translucentStatusBar,
+      ...restParams
+    } = params;
 
     this.setState({
       title,
@@ -146,6 +160,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
       Component: Component ?? NotificationComponent,
       swipeEnabled: swipeEnabled ?? DEFAULT_SWIPE_ENABLED,
       componentProps: componentProps,
+      translucentStatusBar,
     });
 
     this.showParams = restParams;
@@ -241,7 +256,14 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
   }
 
   render() {
-    const { title, description, swipeEnabled, Component, componentProps } = this.state;
+    const {
+      title,
+      description,
+      swipeEnabled,
+      Component,
+      componentProps,
+      translucentStatusBar,
+    } = this.state;
 
     return (
       <PanGestureHandler
@@ -251,14 +273,21 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
       >
         <Animated.View
           style={[
-            s.container,
+            styles.container,
             {
               transform: [{ translateY: this.translateYInterpolated }],
             },
           ]}
         >
           <TouchableWithoutFeedback onPress={this.onPress}>
-            <View onLayout={this.onLayout}>
+            <View
+              onLayout={this.onLayout}
+              style={
+                Platform.OS === 'android' && translucentStatusBar
+                  ? styles.translucentStatusBarPadding
+                  : undefined
+              }
+            >
               <Component title={title} description={description} {...componentProps} />
             </View>
           </TouchableWithoutFeedback>

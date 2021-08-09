@@ -108,6 +108,7 @@ hideOnPress           | Boolean    | true                          | Should noti
 swipePixelsToClose    | Number     | 20                            | How many pixels user should swipe-up notification to dismiss it
 swipeEasing           | Easing     | null                          | Animation easing after user finished swiping
 swipeAnimationDuration| Number     | 200                           | How fast should be animation after user finished swiping
+translucentStatusBar  | Boolean    | false                         | Add additional top padding that equals to `StatusBar.currentHeight`. Android Only.
 
 ### `hideNotification`
 
