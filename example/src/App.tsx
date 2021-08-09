@@ -172,7 +172,7 @@ export default function App() {
           <Button title="Hide modal" onPress={() => setModalVisible(false)} />
         </View>
       </Modal>
-      <NotifierRoot ref={notifierRef} />
+      <NotifierRoot ref={notifierRef} translucentStatusBar={statusBarTranslucent} />
     </>
   );
 }

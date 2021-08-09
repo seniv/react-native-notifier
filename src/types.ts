@@ -87,6 +87,12 @@ export interface ShowNotificationParams<ComponentType extends ElementType = Elem
   /** Determines the order in which notifications are shown. Read more in the [Queue Mode](https://github.com/seniv/react-native-notifier#queue-mode) section.
    * @default 'reset' */
   queueMode?: QueueMode;
+
+  /** Add top padding that equals to `StatusBar.currentHeight` to correctly display notification when status bar is translucent. Android Only.
+   * @platform Android
+   * @default false
+   */
+  translucentStatusBar?: boolean;
 }
 
 export interface StateInterface {
@@ -95,6 +101,7 @@ export interface StateInterface {
   swipeEnabled: boolean;
   Component: ElementType;
   componentProps: Record<string, any>;
+  translucentStatusBar?: boolean;
 }
 
 export interface NotifierInterface {

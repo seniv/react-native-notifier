@@ -1,4 +1,4 @@
-import { StyleSheet, Platform } from 'react-native';
+import { StyleSheet, Platform, StatusBar } from 'react-native';
 
 export default StyleSheet.create({
   container: {
@@ -11,5 +11,8 @@ export default StyleSheet.create({
     }),
     top: 0,
     left: 0,
+  },
+  translucentStatusBarPadding: {
+    paddingTop: StatusBar.currentHeight ?? 0,
   },
 });
