@@ -51,7 +51,7 @@
     "jest": "^26.6.3",
     "prettier": "^2.2.1",
     "react": "16.13.1",
-    "react-native": "~0.63.4",
+    "react-native": "~0.64.1",
     "react-native-builder-bob": "^0.17.1",
     "react-native-gesture-handler": "^1.10.1",
     "release-it": "^14.4.1",
