@@ -12,8 +12,21 @@ import { Easing, Notifier, NotifierRoot, NotifierComponents } from 'react-native
 import Modal from 'react-native-modal';
 import Button from './Button';
 import CustomComponent from './CustomComponent';
+import {
+  getContainerStyleBottomPosition,
+  getContainerStyleClassicWithOverSwipe,
+  getContainerStyleOpacityOnly,
+  getContainerStyleOpacityTransformScale,
+  getContainerStyleScaleAndRotation,
+  getContainerStyleScaleOnly,
+  getContainerStyleWithTranslateAndScale,
+} from './customAnimations';
+import Section from './Section';
 
 const isAndroid = Platform.OS === 'android';
+
+// "needsOffscreenAlphaCompositing" prop is needed to fix shadows on android when using "opacity" style in container
+const animatedContainerProps = isAndroid ? { needsOffscreenAlphaCompositing: true } : undefined;
 
 export default function App() {
   const notifierRef = React.useRef<NotifierRoot>(null);
@@ -140,6 +153,88 @@ export default function App() {
               })
             }
           />
+          <Section title="Custom Animations">
+            <Button
+              title="Opacity, TranslateY and Scale animation"
+              onPress={() =>
+                notifierRef.current?.showNotification({
+                  title: 'Opacity, TranslateY and Scale animation',
+                  description:
+                    'This notification uses Opacity and Transformation of Scale and TranslateY',
+                  containerStyle: getContainerStyleOpacityTransformScale,
+                  containerProps: animatedContainerProps,
+                  queueMode: 'standby',
+                })
+              }
+            />
+            <Button
+              title="Pull down"
+              onPress={() =>
+                notifierRef.current?.showNotification({
+                  title: 'Pull down',
+                  description: 'Notification can be slightly pulled down',
+                  containerStyle: getContainerStyleClassicWithOverSwipe,
+                  queueMode: 'standby',
+                })
+              }
+            />
+            <Button
+              title="Fade In/Out Notification"
+              onPress={() =>
+                notifierRef.current?.showNotification({
+                  title: 'Fade In/Out Notification',
+                  description: 'This notification is faded in using Animated opacity style',
+                  containerStyle: getContainerStyleOpacityOnly,
+                  containerProps: animatedContainerProps,
+                  queueMode: 'standby',
+                })
+              }
+            />
+            <Button
+              title="Zoom In/Out Animation"
+              onPress={() =>
+                notifierRef.current?.showNotification({
+                  title: 'Zoom In/Out Animation',
+                  description: 'Uses only Scale Transformation to zoom in',
+                  containerStyle: getContainerStyleScaleOnly,
+                  queueMode: 'standby',
+                })
+              }
+            />
+            <Button
+              title="Zoom + Rotation"
+              onPress={() =>
+                notifierRef.current?.showNotification({
+                  title: 'Zoom + Rotation',
+                  description: 'Scale and Rotate the notification. This is a MADNESS!',
+                  containerStyle: getContainerStyleScaleAndRotation,
+                  queueMode: 'standby',
+                })
+              }
+            />
+            <Button
+              title="Animation from code example"
+              onPress={() =>
+                notifierRef.current?.showNotification({
+                  title: 'Animation from code example',
+                  description: 'Scale and Translate',
+                  containerStyle: getContainerStyleWithTranslateAndScale,
+                })
+              }
+            />
+            <Button
+              title="Bottom Position"
+              onPress={() =>
+                notifierRef.current?.showNotification({
+                  title: 'Bottom Position',
+                  description: 'Moved to the bottom using containerStyle property',
+                  containerStyle: getContainerStyleBottomPosition,
+                  // Disable swipes because currently bottom position is not fully supported
+                  swipeEnabled: false,
+                })
+              }
+            />
+          </Section>
           <Button title="Hide" onPress={() => Notifier.hideNotification()} />
           <Button title="Open react-native-modal" onPress={() => setModalVisible(true)} />
           {isAndroid && (
@@ -183,7 +278,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    paddingVertical: 100,
+    paddingVertical: 50,
   },
   modalContainer: {
     flex: 1,

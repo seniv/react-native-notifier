@@ -1,6 +1,11 @@
 import NotificationComponent from './components/Notification';
-import { Animated } from 'react-native';
+import { Animated, View } from 'react-native';
 import { ElementType } from 'react';
+
+type AnimatedViewProps = React.ComponentProps<Animated.AnimatedComponent<typeof View>>;
+type ContainerStyleParam =
+  | ((translateYAnimatedValue: Animated.Value) => AnimatedViewProps['style'])
+  | AnimatedViewProps['style'];
 
 export interface ShowParams {
   /** How fast notification will appear/disappear
@@ -93,6 +98,16 @@ export interface ShowNotificationParams<ComponentType extends ElementType = Elem
    * @default false
    */
   translucentStatusBar?: boolean;
+
+  /** Styles Object or A function that will receive `translateY: Animated.Value` as first parameter and should return Styles that will be used in container. Using this parameter it is possible to create your own animations of the notification. BE CAREFUL!! when set `transform` style it will override default animation.
+   * @default null
+   */
+  containerStyle?: ContainerStyleParam;
+
+  /** props of Animated Container
+   * @default {}
+   */
+  containerProps?: Omit<AnimatedViewProps, 'style'>;
 }
 
 export interface StateInterface {
@@ -102,6 +117,8 @@ export interface StateInterface {
   Component: ElementType;
   componentProps: Record<string, any>;
   translucentStatusBar?: boolean;
+  containerStyle?: ContainerStyleParam;
+  containerProps?: Omit<AnimatedViewProps, 'style'>;
 }
 
 export interface NotifierInterface {

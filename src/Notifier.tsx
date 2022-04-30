@@ -151,6 +151,8 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
       Component,
       componentProps,
       translucentStatusBar,
+      containerStyle,
+      containerProps,
       ...restParams
     } = params;
 
@@ -161,6 +163,8 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
       swipeEnabled: swipeEnabled ?? DEFAULT_SWIPE_ENABLED,
       componentProps: componentProps,
       translucentStatusBar,
+      containerStyle,
+      containerProps,
     });
 
     this.showParams = restParams;
@@ -263,7 +267,12 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
       Component,
       componentProps,
       translucentStatusBar,
+      containerStyle,
+      containerProps,
     } = this.state;
+
+    const additionalContainerStyle =
+      typeof containerStyle === 'function' ? containerStyle(this.translateY) : containerStyle;
 
     return (
       <PanGestureHandler
@@ -272,11 +281,13 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
         onHandlerStateChange={this.onHandlerStateChange}
       >
         <Animated.View
+          {...containerProps}
           style={[
             styles.container,
             {
               transform: [{ translateY: this.translateYInterpolated }],
             },
+            additionalContainerStyle,
           ]}
         >
           <TouchableWithoutFeedback onPress={this.onPress}>
