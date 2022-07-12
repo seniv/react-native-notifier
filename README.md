@@ -103,6 +103,7 @@ hideAnimationDuration | Number           | animationDuration \|\| 300    | How f
 easing                | Easing           | null                          | Animation easing. Details: https://reactnative.dev/docs/easing
 showEasing            | Easing           | easing \|\| null              | Show Animation easing.
 hideEasing            | Easing           | easing \|\| null              | Hide Animation easing.
+onShown               | () => void       | null                          | Function called when entering animation is finished
 onStartHiding         | () => void       | null                          | Function called when notification started hiding
 onHidden              | () => void       | null                          | Function called when notification completely hidden
 onPress               | () => void       | null                          | Function called when user press on notification

@@ -32,6 +32,10 @@ export interface ShowParams {
    * @default easing || null */
   hideEasing?: Animated.TimingAnimationConfig['easing'];
 
+  /** Function called when entering animation is finished
+   * @default null */
+  onShown?: () => void;
+
   /** Function called when notification started hiding
    * @default null */
   onStartHiding?: () => void;

@@ -153,6 +153,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
       translucentStatusBar,
       containerStyle,
       containerProps,
+      onShown,
       ...restParams
     } = params;
 
@@ -181,7 +182,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
         this.showParams?.animationDuration ??
         DEFAULT_ANIMATION_DURATION,
       useNativeDriver: true,
-    }).start();
+    }).start(onShown);
   }
 
   public clearQueue(hideDisplayedNotification?: boolean) {

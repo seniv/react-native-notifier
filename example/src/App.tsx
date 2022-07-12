@@ -134,6 +134,18 @@ export default function App() {
             }
           />
           <Button
+            title="Slow animation & onShown"
+            onPress={() =>
+              notifierRef.current?.showNotification({
+                title: 'Called using ref!',
+                description: 'Amazing!',
+                showAnimationDuration: 5000,
+                duration: 7000,
+                onShown: () => console.log('Notification shown'),
+              })
+            }
+          />
+          <Button
             title="Styled Notification"
             onPress={() =>
               notifierRef.current?.showNotification({
