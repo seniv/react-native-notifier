@@ -25,6 +25,7 @@ import {
   DEFAULT_COMPONENT_HEIGHT,
 } from './constants';
 import { ShowParams, ShowNotificationParams, StateInterface, NotifierInterface } from './types';
+import { FullWindowOverlay } from 'react-native-screens';
 
 export const Notifier: NotifierInterface = {
   showNotification: () => {},
@@ -276,6 +277,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
       typeof containerStyle === 'function' ? containerStyle(this.translateY) : containerStyle;
 
     return (
+      <FullWindowOverlay style={{position: 'absolute', width: '100%', height: '100%', justifyContent: 'center' }}>
       <PanGestureHandler
         enabled={swipeEnabled}
         onGestureEvent={this.onGestureEvent}
@@ -305,6 +307,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
           </TouchableWithoutFeedback>
         </Animated.View>
       </PanGestureHandler>
+      </FullWindowOverlay>
     );
   }
 }
