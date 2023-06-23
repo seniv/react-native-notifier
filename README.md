@@ -13,7 +13,7 @@ Fast, simple, and customizable in-app notifications for React Native
 
 This library uses [react-native-gesture-handler](https://github.com/software-mansion/react-native-gesture-handler), a perfect library for swipes, and other gesture events.
 
-If you are using [react-navigation](https://reactnavigation.org/) then you already have `gesture-handler` installed. If you don't, check Getting Started guide to install it: https://software-mansion.github.io/react-native-gesture-handler/docs/getting-started.html
+Please check their installation guide to install it properly: https://docs.swmansion.com/react-native-gesture-handler/docs/installation
 
 ## Installation
 ```sh
@@ -349,6 +349,11 @@ This behavior will be fixed in feature releases.
 If you are using `react-native-navigation`, this issue might be helpful to use notifier with native-navigation: https://github.com/seniv/react-native-notifier/issues/16
 
 If you have any solutions or improvements in how to use notifier with native-navigation, then feel free to write comments in that thread!
+
+## Troubleshooting
+
+### PanGestureHandler must be used as a descendant of GestureHandlerRootView
+Check this comment: https://github.com/seniv/react-native-notifier/issues/85#issuecomment-1603741147
 
 ## License
 
