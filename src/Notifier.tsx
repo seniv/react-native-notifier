@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Animated,
   View,
-  TouchableWithoutFeedback,
+  Pressable as TouchableWithoutFeedback,
   LayoutChangeEvent,
   Platform,
 } from 'react-native';
