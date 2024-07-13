@@ -1,4 +1,4 @@
-import React from 'react';
+import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 const styles = StyleSheet.create({
@@ -20,9 +20,10 @@ const styles = StyleSheet.create({
 
 interface SectionProps {
   title: string;
+  children: ReactNode;
 }
 
-const Section: React.FC<SectionProps> = ({ children, title }) => (
+const Section = ({ children, title }: SectionProps) => (
   <>
     <Text style={styles.title}>{title}</Text>
     <View style={styles.line} />

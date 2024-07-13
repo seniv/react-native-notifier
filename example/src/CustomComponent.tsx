@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { StyleSheet, View, Text, SafeAreaView } from 'react-native';
 
 const customStyles = StyleSheet.create({

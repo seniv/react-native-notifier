@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useRef, useState } from 'react';
 import {
   StyleSheet,
   StatusBar,
@@ -8,7 +8,12 @@ import {
   View,
   Text,
 } from 'react-native';
-import { Easing, Notifier, NotifierRoot, NotifierComponents } from 'react-native-notifier';
+import {
+  Easing,
+  Notifier,
+  NotifierRoot,
+  NotifierComponents,
+} from 'react-native-notifier';
 import Modal from 'react-native-modal';
 import Button from './Button';
 import CustomComponent from './CustomComponent';
@@ -22,17 +27,20 @@ import {
   getContainerStyleWithTranslateAndScale,
 } from './customAnimations';
 import Section from './Section';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const isAndroid = Platform.OS === 'android';
 
 // "needsOffscreenAlphaCompositing" prop is needed to fix shadows on android when using "opacity" style in container
-const animatedContainerProps = isAndroid ? { needsOffscreenAlphaCompositing: true } : undefined;
+const animatedContainerProps = isAndroid
+  ? { needsOffscreenAlphaCompositing: true }
+  : undefined;
 
 export default function App() {
-  const notifierRef = React.useRef<NotifierRoot>(null);
-  const [statusBar, setStatusBar] = React.useState(true);
-  const [statusBarTranslucent, setStatusBarTranslucent] = React.useState(false);
-  const [isModalVisible, setModalVisible] = React.useState(false);
+  const notifierRef = useRef<NotifierRoot>(null);
+  const [statusBar, setStatusBar] = useState(true);
+  const [statusBarTranslucent, setStatusBarTranslucent] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
 
   if (isAndroid) {
     StatusBar.setHidden(!statusBar);
@@ -40,9 +48,12 @@ export default function App() {
   }
 
   return (
-    <>
+    <GestureHandlerRootView>
       <SafeAreaView style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={styles.contentContainer}
+        >
           <Button
             title="Easing: bounce"
             onPress={() =>
@@ -113,7 +124,10 @@ export default function App() {
             }
           />
           <Button title="Clear Queue" onPress={() => Notifier.clearQueue()} />
-          <Button title="Clear Queue and Hide" onPress={() => Notifier.clearQueue(true)} />
+          <Button
+            title="Clear Queue and Hide"
+            onPress={() => Notifier.clearQueue(true)}
+          />
           <Button
             title="Custom component"
             onPress={() =>
@@ -195,7 +209,8 @@ export default function App() {
               onPress={() =>
                 notifierRef.current?.showNotification({
                   title: 'Fade In/Out Notification',
-                  description: 'This notification is faded in using Animated opacity style',
+                  description:
+                    'This notification is faded in using Animated opacity style',
                   containerStyle: getContainerStyleOpacityOnly,
                   containerProps: animatedContainerProps,
                   queueMode: 'standby',
@@ -218,7 +233,8 @@ export default function App() {
               onPress={() =>
                 notifierRef.current?.showNotification({
                   title: 'Zoom + Rotation',
-                  description: 'Scale and Rotate the notification. This is a MADNESS!',
+                  description:
+                    'Scale and Rotate the notification. This is a MADNESS!',
                   containerStyle: getContainerStyleScaleAndRotation,
                   queueMode: 'standby',
                 })
@@ -239,7 +255,8 @@ export default function App() {
               onPress={() =>
                 notifierRef.current?.showNotification({
                   title: 'Bottom Position',
-                  description: 'Moved to the bottom using containerStyle property',
+                  description:
+                    'Moved to the bottom using containerStyle property',
                   containerStyle: getContainerStyleBottomPosition,
                   // Disable swipes because currently bottom position is not fully supported
                   swipeEnabled: false,
@@ -248,10 +265,16 @@ export default function App() {
             />
           </Section>
           <Button title="Hide" onPress={() => Notifier.hideNotification()} />
-          <Button title="Open react-native-modal" onPress={() => setModalVisible(true)} />
+          <Button
+            title="Open react-native-modal"
+            onPress={() => setModalVisible(true)}
+          />
           {isAndroid && (
             <>
-              <Button title="Toggle Status Bar" onPress={() => setStatusBar((v) => !v)} />
+              <Button
+                title="Toggle Status Bar"
+                onPress={() => setStatusBar((v) => !v)}
+              />
               <Button
                 title="Toggle Status Bar Translucent"
                 onPress={() => setStatusBarTranslucent((v) => !v)}
@@ -263,8 +286,8 @@ export default function App() {
       <Modal isVisible={isModalVisible} coverScreen={false}>
         <View style={styles.modalContainer}>
           <Text>
-            Property "coverScreen" set to "false" does the trick and notification should be rendered
-            above the modal!
+            Property "coverScreen" set to "false" does the trick and
+            notification should be rendered above the modal!
           </Text>
 
           <Button
@@ -279,8 +302,11 @@ export default function App() {
           <Button title="Hide modal" onPress={() => setModalVisible(false)} />
         </View>
       </Modal>
-      <NotifierRoot ref={notifierRef} translucentStatusBar={statusBarTranslucent} />
-    </>
+      <NotifierRoot
+        ref={notifierRef}
+        translucentStatusBar={statusBarTranslucent}
+      />
+    </GestureHandlerRootView>
   );
 }
 
