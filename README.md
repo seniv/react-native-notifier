@@ -286,6 +286,8 @@ const getContainerStyleWithTranslateAndScale = (translateY: Animated.Value) => (
         outputRange: [-1000, 0],
         extrapolate: 'clamp',
       }),
+    },
+    {
       // scaling from 0 to 0.5 when value is in range of -1000 and -200 because mostly it is still invisible,
       // and from 0.5 to 1 in last 200 pixels to make the scaling effect more noticeable.
       scale: translateY.interpolate({
