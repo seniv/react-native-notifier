@@ -5,11 +5,14 @@ import {
   SafeAreaView,
   Dimensions,
   Platform,
-  ScaledSize,
-  ViewProps,
+  type ScaledSize,
+  type ViewProps,
+  type EmitterSubscription,
 } from 'react-native';
 
-const isIOS10 = Platform.OS === 'ios' && Platform.Version?.toString()?.split('.')?.[0] === '10';
+const isIOS10 =
+  Platform.OS === 'ios' &&
+  Platform.Version?.toString()?.split('.')?.[0] === '10';
 
 const s = StyleSheet.create({
   statusBarPadding: {
@@ -24,6 +27,8 @@ interface StatusBarSpacerState {
 // This component used instead of SafeAreaView on iOS 10 because of bug
 // Details: https://github.com/seniv/react-native-notifier/issues/3
 class StatusBarSpacer extends React.Component<ViewProps, StatusBarSpacerState> {
+  dimensionsListener: EmitterSubscription | undefined;
+
   constructor(props: ViewProps) {
     super(props);
 
@@ -35,11 +40,14 @@ class StatusBarSpacer extends React.Component<ViewProps, StatusBarSpacerState> {
   }
 
   componentDidMount() {
-    Dimensions.addEventListener('change', this.onSizeChange);
+    this.dimensionsListener = Dimensions.addEventListener(
+      'change',
+      this.onSizeChange
+    );
   }
 
   componentWillUnmount() {
-    Dimensions.removeEventListener('change', this.onSizeChange);
+    this.dimensionsListener?.remove?.();
   }
 
   onSizeChange({ window }: { window: ScaledSize }) {
@@ -51,7 +59,9 @@ class StatusBarSpacer extends React.Component<ViewProps, StatusBarSpacerState> {
   render() {
     const { style, ...props } = this.props;
     const { displayPadding } = this.state;
-    return <View style={[displayPadding && s.statusBarPadding, style]} {...props} />;
+    return (
+      <View style={[displayPadding && s.statusBarPadding, style]} {...props} />
+    );
   }
 }
 

@@ -3,13 +3,13 @@ import {
   Animated,
   View,
   TouchableWithoutFeedback,
-  LayoutChangeEvent,
+  type LayoutChangeEvent,
   Platform,
 } from 'react-native';
 import {
   PanGestureHandler,
   State,
-  PanGestureHandlerStateChangeEvent,
+  type PanGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 
 import styles from './Notifier.styles';
@@ -24,7 +24,12 @@ import {
   DEFAULT_SWIPE_ENABLED,
   DEFAULT_COMPONENT_HEIGHT,
 } from './constants';
-import { ShowParams, ShowNotificationParams, StateInterface, NotifierInterface } from './types';
+import type {
+  ShowParams,
+  ShowNotificationParams,
+  StateInterface,
+  NotifierInterface,
+} from './types';
 
 export const Notifier: NotifierInterface = {
   showNotification: () => {},
@@ -32,7 +37,10 @@ export const Notifier: NotifierInterface = {
   clearQueue: () => {},
 };
 
-export class NotifierRoot extends React.PureComponent<ShowNotificationParams, StateInterface> {
+export class NotifierRoot extends React.PureComponent<
+  ShowNotificationParams,
+  StateInterface
+> {
   private isShown: boolean;
   private isHiding: boolean;
   private hideTimer: any;
@@ -40,7 +48,7 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
   private callStack: Array<ShowNotificationParams>;
   private hiddenComponentValue: number;
   private readonly translateY: Animated.Value;
-  private readonly translateYInterpolated: Animated.AnimatedInterpolation;
+  private readonly translateYInterpolated: Animated.AnimatedInterpolation<number>;
   private readonly onGestureEvent: (...args: any[]) => void;
 
   constructor(props: ShowNotificationParams) {
@@ -111,13 +119,16 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
     this.onStartHiding();
   }
 
-  public showNotification<ComponentType extends React.ElementType = typeof NotificationComponent>(
-    functionParams: ShowNotificationParams<ComponentType>
-  ) {
+  public showNotification<
+    ComponentType extends React.ElementType = typeof NotificationComponent,
+  >(functionParams: ShowNotificationParams<ComponentType>) {
     const params = {
       ...this.props,
       ...functionParams,
-      componentProps: { ...this.props?.componentProps, ...functionParams?.componentProps },
+      componentProps: {
+        ...this.props?.componentProps,
+        ...functionParams?.componentProps,
+      },
     };
 
     if (this.isShown) {
@@ -220,7 +231,9 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
     }
   }
 
-  private onHandlerStateChange({ nativeEvent }: PanGestureHandlerStateChangeEvent) {
+  private onHandlerStateChange({
+    nativeEvent,
+  }: PanGestureHandlerStateChangeEvent) {
     if (nativeEvent.state === State.ACTIVE) {
       clearTimeout(this.hideTimer);
     }
@@ -229,13 +242,16 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
     }
     this.setHideTimer();
 
-    const swipePixelsToClose = -(this.showParams?.swipePixelsToClose ?? SWIPE_PIXELS_TO_CLOSE);
+    const swipePixelsToClose = -(
+      this.showParams?.swipePixelsToClose ?? SWIPE_PIXELS_TO_CLOSE
+    );
     const isSwipedOut = nativeEvent.translationY < swipePixelsToClose;
 
     Animated.timing(this.translateY, {
       toValue: isSwipedOut ? this.hiddenComponentValue : MAX_TRANSLATE_Y,
       easing: this.showParams?.swipeEasing,
-      duration: this.showParams?.swipeAnimationDuration ?? SWIPE_ANIMATION_DURATION,
+      duration:
+        this.showParams?.swipeAnimationDuration ?? SWIPE_ANIMATION_DURATION,
       useNativeDriver: true,
     }).start(() => {
       if (isSwipedOut) {
@@ -257,7 +273,10 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
 
   private onLayout({ nativeEvent }: LayoutChangeEvent) {
     const heightWithMargin = nativeEvent.layout.height + 50;
-    this.hiddenComponentValue = -Math.max(heightWithMargin, DEFAULT_COMPONENT_HEIGHT);
+    this.hiddenComponentValue = -Math.max(
+      heightWithMargin,
+      DEFAULT_COMPONENT_HEIGHT
+    );
   }
 
   render() {
@@ -273,7 +292,9 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
     } = this.state;
 
     const additionalContainerStyle =
-      typeof containerStyle === 'function' ? containerStyle(this.translateY) : containerStyle;
+      typeof containerStyle === 'function'
+        ? containerStyle(this.translateY)
+        : containerStyle;
 
     return (
       <PanGestureHandler
@@ -300,7 +321,11 @@ export class NotifierRoot extends React.PureComponent<ShowNotificationParams, St
                   : undefined
               }
             >
-              <Component title={title} description={description} {...componentProps} />
+              <Component
+                title={title}
+                description={description}
+                {...componentProps}
+              />
             </View>
           </TouchableWithoutFeedback>
         </Animated.View>
