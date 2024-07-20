@@ -1,5 +1,11 @@
 import React from 'react';
-import { StyleSheet, View, Text, TextStyle, StyleProp } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  type TextStyle,
+  type StyleProp,
+} from 'react-native';
 
 import SafeContainer from './SafeContainer';
 
@@ -85,10 +91,15 @@ const AlertComponent: React.FunctionComponent<AlertComponentAllProps> = ({
   const Container = ContainerComponent ?? SafeContainer;
   const textStyle = textColor ? { color: textColor } : null;
   return (
-    <Container style={{ backgroundColor: backgroundColor || bgColors[alertType] }}>
+    <Container
+      style={{ backgroundColor: backgroundColor || bgColors[alertType] }}
+    >
       <View style={s.container}>
         {!!title && (
-          <Text style={[s.title, textStyle, titleStyle]} numberOfLines={maxTitleLines}>
+          <Text
+            style={[s.title, textStyle, titleStyle]}
+            numberOfLines={maxTitleLines}
+          >
             {title}
           </Text>
         )}

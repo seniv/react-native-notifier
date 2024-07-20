@@ -1,6 +1,8 @@
-import { Animated } from 'react-native';
+import { Animated, Platform } from 'react-native';
 
-export const getContainerStyleOpacityTransformScale = (translateY: Animated.Value) => ({
+export const getContainerStyleOpacityTransformScale = (
+  translateY: Animated.Value
+) => ({
   opacity: translateY.interpolate({
     inputRange: [-200, 0],
     outputRange: [0, 1],
@@ -13,6 +15,8 @@ export const getContainerStyleOpacityTransformScale = (translateY: Animated.Valu
         outputRange: [-1000, 0],
         extrapolate: 'clamp',
       }),
+    },
+    {
       scale: translateY.interpolate({
         inputRange: [-1000, -200, 0],
         outputRange: [0, 0.5, 1],
@@ -22,7 +26,9 @@ export const getContainerStyleOpacityTransformScale = (translateY: Animated.Valu
   ],
 });
 
-export const getContainerStyleClassicWithOverSwipe = (translateY: Animated.Value) => ({
+export const getContainerStyleClassicWithOverSwipe = (
+  translateY: Animated.Value
+) => ({
   transform: [
     {
       // from negative values to 0 it is dragging as usual, but dragging down is 20x slower.
@@ -76,7 +82,9 @@ export const getContainerStyleScaleOnly = (translateY: Animated.Value) => ({
   ],
 });
 
-export const getContainerStyleScaleAndRotation = (translateY: Animated.Value) => ({
+export const getContainerStyleScaleAndRotation = (
+  translateY: Animated.Value
+) => ({
   transform: [
     {
       // Translate notification out of the screen to make sure it is not visible
@@ -106,7 +114,9 @@ export const getContainerStyleScaleAndRotation = (translateY: Animated.Value) =>
 });
 
 // Code from README.md example
-export const getContainerStyleWithTranslateAndScale = (translateY: Animated.Value) => ({
+export const getContainerStyleWithTranslateAndScale = (
+  translateY: Animated.Value
+) => ({
   transform: [
     {
       // this interpolation is used just to "clamp" the value and didn't allow to drag the notification below "0"
@@ -115,6 +125,8 @@ export const getContainerStyleWithTranslateAndScale = (translateY: Animated.Valu
         outputRange: [-1000, 0],
         extrapolate: 'clamp',
       }),
+    },
+    {
       // scaling from 0 to 0.5 when value is in range of -1000 and -200 because mostly it is still invisible,
       // and from 0.5 to 1 in last 200 pixels to make the scaling effect more noticeable.
       scale: translateY.interpolate({
@@ -126,9 +138,14 @@ export const getContainerStyleWithTranslateAndScale = (translateY: Animated.Valu
   ],
 });
 
-export const getContainerStyleBottomPosition = (translateY: Animated.Value) => ({
+export const getContainerStyleBottomPosition = (
+  translateY: Animated.Value
+) => ({
   // unset "top" property that was used in default styles
-  top: undefined,
+  top: Platform.select({
+    web: 'unset' as unknown as number,
+    default: undefined,
+  }),
   // add bottom margin
   bottom: 10,
   transform: [

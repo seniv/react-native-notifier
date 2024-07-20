@@ -1,8 +1,10 @@
 import NotificationComponent from './components/Notification';
 import { Animated, View } from 'react-native';
-import { ElementType } from 'react';
+import type { ElementType } from 'react';
 
-type AnimatedViewProps = React.ComponentProps<Animated.AnimatedComponent<typeof View>>;
+type AnimatedViewProps = React.ComponentProps<
+  Animated.AnimatedComponent<typeof View>
+>;
 type ContainerStyleParam =
   | ((translateYAnimatedValue: Animated.Value) => AnimatedViewProps['style'])
   | AnimatedViewProps['style'];
@@ -71,8 +73,9 @@ export interface ShowParams {
 
 export type QueueMode = 'immediate' | 'next' | 'standby' | 'reset';
 
-export interface ShowNotificationParams<ComponentType extends ElementType = ElementType>
-  extends ShowParams {
+export interface ShowNotificationParams<
+  ComponentType extends ElementType = ElementType,
+> extends ShowParams {
   /** Title of notification. __Passed to `Component`.__
    * @default null */
   title?: string;
@@ -91,7 +94,10 @@ export interface ShowNotificationParams<ComponentType extends ElementType = Elem
 
   /** Additional props that are passed to `Component`. See all available props of built-in components in the [components section](https://github.com/seniv/react-native-notifier#components)
    * @default {} */
-  componentProps?: Omit<React.ComponentProps<ComponentType>, 'title' | 'description'>;
+  componentProps?: Omit<
+    React.ComponentProps<ComponentType>,
+    'title' | 'description'
+  >;
 
   /** Determines the order in which notifications are shown. Read more in the [Queue Mode](https://github.com/seniv/react-native-notifier#queue-mode) section.
    * @default 'reset' */
@@ -126,7 +132,9 @@ export interface StateInterface {
 }
 
 export interface NotifierInterface {
-  showNotification<ComponentType extends ElementType = typeof NotificationComponent>(
+  showNotification<
+    ComponentType extends ElementType = typeof NotificationComponent,
+  >(
     params: ShowNotificationParams<ComponentType>
   ): void;
   hideNotification(onHidden?: Animated.EndCallback): void;

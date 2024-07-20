@@ -3,12 +3,12 @@ import {
   StyleSheet,
   View,
   Text,
-  ImageSourcePropType,
   Image,
-  TextStyle,
-  ImageStyle,
-  ViewStyle,
-  StyleProp,
+  type ImageSourcePropType,
+  type TextStyle,
+  type ImageStyle,
+  type ViewStyle,
+  type StyleProp,
 } from 'react-native';
 
 import SafeContainer from './SafeContainer';
@@ -98,7 +98,9 @@ interface NotificationComponentAllProps extends NotificationComponentProps {
   description?: string;
 }
 
-const NotificationComponent: React.FunctionComponent<NotificationComponentAllProps> = ({
+const NotificationComponent: React.FunctionComponent<
+  NotificationComponentAllProps
+> = ({
   title,
   titleStyle,
   description,
@@ -114,7 +116,9 @@ const NotificationComponent: React.FunctionComponent<NotificationComponentAllPro
   return (
     <Container>
       <View style={[s.container, containerStyle]}>
-        {!!imageSource && <Image style={[s.image, imageStyle]} source={imageSource} />}
+        {!!imageSource && (
+          <Image style={[s.image, imageStyle]} source={imageSource} />
+        )}
         <View style={s.content}>
           {!!title && (
             <Text style={[s.title, titleStyle]} numberOfLines={maxTitleLines}>
@@ -122,7 +126,10 @@ const NotificationComponent: React.FunctionComponent<NotificationComponentAllPro
             </Text>
           )}
           {!!description && (
-            <Text style={[s.description, descriptionStyle]} numberOfLines={maxDescriptionLines}>
+            <Text
+              style={[s.description, descriptionStyle]}
+              numberOfLines={maxDescriptionLines}
+            >
               {description}
             </Text>
           )}
