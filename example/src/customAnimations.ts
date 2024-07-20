@@ -1,4 +1,4 @@
-import { Animated } from 'react-native';
+import { Animated, Platform } from 'react-native';
 
 export const getContainerStyleOpacityTransformScale = (
   translateY: Animated.Value
@@ -142,7 +142,10 @@ export const getContainerStyleBottomPosition = (
   translateY: Animated.Value
 ) => ({
   // unset "top" property that was used in default styles
-  top: undefined,
+  top: Platform.select({
+    web: 'unset' as unknown as number,
+    default: undefined,
+  }),
   // add bottom margin
   bottom: 10,
   transform: [
