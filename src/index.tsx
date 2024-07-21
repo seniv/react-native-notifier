@@ -8,4 +8,5 @@ export type {
   NotifierInterface,
   QueueMode,
   ShowNotificationParams,
+  NotifierProps,
 } from './types';
