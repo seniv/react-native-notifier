@@ -112,6 +112,8 @@ swipePixelsToClose    | Number           | 20                            | How m
 swipeEasing           | Easing           | null                          | Animation easing after user finished swiping
 swipeAnimationDuration| Number           | 200                           | How fast should be animation after user finished swiping
 translucentStatusBar  | Boolean          | false                         | Add additional top padding that equals to `StatusBar.currentHeight`. Android Only.
+useRNScreensOverlay   | Boolean          | false                         | use `FullWindowOverlay` component from `react-native-screens` library. If `true`, Notifier will be rendered above NativeStackNavigation modals and RN Modal on iOS. This Option will work only if `react-native-screens` library is installed. It's recommended to not mix notifications with useRNScreensOverlay off and on, use the same value everywhere. iOS Only.
+rnScreensOverlayViewStyle| null          | false                         | Style that will be used for RN View that is inside of FullWindowOverlay. iOS Only.
 
 ### `hideNotification`
 
