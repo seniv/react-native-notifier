@@ -83,7 +83,7 @@ omitGlobalMethodsHookup| Boolean         | false                         | If se
 useRNScreensOverlay   | Boolean          | false                         | use `FullWindowOverlay` component from `react-native-screens` library. If `true`, Notifier will be rendered above NativeStackNavigation modals and RN Modal on iOS. This Option will work only if `react-native-screens` library is installed. iOS Only.
 rnScreensOverlayViewStyle| ViewStyle     | null                          | Style that will be used for RN View that is inside of FullWindowOverlay. iOS Only.
 
-All params of [`showNotification`](#showNotification) function can be passed as props to `NotifierWrapper` or `NotifierRoot`, in this case they will be used as default params of  function. This can be useful to set default [`Component`](#custom-component) param.
+All parameters of the [`showNotification`](#showNotification) function can be passed as props to `NotifierWrapper` or `NotifierRoot`. In this case, they will be used as default parameters when calling the [`showNotification`](#showNotification) function. This can be useful for setting default [`Component`](#custom-component) parameter.
 
 ## API
 
