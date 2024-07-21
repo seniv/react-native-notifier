@@ -4,4 +4,8 @@ export { NotifierComponents };
 export { Notifier, NotifierRoot } from './Notifier';
 export { Easing } from 'react-native';
 export * from './NotifierWrapper';
-export type { NotifierInterface } from './types';
+export type {
+  NotifierInterface,
+  QueueMode,
+  ShowNotificationParams,
+} from './types';
