@@ -8195,14 +8195,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-font@npm:~12.0.8":
-  version: 12.0.8
-  resolution: "expo-font@npm:12.0.8"
+"expo-font@npm:~12.0.9":
+  version: 12.0.9
+  resolution: "expo-font@npm:12.0.9"
   dependencies:
     fontfaceobserver: ^2.1.0
   peerDependencies:
     expo: "*"
-  checksum: 42968cceb60b9f5d1ef4fd29b243819e738588c8f51a8eb63750e21656f93be13d925982d8ef3b874da9145ebe4cd789da4d9d32bbd6577519ca0bfb214daa4b
+  checksum: adad225ed6002d5d527808b8f463bc59a1a1626fb2ff34918dcbd2172757977c056101f737ed9523f6d55e0aa88a64988002eb9b6d22f379d5956883f7451379
   languageName: node
   linkType: hard
 
@@ -8246,9 +8246,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo@npm:~51.0.20":
-  version: 51.0.20
-  resolution: "expo@npm:51.0.20"
+"expo@npm:~51.0.21":
+  version: 51.0.21
+  resolution: "expo@npm:51.0.21"
   dependencies:
     "@babel/runtime": ^7.20.0
     "@expo/cli": 0.18.25
@@ -8259,7 +8259,7 @@ __metadata:
     babel-preset-expo: ~11.0.12
     expo-asset: ~10.0.10
     expo-file-system: ~17.0.1
-    expo-font: ~12.0.8
+    expo-font: ~12.0.9
     expo-keep-awake: ~13.0.2
     expo-modules-autolinking: 1.11.1
     expo-modules-core: 1.12.19
@@ -8267,7 +8267,7 @@ __metadata:
     whatwg-url-without-unicode: 8.0.0-3
   bin:
     expo: bin/cli
-  checksum: 6951f2e9949db179d73ae03d22896ba60c71e1a7df72d7bdd5e21ed79ccd146b7b6e0f5a1127e2d6e9f4266e72ecf4a2cb378a31fea13d8e04bda6b254138987
+  checksum: dcd18974ae1b8a7d0a08252ad013c4d2ebf986e5e39b2ed2cefe521623c182bf6cba67bd05fe54bbf0586a9ac6559c872807ef6d4e829af3a314ed52e1434e4a
   languageName: node
   linkType: hard
 
@@ -14333,14 +14333,14 @@ __metadata:
     "@react-navigation/native": ^6.1.18
     "@react-navigation/native-stack": ^6.10.1
     babel-plugin-module-resolver: ^5.0.0
-    expo: ~51.0.20
+    expo: ~51.0.21
     expo-status-bar: ~1.12.1
     react: 18.2.0
     react-dom: 18.2.0
     react-native: 0.74.3
     react-native-gesture-handler: ~2.16.1
     react-native-modal: ^13.0.1
-    react-native-safe-area-context: 4.10.1
+    react-native-safe-area-context: 4.10.5
     react-native-screens: 3.31.1
     react-native-web: ~0.19.10
     zustand: ^4.5.4
@@ -14377,13 +14377,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"react-native-safe-area-context@npm:4.10.1":
-  version: 4.10.1
-  resolution: "react-native-safe-area-context@npm:4.10.1"
+"react-native-safe-area-context@npm:4.10.5":
+  version: 4.10.5
+  resolution: "react-native-safe-area-context@npm:4.10.5"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: a0f31a66f0aba7050cfdc34512349f49dd65349d53407d461196fa70010f65aca7310212d5c7c47078745db6e02975a4d97881d0340160d40e0feb5a4a5d9de2
+  checksum: 94e049a5579e8cbe6d08a6da89efc948ff20042c7c08670341ec3629752fa40d0b1f14471860a18fdfc121fbdee1b58d582704f3fd2dc612890a0bd002f908a1
   languageName: node
   linkType: hard
 
