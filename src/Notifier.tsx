@@ -24,6 +24,7 @@ import type {
   ShowNotificationParams,
   StateInterface,
   NotifierInterface,
+  NotifierProps,
 } from './types';
 import { FullWindowOverlay } from './components/FullWindowOverlay';
 
@@ -34,7 +35,7 @@ export const Notifier: NotifierInterface = {
 };
 
 export class NotifierRoot extends React.PureComponent<
-  ShowNotificationParams,
+  NotifierProps,
   StateInterface
 > {
   private isShown: boolean;
@@ -47,7 +48,7 @@ export class NotifierRoot extends React.PureComponent<
   private readonly translateYInterpolated: Animated.AnimatedInterpolation<number>;
   private readonly onGestureEvent: (...args: any[]) => void;
 
-  constructor(props: ShowNotificationParams) {
+  constructor(props: NotifierProps) {
     super(props);
 
     this.state = {
@@ -85,9 +86,11 @@ export class NotifierRoot extends React.PureComponent<
     this.hideNotification = this.hideNotification.bind(this);
     this.clearQueue = this.clearQueue.bind(this);
 
-    Notifier.showNotification = this.showNotification;
-    Notifier.hideNotification = this.hideNotification;
-    Notifier.clearQueue = this.clearQueue;
+    if (!props.omitGlobalMethodsHookup) {
+      Notifier.showNotification = this.showNotification;
+      Notifier.hideNotification = this.hideNotification;
+      Notifier.clearQueue = this.clearQueue;
+    }
   }
 
   componentWillUnmount() {
@@ -118,11 +121,23 @@ export class NotifierRoot extends React.PureComponent<
   public showNotification<
     ComponentType extends React.ElementType = typeof NotificationComponent,
   >(functionParams: ShowNotificationParams<ComponentType>) {
+    const {
+      // Remove "omitGlobalMethodsHookup" prop as it is only utilized within the constructor and is redundant elsewhere.
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      omitGlobalMethodsHookup,
+      // Remove "useRNScreensOverlay" and "rnScreensOverlayViewStyle" as it is only used in the render
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      useRNScreensOverlay,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      rnScreensOverlayViewStyle,
+      ...props
+    } = this.props;
+
     const params = {
-      ...this.props,
+      ...props,
       ...functionParams,
       componentProps: {
-        ...this.props?.componentProps,
+        ...props?.componentProps,
         ...functionParams?.componentProps,
       },
     };
@@ -161,8 +176,6 @@ export class NotifierRoot extends React.PureComponent<
       containerStyle,
       containerProps,
       onShown,
-      useRNScreensOverlay,
-      rnScreensOverlayViewStyle,
       ...restParams
     } = params;
 
@@ -175,8 +188,6 @@ export class NotifierRoot extends React.PureComponent<
       translucentStatusBar,
       containerStyle,
       containerProps,
-      useRNScreensOverlay,
-      rnScreensOverlayViewStyle,
     });
 
     this.showParams = restParams;
@@ -280,6 +291,7 @@ export class NotifierRoot extends React.PureComponent<
   }
 
   render() {
+    const { useRNScreensOverlay, rnScreensOverlayViewStyle } = this.props;
     const {
       title,
       description,
@@ -289,8 +301,6 @@ export class NotifierRoot extends React.PureComponent<
       translucentStatusBar,
       containerStyle,
       containerProps,
-      useRNScreensOverlay,
-      rnScreensOverlayViewStyle,
     } = this.state;
 
     const additionalContainerStyle =

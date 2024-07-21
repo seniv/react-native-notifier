@@ -109,19 +109,6 @@ export interface ShowNotificationParams<
    */
   translucentStatusBar?: boolean;
 
-  /** use FullWindowOverlay component from react-native-screens library
-   * If true, Notifier will be rendered above NativeStackNavigation modals and RN Modal on iOS.
-   * This Option will work only if react-native-screens library is installed.
-   * It's recommended to not mix notifications with useRNScreensOverlay off and on, use the same value everywhere
-   * @platform iOS
-   * @default false */
-  useRNScreensOverlay?: boolean;
-
-  /** Style that will be used for RN View that is inside of FullWindowOverlay
-   * @platform iOS
-   * @default null */
-  rnScreensOverlayViewStyle?: StyleProp<ViewStyle>;
-
   /** Styles Object or A function that will receive `translateY: Animated.Value` as first parameter and should return Styles that will be used in container. Using this parameter it is possible to create your own animations of the notification. BE CAREFUL!! when set `transform` style it will override default animation.
    * @default null
    */
@@ -142,7 +129,25 @@ export interface StateInterface {
   translucentStatusBar?: boolean;
   containerStyle?: ContainerStyleParam;
   containerProps?: Omit<AnimatedViewProps, 'style'>;
+}
+
+export interface NotifierProps extends ShowNotificationParams {
+  /** If set to `true`, global `Notifier` methods will not control this component.
+   * It's useful in case you have more than one NotifierWrapper or NotifierRoot rendered.
+   * If enabled, the only way to display notifications is using refs.
+   * @default false */
+  omitGlobalMethodsHookup?: boolean;
+  /** use FullWindowOverlay component from react-native-screens library
+   * If true, Notifier will be rendered above NativeStackNavigation modals and RN Modal on iOS.
+   * This Option will work only if react-native-screens library is installed.
+   * It's recommended to not change this value on the fly as FullWindowOverlay might not work correctly
+   * @platform iOS
+   * @default false */
   useRNScreensOverlay?: boolean;
+
+  /** Style that will be used for RN View that is inside of FullWindowOverlay
+   * @platform iOS
+   * @default null */
   rnScreensOverlayViewStyle?: StyleProp<ViewStyle>;
 }
 
