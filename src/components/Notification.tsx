@@ -4,14 +4,13 @@ import {
   View,
   Text,
   Image,
+  SafeAreaView,
   type ImageSourcePropType,
   type TextStyle,
   type ImageStyle,
   type ViewStyle,
   type StyleProp,
 } from 'react-native';
-
-import SafeContainer from './SafeContainer';
 
 const s = StyleSheet.create({
   container: {
@@ -112,7 +111,7 @@ const NotificationComponent: React.FunctionComponent<
   maxDescriptionLines,
   containerStyle,
 }) => {
-  const Container = ContainerComponent ?? SafeContainer;
+  const Container = ContainerComponent ?? SafeAreaView;
   return (
     <Container>
       <View style={[s.container, containerStyle]}>

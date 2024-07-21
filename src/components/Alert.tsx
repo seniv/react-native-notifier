@@ -3,11 +3,10 @@ import {
   StyleSheet,
   View,
   Text,
+  SafeAreaView,
   type TextStyle,
   type StyleProp,
 } from 'react-native';
-
-import SafeContainer from './SafeContainer';
 
 type AlertTypes = 'error' | 'warn' | 'info' | 'success';
 
@@ -88,7 +87,7 @@ const AlertComponent: React.FunctionComponent<AlertComponentAllProps> = ({
   maxTitleLines,
   maxDescriptionLines,
 }) => {
-  const Container = ContainerComponent ?? SafeContainer;
+  const Container = ContainerComponent ?? SafeAreaView;
   const textStyle = textColor ? { color: textColor } : null;
   return (
     <Container
