@@ -1,5 +1,5 @@
 import NotificationComponent from './components/Notification';
-import { Animated, View } from 'react-native';
+import { Animated, View, type StyleProp, type ViewStyle } from 'react-native';
 import type { ElementType } from 'react';
 
 type AnimatedViewProps = React.ComponentProps<
@@ -109,6 +109,19 @@ export interface ShowNotificationParams<
    */
   translucentStatusBar?: boolean;
 
+  /** use FullWindowOverlay component from react-native-screens library
+   * If true, Notifier will be rendered above NativeStackNavigation modals and RN Modal on iOS.
+   * This Option will work only if react-native-screens library is installed.
+   * It's recommended to not mix notifications with useRNScreensOverlay off and on, use the same value everywhere
+   * @platform iOS
+   * @default false */
+  useRNScreensOverlay?: boolean;
+
+  /** Style that will be used for RN View that is inside of FullWindowOverlay
+   * @platform iOS
+   * @default null */
+  rnScreensOverlayViewStyle?: StyleProp<ViewStyle>;
+
   /** Styles Object or A function that will receive `translateY: Animated.Value` as first parameter and should return Styles that will be used in container. Using this parameter it is possible to create your own animations of the notification. BE CAREFUL!! when set `transform` style it will override default animation.
    * @default null
    */
@@ -129,6 +142,8 @@ export interface StateInterface {
   translucentStatusBar?: boolean;
   containerStyle?: ContainerStyleParam;
   containerProps?: Omit<AnimatedViewProps, 'style'>;
+  useRNScreensOverlay?: boolean;
+  rnScreensOverlayViewStyle?: StyleProp<ViewStyle>;
 }
 
 export interface NotifierInterface {

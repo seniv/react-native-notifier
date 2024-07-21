@@ -1,14 +1,9 @@
 import React from 'react';
-import {
-  Animated,
-  View,
-  TouchableWithoutFeedback,
-  type LayoutChangeEvent,
-  Platform,
-} from 'react-native';
+import { Animated, View, type LayoutChangeEvent, Platform } from 'react-native';
 import {
   PanGestureHandler,
   State,
+  TouchableWithoutFeedback,
   type PanGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 
@@ -30,6 +25,7 @@ import type {
   StateInterface,
   NotifierInterface,
 } from './types';
+import { FullWindowOverlay } from './components/FullWindowOverlay';
 
 export const Notifier: NotifierInterface = {
   showNotification: () => {},
@@ -165,6 +161,8 @@ export class NotifierRoot extends React.PureComponent<
       containerStyle,
       containerProps,
       onShown,
+      useRNScreensOverlay,
+      rnScreensOverlayViewStyle,
       ...restParams
     } = params;
 
@@ -177,6 +175,8 @@ export class NotifierRoot extends React.PureComponent<
       translucentStatusBar,
       containerStyle,
       containerProps,
+      useRNScreensOverlay,
+      rnScreensOverlayViewStyle,
     });
 
     this.showParams = restParams;
@@ -289,6 +289,8 @@ export class NotifierRoot extends React.PureComponent<
       translucentStatusBar,
       containerStyle,
       containerProps,
+      useRNScreensOverlay,
+      rnScreensOverlayViewStyle,
     } = this.state;
 
     const additionalContainerStyle =
@@ -297,39 +299,44 @@ export class NotifierRoot extends React.PureComponent<
         : containerStyle;
 
     return (
-      <PanGestureHandler
-        enabled={swipeEnabled}
-        onGestureEvent={this.onGestureEvent}
-        onHandlerStateChange={this.onHandlerStateChange}
+      <FullWindowOverlay
+        useOverlay={useRNScreensOverlay}
+        viewStyle={rnScreensOverlayViewStyle}
       >
-        <Animated.View
-          {...containerProps}
-          style={[
-            styles.container,
-            {
-              transform: [{ translateY: this.translateYInterpolated }],
-            },
-            additionalContainerStyle,
-          ]}
+        <PanGestureHandler
+          enabled={swipeEnabled}
+          onGestureEvent={this.onGestureEvent}
+          onHandlerStateChange={this.onHandlerStateChange}
         >
-          <TouchableWithoutFeedback onPress={this.onPress}>
-            <View
-              onLayout={this.onLayout}
-              style={
-                Platform.OS === 'android' && translucentStatusBar
-                  ? styles.translucentStatusBarPadding
-                  : undefined
-              }
-            >
-              <Component
-                title={title}
-                description={description}
-                {...componentProps}
-              />
-            </View>
-          </TouchableWithoutFeedback>
-        </Animated.View>
-      </PanGestureHandler>
+          <Animated.View
+            {...containerProps}
+            style={[
+              styles.container,
+              {
+                transform: [{ translateY: this.translateYInterpolated }],
+              },
+              additionalContainerStyle,
+            ]}
+          >
+            <TouchableWithoutFeedback onPress={this.onPress}>
+              <View
+                onLayout={this.onLayout}
+                style={
+                  Platform.OS === 'android' && translucentStatusBar
+                    ? styles.translucentStatusBarPadding
+                    : undefined
+                }
+              >
+                <Component
+                  title={title}
+                  description={description}
+                  {...componentProps}
+                />
+              </View>
+            </TouchableWithoutFeedback>
+          </Animated.View>
+        </PanGestureHandler>
+      </FullWindowOverlay>
     );
   }
 }
