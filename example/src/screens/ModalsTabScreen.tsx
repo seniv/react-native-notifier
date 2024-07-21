@@ -21,10 +21,22 @@ export const ModalsTabScreen = () => {
           onPress={() => navigation.navigate('Modal')}
         />
         <Button
-          title="Show Notification"
+          title="Show Regular Notification"
           onPress={() =>
             Notifier.showNotification({
               title: 'Notification above modal',
+              description: 'without useRNScreensOverlay',
+              useRNScreensOverlay: false,
+            })
+          }
+        />
+        <Button
+          title="Show Notification with useRNScreensOverlay"
+          onPress={() =>
+            Notifier.showNotification({
+              title: 'Notification above modal',
+              description: 'with useRNScreensOverlay',
+              useRNScreensOverlay: true,
             })
           }
         />
