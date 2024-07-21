@@ -59,6 +59,7 @@ export default function App() {
   const statusBarTranslucent = useAppStore(
     (state) => state.statusBarTranslucent
   );
+  const useRNScreensOverlay = useAppStore((state) => state.useRNScreensOverlay);
 
   useEffect(() => {
     if (isAndroid) {
@@ -72,6 +73,7 @@ export default function App() {
       <NotifierWrapper
         ref={notifierRef}
         translucentStatusBar={statusBarTranslucent}
+        useRNScreensOverlay={useRNScreensOverlay}
       >
         <NavigationContainer>
           <StackNavigator />

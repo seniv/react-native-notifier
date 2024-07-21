@@ -1,29 +1,31 @@
 import { Notifier } from 'react-native-notifier';
 import Button from '../components/Button';
+import { isIos } from '../constants';
+import { useAppStore } from '../store';
 
 export const ModalScreen = () => {
+  const useRNScreensOverlay = useAppStore((state) => state.useRNScreensOverlay);
+  const toggleUseRNScreensOverlay = useAppStore(
+    (state) => state.toggleUseRNScreensOverlay
+  );
+
   return (
     <>
       <Button
-        title="Show Regular Notification"
+        title="Show Notification"
         onPress={() =>
           Notifier.showNotification({
             title: 'Notification above modal',
-            description: 'without useRNScreensOverlay',
-            useRNScreensOverlay: false,
+            description: `Currently useRNScreensOverlay is ${useRNScreensOverlay ? 'enabled' : 'disabled'}`,
           })
         }
       />
-      <Button
-        title="Show Notification with useRNScreensOverlay"
-        onPress={() =>
-          Notifier.showNotification({
-            title: 'Notification above modal',
-            description: 'Native Stack Modal should be below the notification',
-            useRNScreensOverlay: true,
-          })
-        }
-      />
+      {isIos && (
+        <Button
+          title="Toggle useRNScreensOverlay"
+          onPress={toggleUseRNScreensOverlay}
+        />
+      )}
     </>
   );
 };

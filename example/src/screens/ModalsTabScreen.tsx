@@ -4,10 +4,16 @@ import Button from '../components/Button';
 import Modal from 'react-native-modal';
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
+import { useAppStore } from '../store';
+import { isIos } from '../constants';
 
 export const ModalsTabScreen = () => {
   const navigation = useNavigation<any>();
   const [isModalVisible, setModalVisible] = useState(false);
+  const useRNScreensOverlay = useAppStore((state) => state.useRNScreensOverlay);
+  const toggleUseRNScreensOverlay = useAppStore(
+    (state) => state.toggleUseRNScreensOverlay
+  );
 
   return (
     <>
@@ -21,25 +27,20 @@ export const ModalsTabScreen = () => {
           onPress={() => navigation.navigate('Modal')}
         />
         <Button
-          title="Show Regular Notification"
+          title="Show Notification"
           onPress={() =>
             Notifier.showNotification({
               title: 'Notification above modal',
-              description: 'without useRNScreensOverlay',
-              useRNScreensOverlay: false,
+              description: `Currently useRNScreensOverlay is ${useRNScreensOverlay ? 'enabled' : 'disabled'}`,
             })
           }
         />
-        <Button
-          title="Show Notification with useRNScreensOverlay"
-          onPress={() =>
-            Notifier.showNotification({
-              title: 'Notification above modal',
-              description: 'with useRNScreensOverlay',
-              useRNScreensOverlay: true,
-            })
-          }
-        />
+        {isIos && (
+          <Button
+            title="Toggle useRNScreensOverlay"
+            onPress={toggleUseRNScreensOverlay}
+          />
+        )}
       </ScrollView>
       <Modal isVisible={isModalVisible} coverScreen={false}>
         <View style={styles.modalContainer}>
