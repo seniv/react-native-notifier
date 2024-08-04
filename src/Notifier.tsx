@@ -12,12 +12,11 @@ import { Notification as NotificationComponent } from './components';
 import {
   DEFAULT_ANIMATION_DURATION,
   DEFAULT_DURATION,
-  MAX_TRANSLATE_Y,
-  MIN_TRANSLATE_Y,
   SWIPE_ANIMATION_DURATION,
   SWIPE_PIXELS_TO_CLOSE,
   DEFAULT_SWIPE_ENABLED,
-  DEFAULT_COMPONENT_HEIGHT,
+  MAX_VALUE,
+  SAFETY_MARGIN_TO_COMPONENT_SIZE,
 } from './constants';
 import type {
   ShowParams,
@@ -27,6 +26,13 @@ import type {
   NotifierProps,
 } from './types';
 import { FullWindowOverlay } from './components/FullWindowOverlay';
+import {
+  getFinalTranslateValue,
+  getHiddenTranslateValues,
+  getSwipedOutDirection,
+  type FinalTranslateValue,
+} from './utils/swipeDirection';
+import { animateTranslationReset } from './utils/animation';
 
 export const Notifier: NotifierInterface = {
   showNotification: () => {},
@@ -43,37 +49,54 @@ export class NotifierRoot extends React.PureComponent<
   private hideTimer: any;
   private showParams: ShowParams | null;
   private callStack: Array<ShowNotificationParams>;
-  private hiddenComponentValue: number;
+  private componentHeight: number;
+  private componentWidth: number;
+  private readonly animationDriver: Animated.Value;
   private readonly translateY: Animated.Value;
-  private readonly translateYInterpolated: Animated.AnimatedInterpolation<number>;
+  private readonly translateX: Animated.Value;
+  private readonly hiddenTranslateYValue: Animated.Value;
+  private readonly hiddenTranslateXValue: Animated.Value;
   private readonly onGestureEvent: (...args: any[]) => void;
 
   constructor(props: NotifierProps) {
     super(props);
 
-    this.state = {
-      Component: NotificationComponent,
-      swipeEnabled: DEFAULT_SWIPE_ENABLED,
-      componentProps: {},
-    };
     this.isShown = false;
     this.isHiding = false;
     this.hideTimer = null;
     this.showParams = null;
     this.callStack = [];
-    this.hiddenComponentValue = -DEFAULT_COMPONENT_HEIGHT;
 
-    this.translateY = new Animated.Value(MIN_TRANSLATE_Y);
-    this.translateYInterpolated = this.translateY.interpolate({
-      inputRange: [MIN_TRANSLATE_Y, MAX_TRANSLATE_Y],
-      outputRange: [MIN_TRANSLATE_Y, MAX_TRANSLATE_Y],
-      extrapolate: 'clamp',
-    });
+    this.componentHeight = 0;
+    this.componentWidth = 0;
+    this.animationDriver = new Animated.Value(0);
+    this.translateY = new Animated.Value(0);
+    this.translateX = new Animated.Value(0);
+    this.hiddenTranslateYValue = new Animated.Value(-MAX_VALUE);
+    this.hiddenTranslateXValue = new Animated.Value(0);
+
+    this.state = {
+      Component: NotificationComponent,
+      swipeEnabled: DEFAULT_SWIPE_ENABLED,
+      componentProps: {},
+      swipeDirection: 'top',
+      ...getFinalTranslateValue({
+        swipeDirection: 'top',
+        animationDriver: this.animationDriver,
+        hiddenTranslateXValue: this.hiddenTranslateXValue,
+        hiddenTranslateYValue: this.hiddenTranslateYValue,
+        translateX: this.translateX,
+        translateY: this.translateY,
+      }),
+    };
 
     this.onGestureEvent = Animated.event(
       [
         {
-          nativeEvent: { translationY: this.translateY },
+          nativeEvent: {
+            translationY: this.translateY,
+            translationX: this.translateX,
+          },
         },
       ],
       { useNativeDriver: true }
@@ -102,8 +125,8 @@ export class NotifierRoot extends React.PureComponent<
       return;
     }
 
-    Animated.timing(this.translateY, {
-      toValue: this.hiddenComponentValue,
+    Animated.timing(this.animationDriver, {
+      toValue: 0,
       easing: this.showParams?.hideEasing ?? this.showParams?.easing,
       duration:
         this.showParams?.hideAnimationDuration ??
@@ -176,8 +199,21 @@ export class NotifierRoot extends React.PureComponent<
       containerStyle,
       containerProps,
       onShown,
+      swipeDirection = 'top',
       ...restParams
     } = params;
+
+    let additionalState: FinalTranslateValue | undefined;
+    if (this.state.swipeDirection !== swipeDirection) {
+      additionalState = getFinalTranslateValue({
+        swipeDirection,
+        animationDriver: this.animationDriver,
+        hiddenTranslateXValue: this.hiddenTranslateXValue,
+        hiddenTranslateYValue: this.hiddenTranslateYValue,
+        translateX: this.translateX,
+        translateY: this.translateY,
+      });
+    }
 
     this.setState({
       title,
@@ -188,6 +224,9 @@ export class NotifierRoot extends React.PureComponent<
       translucentStatusBar,
       containerStyle,
       containerProps,
+      swipeDirection,
+      // TODO: fix types (definitely need useMemo)
+      ...(additionalState ? additionalState : {}),
     });
 
     this.showParams = restParams;
@@ -195,9 +234,12 @@ export class NotifierRoot extends React.PureComponent<
 
     this.setHideTimer();
 
-    this.translateY.setValue(-DEFAULT_COMPONENT_HEIGHT);
-    Animated.timing(this.translateY, {
-      toValue: MAX_TRANSLATE_Y,
+    this.translateY.setValue(0);
+    this.translateX.setValue(0);
+    this.hiddenTranslateYValue.setValue(-MAX_VALUE);
+    this.hiddenTranslateXValue.setValue(0);
+    Animated.timing(this.animationDriver, {
+      toValue: 1,
       easing: this.showParams?.showEasing ?? this.showParams?.easing,
       duration:
         this.showParams?.showAnimationDuration ??
@@ -234,7 +276,11 @@ export class NotifierRoot extends React.PureComponent<
     this.isShown = false;
     this.isHiding = false;
     this.showParams = null;
-    this.translateY.setValue(MIN_TRANSLATE_Y);
+
+    this.translateY.setValue(0);
+    this.translateX.setValue(0);
+    this.hiddenTranslateXValue.setValue(0);
+    this.hiddenTranslateYValue.setValue(-MAX_VALUE);
 
     const nextNotification = this.callStack.shift();
     if (nextNotification) {
@@ -253,26 +299,45 @@ export class NotifierRoot extends React.PureComponent<
     }
     this.setHideTimer();
 
-    const swipePixelsToClose = -(
-      this.showParams?.swipePixelsToClose ?? SWIPE_PIXELS_TO_CLOSE
-    );
-    const isSwipedOut = nativeEvent.translationY < swipePixelsToClose;
+    const swipePixelsToClose =
+      this.showParams?.swipePixelsToClose ?? SWIPE_PIXELS_TO_CLOSE;
 
-    Animated.timing(this.translateY, {
-      toValue: isSwipedOut ? this.hiddenComponentValue : MAX_TRANSLATE_Y,
+    const swipedOutDirection = getSwipedOutDirection({
+      swipeDirection: this.state.swipeDirection,
+      swipePixelsToClose,
+      translationX: nativeEvent.translationX,
+      translationY: nativeEvent.translationY,
+    });
+
+    if (swipedOutDirection === 'none') {
+      animateTranslationReset({
+        translateX: this.translateX,
+        translateY: this.translateY,
+      });
+      return;
+    }
+
+    const { hiddenTranslateXValue, hiddenTranslateYValue } =
+      getHiddenTranslateValues({
+        swipedOutDirection,
+        componentHeight: this.componentHeight,
+        componentWidth: this.componentWidth,
+      });
+
+    this.hiddenTranslateYValue.setValue(hiddenTranslateYValue);
+    this.hiddenTranslateXValue.setValue(hiddenTranslateXValue);
+
+    Animated.timing(this.animationDriver, {
+      toValue: 0,
       easing: this.showParams?.swipeEasing,
       duration:
         this.showParams?.swipeAnimationDuration ?? SWIPE_ANIMATION_DURATION,
       useNativeDriver: true,
     }).start(() => {
-      if (isSwipedOut) {
-        this.onHidden();
-      }
+      this.onHidden();
     });
 
-    if (isSwipedOut) {
-      this.onStartHiding();
-    }
+    this.onStartHiding();
   }
 
   private onPress() {
@@ -283,11 +348,20 @@ export class NotifierRoot extends React.PureComponent<
   }
 
   private onLayout({ nativeEvent }: LayoutChangeEvent) {
-    const heightWithMargin = nativeEvent.layout.height + 50;
-    this.hiddenComponentValue = -Math.max(
-      heightWithMargin,
-      DEFAULT_COMPONENT_HEIGHT
+    if (!this.isShown) return;
+
+    this.componentHeight =
+      nativeEvent.layout.height + SAFETY_MARGIN_TO_COMPONENT_SIZE;
+    this.componentWidth =
+      nativeEvent.layout.width + SAFETY_MARGIN_TO_COMPONENT_SIZE;
+    console.log(
+      Date.now(),
+      'layout',
+      this.componentHeight,
+      this.componentWidth
     );
+    this.hiddenTranslateYValue.setValue(-this.componentHeight);
+    this.hiddenTranslateXValue.setValue(0);
   }
 
   render() {
@@ -301,9 +375,12 @@ export class NotifierRoot extends React.PureComponent<
       translucentStatusBar,
       containerStyle,
       containerProps,
+      finalTranslateX,
+      finalTranslateY,
     } = this.state;
 
     const additionalContainerStyle =
+      // TODO: fix custom animations (pass all values)
       typeof containerStyle === 'function'
         ? containerStyle(this.translateY)
         : containerStyle;
@@ -323,7 +400,10 @@ export class NotifierRoot extends React.PureComponent<
             style={[
               styles.container,
               {
-                transform: [{ translateY: this.translateYInterpolated }],
+                transform: [
+                  { translateX: finalTranslateX },
+                  { translateY: finalTranslateY },
+                ],
               },
               additionalContainerStyle,
             ]}
@@ -331,6 +411,8 @@ export class NotifierRoot extends React.PureComponent<
             <TouchableWithoutFeedback onPress={this.onPress}>
               <View
                 onLayout={this.onLayout}
+                // TODO: do something with this hack (it was needed to trigger onLayout each time)
+                key={Math.random()}
                 style={
                   Platform.OS === 'android' && translucentStatusBar
                     ? styles.translucentStatusBarPadding

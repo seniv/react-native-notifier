@@ -2,6 +2,14 @@ import NotificationComponent from './components/Notification';
 import { Animated, View, type StyleProp, type ViewStyle } from 'react-native';
 import type { ElementType } from 'react';
 
+export type SwipeDirection =
+  | 'top'
+  | 'bottom'
+  | 'left'
+  | 'right'
+  | 'horizontal'
+  | 'none';
+
 type AnimatedViewProps = React.ComponentProps<
   Animated.AnimatedComponent<typeof View>
 >;
@@ -118,6 +126,11 @@ export interface ShowNotificationParams<
    * @default {}
    */
   containerProps?: Omit<AnimatedViewProps, 'style'>;
+
+  /** Direction in which notification can be swiped out
+   * @default 'top'
+   */
+  swipeDirection?: SwipeDirection;
 }
 
 export interface StateInterface {
@@ -129,6 +142,9 @@ export interface StateInterface {
   translucentStatusBar?: boolean;
   containerStyle?: ContainerStyleParam;
   containerProps?: Omit<AnimatedViewProps, 'style'>;
+  swipeDirection: SwipeDirection;
+  finalTranslateX: Animated.AnimatedAddition<number>;
+  finalTranslateY: Animated.AnimatedAddition<number>;
 }
 
 export interface NotifierProps extends ShowNotificationParams {
