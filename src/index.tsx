@@ -1,8 +1,9 @@
 import * as NotifierComponents from './components';
 
 export { NotifierComponents };
-export { Notifier, NotifierRoot } from './Notifier';
-export { Easing } from 'react-native';
+export { NotifierRoot } from './Notifier';
+export { Notifier } from './hooks/useMethodsHookup';
+export { Easing } from 'react-native-reanimated';
 export * from './NotifierWrapper';
 export type {
   NotifierInterface,

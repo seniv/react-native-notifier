@@ -1,13 +1,13 @@
-import { Animated } from 'react-native';
 import type { SwipeDirection } from '../types';
 import { MAX_VALUE } from '../constants';
+import { clamp } from 'react-native-reanimated';
 
 type SwipedOutDirection = 'top' | 'bottom' | 'left' | 'right' | 'none';
 
 interface LimitTranslateBySwipeDirectionParams {
   swipeDirection: SwipeDirection;
-  translateX: Animated.Value;
-  translateY: Animated.Value;
+  translateX: number;
+  translateY: number;
 }
 
 export const limitTranslateBySwipeDirection = ({
@@ -15,24 +15,18 @@ export const limitTranslateBySwipeDirection = ({
   translateX,
   translateY,
 }: LimitTranslateBySwipeDirectionParams) => {
+  'worklet';
+
   switch (swipeDirection) {
     case 'top':
       return {
         translateX: 0,
-        translateY: translateY.interpolate({
-          inputRange: [-MAX_VALUE, 0],
-          outputRange: [-MAX_VALUE, 0],
-          extrapolate: 'clamp',
-        }),
+        translateY: clamp(translateY, -MAX_VALUE, 0),
       };
     case 'bottom':
       return {
         translateX: 0,
-        translateY: translateY.interpolate({
-          inputRange: [0, MAX_VALUE],
-          outputRange: [0, MAX_VALUE],
-          extrapolate: 'clamp',
-        }),
+        translateY: clamp(translateY, 0, MAX_VALUE),
       };
     case 'horizontal':
       return {
@@ -41,20 +35,12 @@ export const limitTranslateBySwipeDirection = ({
       };
     case 'left':
       return {
-        translateX: translateX.interpolate({
-          inputRange: [-MAX_VALUE, 0],
-          outputRange: [-MAX_VALUE, 0],
-          extrapolate: 'clamp',
-        }),
+        translateX: clamp(translateX, -MAX_VALUE, 0),
         translateY: 0,
       };
     case 'right':
       return {
-        translateX: translateX.interpolate({
-          inputRange: [0, MAX_VALUE],
-          outputRange: [0, MAX_VALUE],
-          extrapolate: 'clamp',
-        }),
+        translateX: clamp(translateX, 0, MAX_VALUE),
         translateY: 0,
       };
     default:
@@ -78,6 +64,8 @@ export const getSwipedOutDirection = ({
   translationX,
   translationY,
 }: GetSwipedOutDirectionParams): SwipedOutDirection => {
+  'worklet';
+
   switch (swipeDirection) {
     case 'top':
       return translationY < -swipePixelsToClose ? 'top' : 'none';
@@ -111,6 +99,8 @@ export const getHiddenTranslateValues = ({
   componentHeight,
   componentWidth,
 }: GetHiddenTranslateValuesParams) => {
+  'worklet';
+
   switch (swipedOutDirection) {
     case 'top':
       return {
@@ -133,55 +123,4 @@ export const getHiddenTranslateValues = ({
         hiddenTranslateXValue: componentWidth,
       };
   }
-};
-
-interface GetFinalTranslateValueParams {
-  swipeDirection: SwipeDirection;
-  animationDriver: Animated.Value;
-  translateX: Animated.Value;
-  translateY: Animated.Value;
-  hiddenTranslateXValue: Animated.Value;
-  hiddenTranslateYValue: Animated.Value;
-}
-
-export interface FinalTranslateValue {
-  finalTranslateX: Animated.AnimatedAddition<number>;
-  finalTranslateY: Animated.AnimatedAddition<number>;
-}
-
-export const getFinalTranslateValue = ({
-  swipeDirection,
-  animationDriver,
-  translateX,
-  translateY,
-  hiddenTranslateXValue,
-  hiddenTranslateYValue,
-}: GetFinalTranslateValueParams): FinalTranslateValue => {
-  const { translateX: swipeTranslateX, translateY: swipeTranslateY } =
-    limitTranslateBySwipeDirection({
-      swipeDirection,
-      translateX: translateX,
-      translateY: translateY,
-    });
-
-  const finalTranslateX = Animated.add(
-    swipeTranslateX,
-    Animated.multiply(
-      Animated.subtract(1, animationDriver),
-      hiddenTranslateXValue
-    )
-  );
-
-  const finalTranslateY = Animated.add(
-    swipeTranslateY,
-    Animated.multiply(
-      Animated.subtract(1, animationDriver),
-      hiddenTranslateYValue
-    )
-  );
-
-  return {
-    finalTranslateX,
-    finalTranslateY,
-  };
 };

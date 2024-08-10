@@ -1,6 +1,22 @@
 import NotificationComponent from './components/Notification';
-import { Animated, View, type StyleProp, type ViewStyle } from 'react-native';
+import {
+  Animated,
+  type StyleProp,
+  type ViewProps,
+  type ViewStyle,
+} from 'react-native';
 import type { ElementType } from 'react';
+import type { AnimatedProps, EasingFunction } from 'react-native-reanimated';
+
+export enum NotifierState {
+  Hidden,
+  WaitingForLayout,
+  LayoutCalculated,
+  IsShowing,
+  IsShown,
+  IsHiding,
+  WaitingForUnmount,
+}
 
 export type SwipeDirection =
   | 'top'
@@ -11,7 +27,7 @@ export type SwipeDirection =
   | 'none';
 
 type AnimatedViewProps = React.ComponentProps<
-  Animated.AnimatedComponent<typeof View>
+  React.ComponentClass<AnimatedProps<ViewProps>, any>
 >;
 type ContainerStyleParam =
   | ((translateYAnimatedValue: Animated.Value) => AnimatedViewProps['style'])
@@ -32,15 +48,15 @@ export interface ShowParams {
 
   /** Animation easing. Details: https://reactnative.dev/docs/easing
    * @default null */
-  easing?: Animated.TimingAnimationConfig['easing'];
+  easing?: EasingFunction;
 
   /** Show Animation easing.
    * @default easing || null */
-  showEasing?: Animated.TimingAnimationConfig['easing'];
+  showEasing?: EasingFunction;
 
   /** Hide Animation easing.
    * @default easing || null */
-  hideEasing?: Animated.TimingAnimationConfig['easing'];
+  hideEasing?: EasingFunction;
 
   /** Function called when entering animation is finished
    * @default null */
@@ -68,7 +84,7 @@ export interface ShowParams {
 
   /** Animation easing after user finished swiping
    * @default null */
-  swipeEasing?: Animated.TimingAnimationConfig['easing'];
+  swipeEasing?: EasingFunction;
 
   /** How fast should be animation after user finished swiping
    * @default 200 */
@@ -91,10 +107,6 @@ export interface ShowNotificationParams<
   /** Description of notification. __Passed to `Component`.__
    * @default null */
   description?: string;
-
-  /** Can notification be hidden by swiping it out
-   * @default true */
-  swipeEnabled?: boolean;
 
   /** Component of the notification body. You can use one of the [built-in components](https://github.com/seniv/react-native-notifier#components), or your [custom component](https://github.com/seniv/react-native-notifier#custom-component).
    * @default NotifierComponents.Notification */
@@ -136,15 +148,11 @@ export interface ShowNotificationParams<
 export interface StateInterface {
   title?: string;
   description?: string;
-  swipeEnabled: boolean;
   Component: ElementType;
   componentProps: Record<string, any>;
   translucentStatusBar?: boolean;
   containerStyle?: ContainerStyleParam;
   containerProps?: Omit<AnimatedViewProps, 'style'>;
-  swipeDirection: SwipeDirection;
-  finalTranslateX: Animated.AnimatedAddition<number>;
-  finalTranslateY: Animated.AnimatedAddition<number>;
 }
 
 export interface NotifierProps extends ShowNotificationParams {
@@ -173,6 +181,6 @@ export interface NotifierInterface {
   >(
     params: ShowNotificationParams<ComponentType>
   ): void;
-  hideNotification(onHidden?: Animated.EndCallback): void;
+  hideNotification(onHidden?: (finished?: boolean) => void): void;
   clearQueue(hideDisplayedNotification?: boolean): void;
 }
