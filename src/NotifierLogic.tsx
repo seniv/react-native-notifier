@@ -1,4 +1,4 @@
-import { forwardRef, memo, useCallback } from 'react';
+import { forwardRef, memo, useCallback, useEffect } from 'react';
 import { NotifierRender } from './NotifierRender';
 import {
   type NotifierProps,
@@ -11,12 +11,9 @@ import { useNotifierInternal } from './contexts/internal';
 import { runHidingAnimation, runShowingAnimation } from './utils/animations';
 import { DEFAULT_DURATION } from './constants';
 import NotificationComponent from './components/Notification';
-import {
-  runOnJS,
-  useAnimatedReaction,
-  type AnimationCallback,
-} from 'react-native-reanimated';
+import { runOnJS, type AnimationCallback } from 'react-native-reanimated';
 import { useMethodsHookup } from './hooks/useMethodsHookup';
+import { useLayout } from './hooks/useLayout';
 
 const NotifierRootLogicInternal = forwardRef<NotifierInterface, NotifierProps>(
   (
@@ -34,40 +31,47 @@ const NotifierRootLogicInternal = forwardRef<NotifierInterface, NotifierProps>(
       hideTimer,
       resetGestures,
       resetHiddenTranslateValues,
-      state,
       animationDriver,
       callStack,
       swipeDirection,
-      setState,
+      renderState,
+      setRenderState,
       resetTimer,
+      setNotifierState,
     } = useNotifierInternal();
 
     const onStartHiding = useCallback(() => {
       showParams.current?.onStartHiding?.();
-      notifierState.value = NotifierState.IsHiding;
+      setNotifierState(NotifierState.IsHiding);
       resetTimer();
-    }, [showParams, notifierState, resetTimer]);
+    }, [showParams, setNotifierState, resetTimer]);
 
     const onHidingAnimationFinished = useCallback(() => {
+      console.log(Date.now(), 'onHidingAnimationFinished');
       showParams.current?.onHidden?.();
 
-      notifierState.value = NotifierState.WaitingForUnmount;
+      setNotifierState(NotifierState.WaitingForUnmount);
       showParams.current = null;
-
+      setRenderState(null);
+    }, [showParams, setNotifierState, setRenderState]);
+    const onHidingAnimationFinishedWorklet = useCallback(() => {
+      'worklet';
       resetGestures();
       resetHiddenTranslateValues();
-    }, [showParams, notifierState, resetGestures, resetHiddenTranslateValues]);
+      runOnJS(onHidingAnimationFinished)();
+    }, [resetGestures, resetHiddenTranslateValues, onHidingAnimationFinished]);
 
     const handleShowAnimationFinished = useCallback(() => {
-      notifierState.value = NotifierState.IsShown;
+      setNotifierState(NotifierState.IsShown);
       showParams.current?.onShown?.();
-    }, [showParams, notifierState]);
+    }, [setNotifierState, showParams]);
 
     const hideNotification: NotifierInterface['hideNotification'] = useCallback(
       (callback?: AnimationCallback) => {
         if (
-          notifierState.value === NotifierState.IsHiding ||
-          notifierState.value === NotifierState.WaitingForUnmount
+          notifierState.current === NotifierState.IsHiding ||
+          notifierState.current === NotifierState.WaitingForUnmount ||
+          notifierState.current === NotifierState.Hidden
         ) {
           return;
         }
@@ -76,8 +80,11 @@ const NotifierRootLogicInternal = forwardRef<NotifierInterface, NotifierProps>(
           animationDriver,
           showParams,
           callback: (finished) => {
-            onHidingAnimationFinished();
-            callback?.(finished);
+            'worklet';
+            onHidingAnimationFinishedWorklet();
+            if (typeof callback === 'function') {
+              runOnJS(callback)(finished);
+            }
           },
         });
 
@@ -88,7 +95,7 @@ const NotifierRootLogicInternal = forwardRef<NotifierInterface, NotifierProps>(
         animationDriver,
         showParams,
         onStartHiding,
-        onHidingAnimationFinished,
+        onHidingAnimationFinishedWorklet,
       ]
     );
 
@@ -113,7 +120,7 @@ const NotifierRootLogicInternal = forwardRef<NotifierInterface, NotifierProps>(
           },
         };
 
-        if (notifierState.value !== NotifierState.Hidden) {
+        if (notifierState.current !== NotifierState.Hidden) {
           switch (params.queueMode) {
             case 'standby': {
               callStack.current.push(params);
@@ -149,7 +156,7 @@ const NotifierRootLogicInternal = forwardRef<NotifierInterface, NotifierProps>(
           ...restParams
         } = params;
 
-        setState({
+        setRenderState({
           title,
           description,
           Component,
@@ -164,13 +171,10 @@ const NotifierRootLogicInternal = forwardRef<NotifierInterface, NotifierProps>(
 
         setHideTimer();
 
-        console.log('restParams', restParams);
-        console.log('showParams.current', showParams.current);
-        console.log(
-          showParams.current?.showEasing ?? showParams.current?.easing
-        );
+        console.log(Date.now(), 'restParams', restParams);
+        console.log(Date.now(), 'showParams.current', showParams.current);
 
-        notifierState.value = NotifierState.WaitingForLayout;
+        setNotifierState(NotifierState.WaitingForLayout);
       },
       [
         callStack,
@@ -178,7 +182,8 @@ const NotifierRootLogicInternal = forwardRef<NotifierInterface, NotifierProps>(
         hideNotification,
         notifierState,
         setHideTimer,
-        setState,
+        setNotifierState,
+        setRenderState,
         showParams,
         swipeDirection,
       ]
@@ -196,7 +201,7 @@ const NotifierRootLogicInternal = forwardRef<NotifierInterface, NotifierProps>(
     );
 
     const checkCallStack = useCallback(() => {
-      console.log('check callstack', callStack.current);
+      console.log(Date.now(), 'check callstack', callStack.current);
       const nextNotification = callStack.current.shift();
       if (nextNotification) {
         showNotification(nextNotification);
@@ -204,20 +209,21 @@ const NotifierRootLogicInternal = forwardRef<NotifierInterface, NotifierProps>(
     }, [callStack, showNotification]);
 
     const runShowAnimation = useCallback(() => {
-      notifierState.value = NotifierState.IsShowing;
+      setNotifierState(NotifierState.IsShowing);
 
       console.log(Date.now(), 'call animation', showParams.current);
       runShowingAnimation({
         animationDriver,
         showParams,
         callback: (finished) => {
+          'worklet';
           if (finished) {
             runOnJS(handleShowAnimationFinished)();
           }
         },
       });
     }, [
-      notifierState,
+      setNotifierState,
       showParams,
       animationDriver,
       handleShowAnimationFinished,
@@ -232,7 +238,7 @@ const NotifierRootLogicInternal = forwardRef<NotifierInterface, NotifierProps>(
 
     const { pan } = useGestures({
       onStartHiding,
-      onHidingAnimationFinished,
+      onHidingAnimationFinishedWorklet,
       setHideTimer,
     });
 
@@ -244,26 +250,17 @@ const NotifierRootLogicInternal = forwardRef<NotifierInterface, NotifierProps>(
       clearQueue,
     });
 
-    useAnimatedReaction(
-      () => notifierState.value === NotifierState.LayoutCalculated,
-      (shouldRunAnimation) => {
-        if (shouldRunAnimation) {
-          runOnJS(runShowAnimation)();
-        }
+    useEffect(() => {
+      if (
+        notifierState.current === NotifierState.WaitingForUnmount &&
+        !renderState
+      ) {
+        setNotifierState(NotifierState.Hidden);
+        checkCallStack();
       }
-    );
+    }, [renderState, notifierState, setNotifierState, checkCallStack]);
 
-    useAnimatedReaction(
-      () => notifierState.value,
-      (currentState, prevState) => {
-        if (
-          currentState === NotifierState.Hidden &&
-          prevState === NotifierState.WaitingForUnmount
-        ) {
-          runOnJS(checkCallStack)();
-        }
-      }
-    );
+    const { onLayout } = useLayout(runShowAnimation);
 
     return (
       <NotifierRender
@@ -271,7 +268,7 @@ const NotifierRootLogicInternal = forwardRef<NotifierInterface, NotifierProps>(
         rnScreensOverlayViewStyle={rnScreensOverlayViewStyle}
         onPress={onPress}
         pan={pan}
-        {...state}
+        onLayout={onLayout}
       />
     );
   }

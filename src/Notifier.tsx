@@ -17,7 +17,6 @@ import {
   NotifierState,
 } from './types';
 import { MAX_VALUE } from './constants';
-import NotificationComponent from './components/Notification';
 import { useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import { NotifierInternalProvider } from './contexts/internal';
 import { NotifierLogic } from './NotifierLogic';
@@ -31,37 +30,55 @@ const NotifierRootBase = forwardRef<NotifierInterface, NotifierProps>(
     const translationY = useSharedValue(0);
     const componentHeight = useSharedValue(0);
     const componentWidth = useSharedValue(0);
-
-    const notifierState = useSharedValue<NotifierState>(NotifierState.Hidden);
-    useAnimatedReaction(
-      () => notifierState.value,
-      (current, prev) =>
-        console.log(Date.now(), `STATE CHANGE: ${prev} -> ${current}`)
-    );
     const swipeDirection = useSharedValue<SwipeDirection>('top');
 
+    const notifierState = useRef<NotifierState>(NotifierState.Hidden);
     const showParams = useRef<ShowParams | null>(null);
     const hideTimer = useRef<NodeJS.Timeout>();
     const callStack = useRef<Array<ShowNotificationParams>>([]);
 
-    const [state, setState] = useState<StateInterface>(() => ({
-      Component: NotificationComponent,
-      componentProps: {},
-    }));
+    useAnimatedReaction(
+      () => hiddenTranslateXValue.value,
+      (current, prev) =>
+        console.log(
+          Date.now(),
+          `hiddenTranslateXValue CHANGE: ${prev} -> ${current}`
+        )
+    );
+    useAnimatedReaction(
+      () => hiddenTranslateYValue.value,
+      (current, prev) =>
+        console.log(
+          Date.now(),
+          `hiddenTranslateYValue CHANGE: ${prev} -> ${current}`
+        )
+    );
+
+    const [renderState, setRenderState] = useState<StateInterface | null>(null);
+
+    const setNotifierState = useCallback((newState: NotifierState) => {
+      console.log(
+        Date.now(),
+        `STATE CHANGE: ${notifierState.current} -> ${newState}`
+      );
+      notifierState.current = newState;
+    }, []);
 
     const resetHiddenTranslateValues = useCallback(() => {
+      'worklet';
       hiddenTranslateXValue.value = 0;
       hiddenTranslateYValue.value = -MAX_VALUE;
     }, [hiddenTranslateXValue, hiddenTranslateYValue]);
 
     const resetGestures = useCallback(() => {
+      'worklet';
       translationX.value = 0;
       translationY.value = 0;
     }, [translationX, translationY]);
 
     const resetTimer = useCallback(() => {
       clearTimeout(hideTimer.current);
-    }, [hideTimer]);
+    }, []);
 
     const internalContextValue = useMemo(
       () => ({
@@ -77,11 +94,12 @@ const NotifierRootBase = forwardRef<NotifierInterface, NotifierProps>(
         hideTimer,
         callStack,
         swipeDirection,
-        state,
-        setState,
+        renderState,
+        setRenderState,
         resetHiddenTranslateValues,
         resetGestures,
         resetTimer,
+        setNotifierState,
       }),
       [
         animationDriver,
@@ -93,10 +111,11 @@ const NotifierRootBase = forwardRef<NotifierInterface, NotifierProps>(
         componentHeight,
         componentWidth,
         swipeDirection,
-        state,
+        renderState,
         resetHiddenTranslateValues,
         resetGestures,
         resetTimer,
+        setNotifierState,
       ]
     );
 

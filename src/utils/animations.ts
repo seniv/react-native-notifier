@@ -1,4 +1,4 @@
-import { runOnJS, withTiming, type SharedValue } from 'react-native-reanimated';
+import { withTiming, type SharedValue } from 'react-native-reanimated';
 import {
   DEFAULT_ANIMATION_DURATION,
   DEFAULT_EASING,
@@ -29,9 +29,7 @@ export const runHidingAnimation = ({
         showParams.current?.animationDuration ??
         DEFAULT_ANIMATION_DURATION,
     },
-    (finished) => {
-      runOnJS(callback)(finished);
-    }
+    callback
   );
 };
 
@@ -47,9 +45,7 @@ export const runSwipeOutAnimation = ({
       duration:
         showParams.current?.swipeAnimationDuration ?? SWIPE_ANIMATION_DURATION,
     },
-    (finished) => {
-      runOnJS(callback)(finished);
-    }
+    callback
   );
 };
 
@@ -70,8 +66,6 @@ export const runShowingAnimation = ({
         showParams.current?.animationDuration ??
         DEFAULT_ANIMATION_DURATION,
     },
-    (finished) => {
-      runOnJS(callback)(finished);
-    }
+    callback
   );
 };

@@ -15,12 +15,12 @@ import { useNotifierInternal } from '../contexts/internal';
 import { runSwipeOutAnimation } from '../utils/animations';
 
 interface UseGesturesParams {
-  onHidingAnimationFinished: () => void;
+  onHidingAnimationFinishedWorklet: () => void;
   onStartHiding: () => void;
   setHideTimer: () => void;
 }
 export const useGestures = ({
-  onHidingAnimationFinished,
+  onHidingAnimationFinishedWorklet,
   onStartHiding,
   setHideTimer,
 }: UseGesturesParams) => {
@@ -72,7 +72,7 @@ export const useGestures = ({
       runSwipeOutAnimation({
         animationDriver,
         showParams,
-        callback: onHidingAnimationFinished,
+        callback: onHidingAnimationFinishedWorklet,
       });
 
       onStartHiding();
@@ -83,7 +83,7 @@ export const useGestures = ({
       componentWidth,
       hiddenTranslateXValue,
       hiddenTranslateYValue,
-      onHidingAnimationFinished,
+      onHidingAnimationFinishedWorklet,
       onStartHiding,
       setHideTimer,
       showParams,

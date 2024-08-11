@@ -4,13 +4,14 @@ import { SAFETY_MARGIN_TO_COMPONENT_SIZE } from '../constants';
 import { useNotifierInternal } from '../contexts/internal';
 import { NotifierState } from '../types';
 
-export const useLayout = () => {
+export const useLayout = (onLayoutCalculated: () => void) => {
   const {
     componentHeight,
     componentWidth,
     notifierState,
     hiddenTranslateXValue,
     hiddenTranslateYValue,
+    setNotifierState,
   } = useNotifierInternal();
 
   const onLayout = useCallback(
@@ -21,8 +22,9 @@ export const useLayout = () => {
         e.nativeEvent.layout.height,
         e.nativeEvent.layout.width
       );
-      if (notifierState.value === NotifierState.WaitingForLayout) {
-        notifierState.value = NotifierState.LayoutCalculated;
+      if (notifierState.current === NotifierState.WaitingForLayout) {
+        setNotifierState(NotifierState.LayoutCalculated);
+        onLayoutCalculated();
       }
 
       const height =
@@ -40,6 +42,8 @@ export const useLayout = () => {
       hiddenTranslateXValue,
       hiddenTranslateYValue,
       notifierState,
+      onLayoutCalculated,
+      setNotifierState,
     ]
   );
 

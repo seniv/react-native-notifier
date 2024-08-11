@@ -16,7 +16,7 @@ export interface NotifierInternalContext {
   translationY: SharedValue<number>;
   componentHeight: SharedValue<number>;
   componentWidth: SharedValue<number>;
-  notifierState: SharedValue<NotifierState>;
+  notifierState: React.MutableRefObject<NotifierState>;
   swipeDirection: SharedValue<SwipeDirection>;
 
   showParams: React.MutableRefObject<ShowParams | null>;
@@ -25,9 +25,10 @@ export interface NotifierInternalContext {
     ShowNotificationParams<React.ElementType>[]
   >;
 
-  state: StateInterface;
-  setState: React.Dispatch<React.SetStateAction<StateInterface>>;
+  renderState: StateInterface | null;
+  setRenderState: React.Dispatch<React.SetStateAction<StateInterface | null>>;
 
+  setNotifierState: (newState: NotifierState) => void;
   resetHiddenTranslateValues: () => void;
   resetGestures: () => void;
   resetTimer: () => void;
