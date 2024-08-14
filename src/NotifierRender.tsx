@@ -3,28 +3,20 @@ import {
   TouchableWithoutFeedback,
   type PanGesture,
 } from 'react-native-gesture-handler';
-import { FullWindowOverlay } from './components/FullWindowOverlay';
-import { type NotifierProps, type ShowNotificationParams } from './types';
+import { type ShowNotificationParams } from './types';
 import { Platform, View, type LayoutChangeEvent } from 'react-native';
 import { styles } from './Notifier.styles';
 import Animated from 'react-native-reanimated';
 import { useAnimationStyles } from './hooks/useAnimationStyles';
 import { useNotifierInternal } from './contexts/internal';
 
-interface NotifierRenderProps
-  extends Pick<
-      NotifierProps,
-      'useRNScreensOverlay' | 'rnScreensOverlayViewStyle'
-    >,
-    Pick<ShowNotificationParams, 'onPress'> {
+interface NotifierRenderProps extends Pick<ShowNotificationParams, 'onPress'> {
   onLayout: (event: LayoutChangeEvent) => void;
   onPress: () => void;
   pan: PanGesture;
 }
 
 export const NotifierRender = ({
-  rnScreensOverlayViewStyle,
-  useRNScreensOverlay,
   onLayout,
   onPress,
   pan,
@@ -35,36 +27,31 @@ export const NotifierRender = ({
 
   console.log(Date.now(), 'renderState', renderState);
 
+  if (!renderState) return null;
+
   return (
-    <FullWindowOverlay
-      useOverlay={useRNScreensOverlay}
-      viewStyle={rnScreensOverlayViewStyle}
-    >
-      {renderState && (
-        <GestureDetector gesture={pan}>
-          <Animated.View
-            {...renderState.containerProps}
-            style={[styles.container, animationStyles]}
-            onLayout={onLayout}
+    <GestureDetector gesture={pan}>
+      <Animated.View
+        {...renderState.containerProps}
+        style={[styles.container, animationStyles]}
+        onLayout={onLayout}
+      >
+        <TouchableWithoutFeedback onPress={onPress}>
+          <View
+            style={
+              Platform.OS === 'android' && renderState.translucentStatusBar
+                ? styles.translucentStatusBarPadding
+                : undefined
+            }
           >
-            <TouchableWithoutFeedback onPress={onPress}>
-              <View
-                style={
-                  Platform.OS === 'android' && renderState.translucentStatusBar
-                    ? styles.translucentStatusBarPadding
-                    : undefined
-                }
-              >
-                <renderState.Component
-                  title={renderState.title}
-                  description={renderState.description}
-                  {...renderState.componentProps}
-                />
-              </View>
-            </TouchableWithoutFeedback>
-          </Animated.View>
-        </GestureDetector>
-      )}
-    </FullWindowOverlay>
+            <renderState.Component
+              title={renderState.title}
+              description={renderState.description}
+              {...renderState.componentProps}
+            />
+          </View>
+        </TouchableWithoutFeedback>
+      </Animated.View>
+    </GestureDetector>
   );
 };

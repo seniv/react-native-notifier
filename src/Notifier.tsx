@@ -20,9 +20,10 @@ import { MAX_VALUE } from './constants';
 import { useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import { NotifierInternalProvider } from './contexts/internal';
 import { NotifierLogic } from './NotifierLogic';
+import { FullWindowOverlay } from './components/FullWindowOverlay';
 
 const NotifierRootBase = forwardRef<NotifierInterface, NotifierProps>(
-  (props, ref) => {
+  ({ useRNScreensOverlay, rnScreensOverlayViewStyle, ...props }, ref) => {
     const animationDriver = useSharedValue(0);
     const hiddenTranslateXValue = useSharedValue(0);
     const hiddenTranslateYValue = useSharedValue(-MAX_VALUE);
@@ -124,9 +125,14 @@ const NotifierRootBase = forwardRef<NotifierInterface, NotifierProps>(
     }, [resetTimer]);
 
     return (
-      <NotifierInternalProvider value={internalContextValue}>
-        <NotifierLogic {...props} ref={ref} />
-      </NotifierInternalProvider>
+      <FullWindowOverlay
+        useOverlay={useRNScreensOverlay}
+        viewStyle={rnScreensOverlayViewStyle}
+      >
+        <NotifierInternalProvider value={internalContextValue}>
+          <NotifierLogic {...props} ref={ref} />
+        </NotifierInternalProvider>
+      </FullWindowOverlay>
     );
   }
 );
