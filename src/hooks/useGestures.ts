@@ -12,20 +12,13 @@ import {
 import { useCallback, useMemo } from 'react';
 import { runOnJS, withSpring } from 'react-native-reanimated';
 import { useNotifierInternal } from '../contexts/internal';
-import { runSwipeOutAnimation } from '../utils/animations';
+import { useSwipeOutAnimation } from './useAnimations';
 
 interface UseGesturesParams {
-  onHidingAnimationFinishedWorklet: () => void;
-  onStartHiding: () => void;
   setHideTimer: () => void;
 }
-export const useGestures = ({
-  onHidingAnimationFinishedWorklet,
-  onStartHiding,
-  setHideTimer,
-}: UseGesturesParams) => {
+export const useGestures = ({ setHideTimer }: UseGesturesParams) => {
   const {
-    animationDriver,
     componentHeight,
     componentWidth,
     hiddenTranslateXValue,
@@ -36,6 +29,7 @@ export const useGestures = ({
     swipeDirection,
     resetTimer,
   } = useNotifierInternal();
+  const { startSwipeOutAnimation } = useSwipeOutAnimation();
 
   const onEnd = useCallback(
     (event: GestureStateChangeEvent<PanGestureHandlerEventPayload>) => {
@@ -69,24 +63,16 @@ export const useGestures = ({
       hiddenTranslateXValue.value = newHiddenTranslateXValue;
       hiddenTranslateYValue.value = newHiddenTranslateYValue;
 
-      runSwipeOutAnimation({
-        animationDriver,
-        showParams,
-        callback: onHidingAnimationFinishedWorklet,
-      });
-
-      onStartHiding();
+      startSwipeOutAnimation();
     },
     [
-      animationDriver,
       componentHeight,
       componentWidth,
       hiddenTranslateXValue,
       hiddenTranslateYValue,
-      onHidingAnimationFinishedWorklet,
-      onStartHiding,
       setHideTimer,
       showParams,
+      startSwipeOutAnimation,
       swipeDirection,
       translationX,
       translationY,

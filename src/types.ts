@@ -26,6 +26,11 @@ export type SwipeDirection =
   | 'horizontal'
   | 'none';
 
+/**
+ * A function called upon animation completion. If the animation is cancelled, the callback will receive `false` as the argument; otherwise, it will receive `true`.
+ */
+export type AnimationEndCallback = (finished?: boolean) => void;
+
 type AnimatedViewProps = React.ComponentProps<
   React.ComponentClass<AnimatedProps<ViewProps>, any>
 >;
@@ -181,6 +186,6 @@ export interface NotifierInterface {
   >(
     params: ShowNotificationParams<ComponentType>
   ): void;
-  hideNotification(onHidden?: (finished?: boolean) => void): void;
+  hideNotification(onHidden?: AnimationEndCallback): void;
   clearQueue(hideDisplayedNotification?: boolean): void;
 }

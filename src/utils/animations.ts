@@ -4,12 +4,12 @@ import {
   DEFAULT_EASING,
   SWIPE_ANIMATION_DURATION,
 } from '../constants';
-import type { ShowParams } from '../types';
+import type { AnimationEndCallback, ShowParams } from '../types';
 
 interface RunAnimationParams {
   animationDriver: SharedValue<number>;
   showParams: React.MutableRefObject<ShowParams | null>;
-  callback: (finished?: boolean) => void;
+  callback: AnimationEndCallback;
 }
 
 export const runHidingAnimation = ({

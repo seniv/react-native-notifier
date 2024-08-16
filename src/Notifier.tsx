@@ -65,18 +65,6 @@ const NotifierRootBase = forwardRef<NotifierInterface, NotifierProps>(
       notifierState.current = newState;
     }, []);
 
-    const resetHiddenTranslateValues = useCallback(() => {
-      'worklet';
-      hiddenTranslateXValue.value = 0;
-      hiddenTranslateYValue.value = -MAX_VALUE;
-    }, [hiddenTranslateXValue, hiddenTranslateYValue]);
-
-    const resetGestures = useCallback(() => {
-      'worklet';
-      translationX.value = 0;
-      translationY.value = 0;
-    }, [translationX, translationY]);
-
     const resetTimer = useCallback(() => {
       clearTimeout(hideTimer.current);
     }, []);
@@ -97,8 +85,6 @@ const NotifierRootBase = forwardRef<NotifierInterface, NotifierProps>(
         swipeDirection,
         renderState,
         setRenderState,
-        resetHiddenTranslateValues,
-        resetGestures,
         resetTimer,
         setNotifierState,
       }),
@@ -113,8 +99,6 @@ const NotifierRootBase = forwardRef<NotifierInterface, NotifierProps>(
         componentWidth,
         swipeDirection,
         renderState,
-        resetHiddenTranslateValues,
-        resetGestures,
         resetTimer,
         setNotifierState,
       ]

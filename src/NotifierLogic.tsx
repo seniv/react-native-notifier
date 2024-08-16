@@ -5,15 +5,15 @@ import {
   type NotifierInterface,
   NotifierState,
   type ShowNotificationParams,
+  type AnimationEndCallback,
 } from './types';
 import { useGestures } from './hooks/useGestures';
 import { useNotifierInternal } from './contexts/internal';
-import { runHidingAnimation, runShowingAnimation } from './utils/animations';
 import { DEFAULT_DURATION } from './constants';
 import NotificationComponent from './components/Notification';
-import { runOnJS, type AnimationCallback } from 'react-native-reanimated';
 import { useMethodsHookup } from './hooks/useMethodsHookup';
 import { useLayout } from './hooks/useLayout';
+import { useHidingAnimation, useShowAnimation } from './hooks/useAnimations';
 
 const NotifierRootLogicInternal = forwardRef<
   NotifierInterface,
@@ -23,9 +23,6 @@ const NotifierRootLogicInternal = forwardRef<
     showParams,
     notifierState,
     hideTimer,
-    resetGestures,
-    resetHiddenTranslateValues,
-    animationDriver,
     callStack,
     swipeDirection,
     renderState,
@@ -34,34 +31,10 @@ const NotifierRootLogicInternal = forwardRef<
     setNotifierState,
   } = useNotifierInternal();
 
-  const onStartHiding = useCallback(() => {
-    showParams.current?.onStartHiding?.();
-    setNotifierState(NotifierState.IsHiding);
-    resetTimer();
-  }, [showParams, setNotifierState, resetTimer]);
-
-  const onHidingAnimationFinished = useCallback(() => {
-    console.log(Date.now(), 'onHidingAnimationFinished');
-    showParams.current?.onHidden?.();
-
-    setNotifierState(NotifierState.WaitingForUnmount);
-    showParams.current = null;
-    setRenderState(null);
-  }, [showParams, setNotifierState, setRenderState]);
-  const onHidingAnimationFinishedWorklet = useCallback(() => {
-    'worklet';
-    resetGestures();
-    resetHiddenTranslateValues();
-    runOnJS(onHidingAnimationFinished)();
-  }, [resetGestures, resetHiddenTranslateValues, onHidingAnimationFinished]);
-
-  const handleShowAnimationFinished = useCallback(() => {
-    setNotifierState(NotifierState.IsShown);
-    showParams.current?.onShown?.();
-  }, [setNotifierState, showParams]);
+  const { startHidingAnimation } = useHidingAnimation();
 
   const hideNotification: NotifierInterface['hideNotification'] = useCallback(
-    (callback?: AnimationCallback) => {
+    (callback?: AnimationEndCallback) => {
       if (
         notifierState.current === NotifierState.IsHiding ||
         notifierState.current === NotifierState.WaitingForUnmount ||
@@ -70,36 +43,10 @@ const NotifierRootLogicInternal = forwardRef<
         return;
       }
 
-      runHidingAnimation({
-        animationDriver,
-        showParams,
-        callback: (finished) => {
-          'worklet';
-          onHidingAnimationFinishedWorklet();
-          if (typeof callback === 'function') {
-            runOnJS(callback)(finished);
-          }
-        },
-      });
-
-      onStartHiding();
+      startHidingAnimation(callback);
     },
-    [
-      notifierState,
-      animationDriver,
-      showParams,
-      onStartHiding,
-      onHidingAnimationFinishedWorklet,
-    ]
+    [notifierState, startHidingAnimation]
   );
-
-  const setHideTimer = useCallback(() => {
-    const duration = showParams.current?.duration ?? DEFAULT_DURATION;
-    resetTimer();
-    if (duration && !isNaN(duration)) {
-      hideTimer.current = setTimeout(hideNotification, duration);
-    }
-  }, [showParams, resetTimer, hideTimer, hideNotification]);
 
   const showNotification: NotifierInterface['showNotification'] = useCallback(
     <ComponentType extends React.ElementType = typeof NotificationComponent>(
@@ -115,26 +62,19 @@ const NotifierRootLogicInternal = forwardRef<
       };
 
       if (notifierState.current !== NotifierState.Hidden) {
-        switch (params.queueMode) {
-          case 'standby': {
-            callStack.current.push(params);
-            break;
-          }
-          case 'next': {
-            callStack.current.unshift(params);
-            break;
-          }
-          case 'immediate': {
+        const queueAction = {
+          standby: () => callStack.current.push(params),
+          next: () => callStack.current.unshift(params),
+          immediate: () => {
             callStack.current.unshift(params);
             hideNotification();
-            break;
-          }
-          default: {
+          },
+          reset: () => {
             callStack.current = [params];
             hideNotification();
-            break;
-          }
-        }
+          },
+        };
+        queueAction[params.queueMode ?? 'reset']();
         return;
       }
 
@@ -161,9 +101,8 @@ const NotifierRootLogicInternal = forwardRef<
       });
 
       swipeDirection.value = swipeDirectionParam;
+      // TODO: split showParams to "providedCallbacks" or "notificationCallbacks" and "showParams"
       showParams.current = restParams;
-
-      setHideTimer();
 
       console.log(Date.now(), 'restParams', restParams);
       console.log(Date.now(), 'showParams.current', showParams.current);
@@ -175,7 +114,6 @@ const NotifierRootLogicInternal = forwardRef<
       defaultParams,
       hideNotification,
       notifierState,
-      setHideTimer,
       setNotifierState,
       setRenderState,
       showParams,
@@ -186,55 +124,12 @@ const NotifierRootLogicInternal = forwardRef<
   const clearQueue: NotifierInterface['clearQueue'] = useCallback(
     (hideDisplayedNotification?: boolean) => {
       callStack.current = [];
-
       if (hideDisplayedNotification) {
         hideNotification();
       }
     },
     [hideNotification, callStack]
   );
-
-  const checkCallStack = useCallback(() => {
-    console.log(Date.now(), 'check callstack', callStack.current);
-    const nextNotification = callStack.current.shift();
-    if (nextNotification) {
-      showNotification(nextNotification);
-    }
-  }, [callStack, showNotification]);
-
-  const runShowAnimation = useCallback(() => {
-    setNotifierState(NotifierState.IsShowing);
-
-    console.log(Date.now(), 'call animation', showParams.current);
-    runShowingAnimation({
-      animationDriver,
-      showParams,
-      callback: (finished) => {
-        'worklet';
-        if (finished) {
-          runOnJS(handleShowAnimationFinished)();
-        }
-      },
-    });
-  }, [
-    setNotifierState,
-    showParams,
-    animationDriver,
-    handleShowAnimationFinished,
-  ]);
-
-  const onPress = useCallback(() => {
-    showParams.current?.onPress?.();
-    if (showParams.current?.hideOnPress !== false) {
-      hideNotification();
-    }
-  }, [showParams, hideNotification]);
-
-  const { pan } = useGestures({
-    onStartHiding,
-    onHidingAnimationFinishedWorklet,
-    setHideTimer,
-  });
 
   useMethodsHookup({
     ref,
@@ -243,6 +138,21 @@ const NotifierRootLogicInternal = forwardRef<
     hideNotification,
     clearQueue,
   });
+
+  const onPress = useCallback(() => {
+    showParams.current?.onPress?.();
+    if (showParams.current?.hideOnPress !== false) {
+      hideNotification();
+    }
+  }, [showParams, hideNotification]);
+
+  const checkCallStack = useCallback(() => {
+    console.log(Date.now(), 'check callstack', callStack.current);
+    const nextNotification = callStack.current.shift();
+    if (nextNotification) {
+      showNotification(nextNotification);
+    }
+  }, [callStack, showNotification]);
 
   useEffect(() => {
     if (
@@ -254,7 +164,17 @@ const NotifierRootLogicInternal = forwardRef<
     }
   }, [renderState, notifierState, setNotifierState, checkCallStack]);
 
-  const { onLayout } = useLayout(runShowAnimation);
+  const setHideTimer = useCallback(() => {
+    const duration = showParams.current?.duration ?? DEFAULT_DURATION;
+    resetTimer();
+    if (duration && !isNaN(duration)) {
+      hideTimer.current = setTimeout(hideNotification, duration);
+    }
+  }, [showParams, resetTimer, hideTimer, hideNotification]);
+
+  const { startShowingAnimation } = useShowAnimation({ setHideTimer });
+  const { onLayout } = useLayout(startShowingAnimation);
+  const { pan } = useGestures({ setHideTimer });
 
   return <NotifierRender onPress={onPress} pan={pan} onLayout={onLayout} />;
 });

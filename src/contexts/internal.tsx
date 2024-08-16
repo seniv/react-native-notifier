@@ -29,8 +29,6 @@ export interface NotifierInternalContext {
   setRenderState: React.Dispatch<React.SetStateAction<StateInterface | null>>;
 
   setNotifierState: (newState: NotifierState) => void;
-  resetHiddenTranslateValues: () => void;
-  resetGestures: () => void;
   resetTimer: () => void;
 }
 
