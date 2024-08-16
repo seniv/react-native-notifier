@@ -8,6 +8,7 @@ import {
   runSwipeOutAnimation,
 } from '../utils/animations';
 import { MAX_VALUE } from '../constants';
+import { notifierLog } from '../utils/logger';
 
 interface UseShowAnimationParams {
   setHideTimer: () => void;
@@ -17,10 +18,14 @@ export const useShowAnimation = ({ setHideTimer }: UseShowAnimationParams) => {
     useNotifierInternal();
 
   const onStartShowing = useCallback(() => {
+    notifierLog('ANIMATION: onStartShowing');
+
     setNotifierState(NotifierState.IsShowing);
   }, [setNotifierState]);
 
   const onShowAnimationFinishedJS = useCallback(() => {
+    notifierLog('ANIMATION: onShowAnimationFinished');
+
     showParams.current?.onShown?.();
 
     setHideTimer();
@@ -68,6 +73,8 @@ const useHidingAnimationCallbacks = () => {
   } = useNotifierInternal();
 
   const onStartHiding = useCallback(() => {
+    notifierLog('ANIMATION: onStartHiding');
+
     showParams.current?.onStartHiding?.();
 
     setNotifierState(NotifierState.IsHiding);
@@ -75,9 +82,10 @@ const useHidingAnimationCallbacks = () => {
   }, [showParams, setNotifierState, resetTimer]);
 
   const onHidingAnimationFinishedJS = useCallback(() => {
+    notifierLog('ANIMATION: onHidingAnimationFinished');
+
     showParams.current?.onHidden?.();
 
-    console.log(Date.now(), 'onHidingAnimationFinished');
     setNotifierState(NotifierState.WaitingForUnmount);
     showParams.current = null;
     setRenderState(null);

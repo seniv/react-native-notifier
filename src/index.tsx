@@ -4,6 +4,7 @@ export { NotifierComponents };
 export { NotifierRoot } from './Notifier';
 export { Notifier } from './hooks/useMethodsHookup';
 export { Easing } from 'react-native-reanimated';
+export { enableNotifierLogging } from './utils/logger';
 export * from './NotifierWrapper';
 export type {
   NotifierInterface,

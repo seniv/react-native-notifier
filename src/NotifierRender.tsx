@@ -9,6 +9,7 @@ import { styles } from './Notifier.styles';
 import Animated from 'react-native-reanimated';
 import { useAnimationStyles } from './hooks/useAnimationStyles';
 import { useNotifierInternal } from './contexts/internal';
+import { notifierLog } from './utils/logger';
 
 interface NotifierRenderProps extends Pick<ShowNotificationParams, 'onPress'> {
   onLayout: (event: LayoutChangeEvent) => void;
@@ -25,7 +26,7 @@ export const NotifierRender = ({
   const animationStyles = useAnimationStyles();
   const { renderState } = useNotifierInternal();
 
-  console.log(Date.now(), 'renderState', renderState);
+  notifierLog('renderState', renderState);
 
   if (!renderState) return null;
 

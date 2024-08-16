@@ -21,6 +21,7 @@ import { useAnimatedReaction, useSharedValue } from 'react-native-reanimated';
 import { NotifierInternalProvider } from './contexts/internal';
 import { NotifierLogic } from './NotifierLogic';
 import { FullWindowOverlay } from './components/FullWindowOverlay';
+import { notifierLog, notifierLogWorklet } from './utils/logger';
 
 const NotifierRootBase = forwardRef<NotifierInterface, NotifierProps>(
   ({ useRNScreensOverlay, rnScreensOverlayViewStyle, ...props }, ref) => {
@@ -41,16 +42,14 @@ const NotifierRootBase = forwardRef<NotifierInterface, NotifierProps>(
     useAnimatedReaction(
       () => hiddenTranslateXValue.value,
       (current, prev) =>
-        console.log(
-          Date.now(),
+        notifierLogWorklet(
           `hiddenTranslateXValue CHANGE: ${prev} -> ${current}`
         )
     );
     useAnimatedReaction(
       () => hiddenTranslateYValue.value,
       (current, prev) =>
-        console.log(
-          Date.now(),
+        notifierLogWorklet(
           `hiddenTranslateYValue CHANGE: ${prev} -> ${current}`
         )
     );
@@ -58,10 +57,7 @@ const NotifierRootBase = forwardRef<NotifierInterface, NotifierProps>(
     const [renderState, setRenderState] = useState<StateInterface | null>(null);
 
     const setNotifierState = useCallback((newState: NotifierState) => {
-      console.log(
-        Date.now(),
-        `STATE CHANGE: ${notifierState.current} -> ${newState}`
-      );
+      notifierLog(`STATE CHANGE: ${notifierState.current} -> ${newState}`);
       notifierState.current = newState;
     }, []);
 

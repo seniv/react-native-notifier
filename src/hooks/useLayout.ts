@@ -3,6 +3,7 @@ import type { LayoutChangeEvent } from 'react-native';
 import { SAFETY_MARGIN_TO_COMPONENT_SIZE } from '../constants';
 import { useNotifierInternal } from '../contexts/internal';
 import { NotifierState } from '../types';
+import { notifierLog } from '../utils/logger';
 
 export const useLayout = (onLayoutCalculated: () => void) => {
   const {
@@ -16,8 +17,7 @@ export const useLayout = (onLayoutCalculated: () => void) => {
 
   const onLayout = useCallback(
     (e: LayoutChangeEvent) => {
-      console.log(
-        Date.now(),
+      notifierLog(
         'layout',
         e.nativeEvent.layout.height,
         e.nativeEvent.layout.width

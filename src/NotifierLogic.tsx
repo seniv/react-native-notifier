@@ -14,6 +14,7 @@ import NotificationComponent from './components/Notification';
 import { useMethodsHookup } from './hooks/useMethodsHookup';
 import { useLayout } from './hooks/useLayout';
 import { useHidingAnimation, useShowAnimation } from './hooks/useAnimations';
+import { notifierLog } from './utils/logger';
 
 const NotifierRootLogicInternal = forwardRef<
   NotifierInterface,
@@ -42,6 +43,7 @@ const NotifierRootLogicInternal = forwardRef<
       ) {
         return;
       }
+      notifierLog('hideNotification');
 
       startHidingAnimation(callback);
     },
@@ -60,6 +62,8 @@ const NotifierRootLogicInternal = forwardRef<
           ...functionParams?.componentProps,
         },
       };
+
+      notifierLog('showNotification', params);
 
       if (notifierState.current !== NotifierState.Hidden) {
         const queueAction = {
@@ -104,9 +108,6 @@ const NotifierRootLogicInternal = forwardRef<
       // TODO: split showParams to "providedCallbacks" or "notificationCallbacks" and "showParams"
       showParams.current = restParams;
 
-      console.log(Date.now(), 'restParams', restParams);
-      console.log(Date.now(), 'showParams.current', showParams.current);
-
       setNotifierState(NotifierState.WaitingForLayout);
     },
     [
@@ -123,6 +124,8 @@ const NotifierRootLogicInternal = forwardRef<
 
   const clearQueue: NotifierInterface['clearQueue'] = useCallback(
     (hideDisplayedNotification?: boolean) => {
+      notifierLog('clearQueue');
+
       callStack.current = [];
       if (hideDisplayedNotification) {
         hideNotification();
@@ -140,6 +143,8 @@ const NotifierRootLogicInternal = forwardRef<
   });
 
   const onPress = useCallback(() => {
+    notifierLog('onPress');
+
     showParams.current?.onPress?.();
     if (showParams.current?.hideOnPress !== false) {
       hideNotification();
@@ -147,7 +152,8 @@ const NotifierRootLogicInternal = forwardRef<
   }, [showParams, hideNotification]);
 
   const checkCallStack = useCallback(() => {
-    console.log(Date.now(), 'check callstack', callStack.current);
+    notifierLog('checkCallStack', callStack.current);
+
     const nextNotification = callStack.current.shift();
     if (nextNotification) {
       showNotification(nextNotification);
@@ -165,6 +171,8 @@ const NotifierRootLogicInternal = forwardRef<
   }, [renderState, notifierState, setNotifierState, checkCallStack]);
 
   const setHideTimer = useCallback(() => {
+    notifierLog('setHideTimer');
+
     const duration = showParams.current?.duration ?? DEFAULT_DURATION;
     resetTimer();
     if (duration && !isNaN(duration)) {
