@@ -9,4 +9,7 @@ export type {
   QueueMode,
   ShowNotificationParams,
   NotifierProps,
+  AnimationFunction,
+  AnimationFunctionParam,
+  AnimationState,
 } from './types';
