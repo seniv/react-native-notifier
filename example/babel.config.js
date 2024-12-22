@@ -13,6 +13,11 @@ module.exports = function (api) {
           extensions: ['.tsx', '.ts', '.js', '.json'],
           alias: {
             // For development, we want to alias the library to the source
+            'react-native-notifier/next': path.join(
+              __dirname,
+              '..',
+              './src/next/index.tsx'
+            ),
             [pak.name]: path.join(__dirname, '..', pak.source),
           },
         },
