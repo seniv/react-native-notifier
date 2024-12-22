@@ -80,6 +80,7 @@
     "react-native": "0.76.5",
     "react-native-builder-bob": "^0.26.0",
     "react-native-gesture-handler": "^2.17.1",
+    "react-native-safe-area-context": "^5.0.0",
     "release-it": "^15.0.0",
     "typescript": "^5.2.2"
   },
@@ -89,7 +90,8 @@
   "peerDependencies": {
     "react": "*",
     "react-native": "*",
-    "react-native-gesture-handler": "*"
+    "react-native-gesture-handler": "*",
+    "react-native-safe-area-context": "*"
   },
   "workspaces": [
     "example"
