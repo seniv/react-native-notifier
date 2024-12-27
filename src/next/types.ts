@@ -6,8 +6,17 @@ type AnimatedViewProps = React.ComponentProps<
   Animated.AnimatedComponent<typeof View>
 >;
 export interface AnimationFunctionParam {
+  /** `Animated.Value` from 0 to 1, where 0 = notification completely hidden, and 1 = notification fully visible */
   animationState: Animated.Value;
+  /** Raw `translationY` value from Pan Gesture Handler, can contain any negative (drag notification up) or positive (drag notification down) values */
   swipeTranslationY: Animated.Value;
+  /** `Animated.Value` that contain height of notification component.
+   *
+   * Correct `componentHeight` will be calculated before UI will be rendered, so you can rely on it.
+   *
+   * If `AnimationFunction` would return styles that somehow changes size of the component (e.g. `scale` property) while `animationState = 0` - height of the component can be calculated incorrectly, so keep it in mind.
+   *
+   * Initial value is set to `1` to prevent issues when you try to divide something by `componentHeight`. **BE CAREFUL!**, it can contain `0` when your component returns empty view or nullable value. So try to avoid dividing by `componentHeight` or avoid situations when your Notification Component can return something that has `height = 0` */
   componentHeight: Animated.Value;
 }
 export type AnimationFunction = (

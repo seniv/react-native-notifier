@@ -98,7 +98,7 @@ export const CustomAnimationsTabScreen = () => {
             description: 'Moved to the bottom using containerStyle property',
             containerStyle: getContainerStyleBottomPosition,
             // Disable swipes because currently bottom position is not fully supported
-            swipeEnabled: false,
+            // swipeEnabled: false,
           })
         }
       />
