@@ -1,4 +1,5 @@
-import { StyleSheet, View, Text, SafeAreaView } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
+import { NotifierComponents } from 'react-native-notifier/next';
 
 const customStyles = StyleSheet.create({
   safeArea: {
@@ -17,12 +18,12 @@ interface CustomComponentProps {
 }
 
 const CustomComponent = ({ title, description }: CustomComponentProps) => (
-  <SafeAreaView style={customStyles.safeArea}>
+  <NotifierComponents.SafeAreaInsetsView style={customStyles.safeArea}>
     <View style={customStyles.container}>
       <Text style={customStyles.title}>{title}</Text>
       <Text style={customStyles.description}>{description}</Text>
     </View>
-  </SafeAreaView>
+  </NotifierComponents.SafeAreaInsetsView>
 );
 
 export default CustomComponent;

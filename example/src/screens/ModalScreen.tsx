@@ -1,4 +1,4 @@
-import { Notifier } from 'react-native-notifier';
+import { Notifier } from 'react-native-notifier/next';
 import Button from '../components/Button';
 import { isIos } from '../constants';
 import { useAppStore } from '../store';

@@ -1,4 +1,4 @@
-import { Notifier } from 'react-native-notifier';
+import { Notifier } from 'react-native-notifier/next';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import Button from '../components/Button';
 import Modal from 'react-native-modal';

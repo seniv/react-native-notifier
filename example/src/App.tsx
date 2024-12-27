@@ -3,7 +3,7 @@ import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { NotifierWrapper } from 'react-native-notifier';
+import { NotifierWrapper } from 'react-native-notifier/next';
 import { isAndroid, notifierRef } from './constants';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomeTabScreen } from './screens/HomeTabScreen';
@@ -11,6 +11,7 @@ import { CustomAnimationsTabScreen } from './screens/CustomAnimationsTabScreen';
 import { ModalsTabScreen } from './screens/ModalsTabScreen';
 import { ModalScreen } from './screens/ModalScreen';
 import { useAppStore } from './store';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -70,15 +71,16 @@ export default function App() {
 
   return (
     <GestureHandlerRootView>
-      <NotifierWrapper
-        ref={notifierRef}
-        translucentStatusBar={statusBarTranslucent}
-        useRNScreensOverlay={useRNScreensOverlay}
-      >
-        <NavigationContainer>
-          <StackNavigator />
-        </NavigationContainer>
-      </NotifierWrapper>
+      <SafeAreaProvider>
+        <NotifierWrapper
+          ref={notifierRef}
+          useRNScreensOverlay={useRNScreensOverlay}
+        >
+          <NavigationContainer>
+            <StackNavigator />
+          </NavigationContainer>
+        </NotifierWrapper>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }
