@@ -1,4 +1,10 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import {
+  forwardRef,
+  memo,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+} from 'react';
 import {
   PanGestureHandler,
   State,
@@ -12,7 +18,7 @@ import { useLayout } from './NotifierRenderer.hooks';
 import { MAX_SWIPE_Y } from '../constants';
 import { getAnimationStyle } from './NotifierRenderer.helpers';
 
-interface NotifierRendererMethods {
+export interface NotifierRendererMethods {
   hideNotification: (callback?: Animated.EndCallback) => void;
 }
 interface NotifierRendererProps {
@@ -30,7 +36,7 @@ interface NotifierRendererProps {
  * 5. Start "hiding" animation when timer is finished or by user interaction
  * 6. When notification is hidden, call "onHiddenCallback" method after which this component will be unmounted
  */
-export const NotifierRenderer = forwardRef<
+const NotifierRendererComponent = forwardRef<
   NotifierRendererMethods,
   NotifierRendererProps
 >(({ notification, onHiddenCallback }, notificationRef) => {
@@ -184,3 +190,5 @@ export const NotifierRenderer = forwardRef<
     </PanGestureHandler>
   );
 });
+
+export const NotifierRenderer = memo(NotifierRendererComponent);

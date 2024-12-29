@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { Animated } from 'react-native';
 import { Notification as NotificationComponent } from './components';
 import {
@@ -10,111 +10,84 @@ import {
 } from './constants';
 import type {
   ShowNotificationParams,
-  StateInterface,
   NotifierInterface,
   NotifierProps,
+  Notification,
+  QueueMode,
 } from './types';
 import { FullWindowOverlay } from '../components/FullWindowOverlay';
-import { NotifierRenderer } from './NotifierRenderer/NotifierRenderer';
+import {
+  NotifierRenderer,
+  type NotifierRendererMethods,
+} from './NotifierRenderer/NotifierRenderer';
+import { useMethodsHookup } from './hooks/useMethodsHookup';
 
-export const Notifier: NotifierInterface = {
-  showNotification: () => {},
-  hideNotification: () => {},
-  clearQueue: () => {},
-};
+/** Component manages queue and exports methods to display/hide notification, and clear the queue
+ * Responsibilities:
+ * - manages queue
+ * - export methods "showNotification", "hideNotification", "clearQueue" via reference & hooks up global methods
+ * - render FullWindowOverlay when useRNScreensOverlay is true
+ * - set currentNotification state and use default parameters passed via props
+ * - mount NotifierRenderer when call "showNotification", and unmount it when NotifierRenderer calls onHidden.
+ */
+const NotifierRootComponent = React.forwardRef<
+  NotifierInterface,
+  NotifierProps
+>((props, ref) => {
+  const {
+    omitGlobalMethodsHookup,
+    useRNScreensOverlay,
+    rnScreensOverlayViewStyle,
+    ...defaultParamsProps
+  } = props;
 
-export class NotifierRoot extends React.PureComponent<
-  NotifierProps,
-  StateInterface
-> {
-  private isShown: boolean;
-  private callStack: Array<ShowNotificationParams>;
-  private notificationRef: any;
+  const isShown = useRef(false);
+  const callStack = useRef<Array<ShowNotificationParams>>([]);
+  const notificationRef = useRef<NotifierRendererMethods>(null);
+  const [currentNotification, setCurrentNotification] =
+    useState<Notification>();
 
-  constructor(props: NotifierProps) {
-    super(props);
-
-    this.state = {
-      currentNotification: undefined,
-    };
-
-    this.isShown = false;
-    this.notificationRef = React.createRef();
-    this.callStack = [];
-
-    this.onHidden = this.onHidden.bind(this);
-
-    this.showNotification = this.showNotification.bind(this);
-    this.hideNotification = this.hideNotification.bind(this);
-    this.clearQueue = this.clearQueue.bind(this);
-
-    if (!props.omitGlobalMethodsHookup) {
-      Notifier.showNotification = this.showNotification;
-      Notifier.hideNotification = this.hideNotification;
-      Notifier.clearQueue = this.clearQueue;
-    }
-  }
-
-  public hideNotification(callback?: Animated.EndCallback) {
-    if (!this.isShown) {
+  const hideNotification = useCallback((callback?: Animated.EndCallback) => {
+    if (!isShown.current) {
       return;
     }
 
-    this.notificationRef.current?.hideNotification?.(callback);
-  }
+    notificationRef.current?.hideNotification?.(callback);
+  }, []);
 
-  public showNotification<
-    ComponentType extends React.ElementType = typeof NotificationComponent,
-  >(functionParams: ShowNotificationParams<ComponentType>) {
-    const {
-      // Remove "omitGlobalMethodsHookup" prop as it is only utilized within the constructor and is redundant elsewhere.
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      omitGlobalMethodsHookup,
-      // Remove "useRNScreensOverlay" and "rnScreensOverlayViewStyle" as it is only used in the render
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      useRNScreensOverlay,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      rnScreensOverlayViewStyle,
-      ...props
-    } = this.props;
+  const showNotification = useCallback(
+    <ComponentType extends React.ElementType = typeof NotificationComponent>(
+      functionParams: ShowNotificationParams<ComponentType>
+    ) => {
+      const params = {
+        ...defaultParamsProps,
+        ...functionParams,
+        componentProps: {
+          ...defaultParamsProps?.componentProps,
+          ...functionParams?.componentProps,
+        },
+      };
 
-    const params = {
-      ...props,
-      ...functionParams,
-      componentProps: {
-        ...props?.componentProps,
-        ...functionParams?.componentProps,
-      },
-    };
+      const { queueMode, ...notificationParams } = params;
 
-    const { queueMode, ...notificationParams } = params;
-
-    if (this.isShown) {
-      switch (queueMode) {
-        case 'standby': {
-          this.callStack.push(params);
-          break;
-        }
-        case 'next': {
-          this.callStack.unshift(params);
-          break;
-        }
-        case 'immediate': {
-          this.callStack.unshift(params);
-          this.hideNotification();
-          break;
-        }
-        default: {
-          this.callStack = [params];
-          this.hideNotification();
-          break;
-        }
+      if (isShown.current) {
+        const queueAction: Record<QueueMode, () => void> = {
+          standby: () => callStack.current.push(params),
+          next: () => callStack.current.unshift(params),
+          immediate: () => {
+            callStack.current.unshift(params);
+            hideNotification();
+          },
+          reset: () => {
+            callStack.current = [params];
+            hideNotification();
+          },
+        };
+        queueAction[queueMode ?? 'reset']();
+        return;
       }
-      return;
-    }
 
-    this.setState({
-      currentNotification: {
+      setCurrentNotification({
         ...notificationParams,
         Component: notificationParams.Component ?? NotificationComponent,
         swipeEnabled: notificationParams.swipeEnabled ?? DEFAULT_SWIPE_ENABLED,
@@ -136,49 +109,57 @@ export class NotifierRoot extends React.PureComponent<
           notificationParams?.showEasing ?? notificationParams?.easing,
         hideEasing:
           notificationParams?.hideEasing ?? notificationParams?.easing,
-      },
-    });
-    this.isShown = true;
-  }
+      });
+      isShown.current = true;
+    },
+    [defaultParamsProps, hideNotification]
+  );
 
-  public clearQueue(hideDisplayedNotification?: boolean) {
-    this.callStack = [];
+  const clearQueue = useCallback(
+    (hideDisplayedNotification?: boolean) => {
+      callStack.current = [];
 
-    if (hideDisplayedNotification) {
-      this.hideNotification();
-    }
-  }
-
-  private onHidden() {
-    this.setState({
-      currentNotification: undefined,
-    });
-    requestAnimationFrame(() => {
-      this.isShown = false;
-
-      const nextNotification = this.callStack.shift();
-      if (nextNotification) {
-        this.showNotification(nextNotification);
+      if (hideDisplayedNotification) {
+        hideNotification();
       }
-    });
-  }
+    },
+    [hideNotification]
+  );
 
-  render() {
-    const { useRNScreensOverlay, rnScreensOverlayViewStyle } = this.props;
+  useMethodsHookup({
+    ref,
+    omitGlobalMethodsHookup,
+    showNotification,
+    hideNotification,
+    clearQueue,
+  });
 
-    return (
-      <FullWindowOverlay
-        useOverlay={useRNScreensOverlay}
-        viewStyle={rnScreensOverlayViewStyle}
-      >
-        {this.state.currentNotification ? (
-          <NotifierRenderer
-            notification={this.state.currentNotification}
-            onHiddenCallback={this.onHidden}
-            ref={this.notificationRef}
-          />
-        ) : null}
-      </FullWindowOverlay>
-    );
-  }
-}
+  const onHidden = useCallback(() => setCurrentNotification(undefined), []);
+
+  useEffect(() => {
+    if (currentNotification) return;
+    isShown.current = false;
+
+    const nextNotification = callStack.current.shift();
+    if (nextNotification) {
+      showNotification(nextNotification);
+    }
+  }, [showNotification, currentNotification]);
+
+  return (
+    <FullWindowOverlay
+      useOverlay={useRNScreensOverlay}
+      viewStyle={rnScreensOverlayViewStyle}
+    >
+      {!!currentNotification && (
+        <NotifierRenderer
+          notification={currentNotification}
+          onHiddenCallback={onHidden}
+          ref={notificationRef}
+        />
+      )}
+    </FullWindowOverlay>
+  );
+});
+
+export const NotifierRoot = memo(NotifierRootComponent);

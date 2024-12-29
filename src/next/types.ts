@@ -152,10 +152,6 @@ export type Notification = Omit<
     >
   >;
 
-export interface StateInterface {
-  currentNotification?: Notification;
-}
-
 export interface NotifierProps extends ShowNotificationParams {
   /** If set to `true`, global `Notifier` methods will not control this component.
    * It's useful in case you have more than one NotifierWrapper or NotifierRoot rendered.
