@@ -26,7 +26,7 @@ export const useLayout = () => {
 
   const shouldIgnoreLayoutRef = useRef(true);
   const onLayout = useCallback(() => {
-    if (shouldIgnoreLayoutRef) {
+    if (shouldIgnoreLayoutRef.current) {
       shouldIgnoreLayoutRef.current = false;
       return;
     }

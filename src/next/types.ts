@@ -173,11 +173,24 @@ export interface NotifierProps extends ShowNotificationParams {
 }
 
 export interface NotifierInterface {
+  /** Show notification with params. */
   showNotification<
     ComponentType extends ElementType = typeof NotificationComponent,
   >(
     params: ShowNotificationParams<ComponentType>
   ): void;
+  /** Hide notification and run callback function when notification completely hidden. */
   hideNotification(onHidden?: Animated.EndCallback): void;
+
+  /** Clear [notifications queue](#queue-mode) and optionally hide currently displayed notification.
+   *
+   * Might be useful to run after logout, after which queued notifications should not be displayed. */
   clearQueue(hideDisplayedNotification?: boolean): void;
+}
+
+export interface GlobalNotifierInterface extends NotifierInterface {
+  /** Broadcasts the command to all currently mounted instances of Notifier, not only to the last one.
+   *
+   * Useful to hide all currently visible notifications via `Notifier.broadcast.hideNotification()` or clear queue.*/
+  broadcast: NotifierInterface;
 }

@@ -1,34 +1,39 @@
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { Animated } from 'react-native';
-import { Notification as NotificationComponent } from './components';
-import {
-  DEFAULT_ANIMATION_DURATION,
-  DEFAULT_DURATION,
-  DEFAULT_SWIPE_ENABLED,
-  SWIPE_ANIMATION_DURATION,
-  SWIPE_PIXELS_TO_CLOSE,
-} from './constants';
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  type MutableRefObject,
+} from 'react';
 import type {
-  ShowNotificationParams,
+  GlobalNotifierInterface,
   NotifierInterface,
   NotifierProps,
-  Notification,
-  QueueMode,
+  ShowNotificationParams,
 } from './types';
 import { FullWindowOverlay } from '../components/FullWindowOverlay';
-import {
-  NotifierRenderer,
-  type NotifierRendererMethods,
-} from './NotifierRenderer/NotifierRenderer';
-import { useMethodsHookup } from './hooks/useMethodsHookup';
+import { NotifierManager } from './NotifierManager';
 
-/** Component manages queue and exports methods to display/hide notification, and clear the queue
- * Responsibilities:
- * - manages queue
- * - export methods "showNotification", "hideNotification", "clearQueue" via reference & hooks up global methods
+// we store references to all currently mounted instances of NotifierRoot / NotifierWrapper where omitGlobalMethodsHookup != true
+// in order they were mounted, and calling Notifier.showNotification will always show notification from the last mounted instance.
+// it allows to render more than one NotifierRoot, for example inside of the modal,
+// and still be able to trigger it by the same method without providing ref manually
+let refs: MutableRefObject<NotifierInterface>[] = [];
+
+const addRef = (ref: NotifierInterface) => {
+  refs.push({
+    current: ref,
+  });
+};
+
+const removeRef = (ref: NotifierInterface | null) => {
+  refs = refs.filter((r) => r.current !== ref);
+};
+
+/** Responsibilities:
+ * - manages refs to display last mounted notification, or broadcast to all
  * - render FullWindowOverlay when useRNScreensOverlay is true
- * - set currentNotification state and use default parameters passed via props
- * - mount NotifierRenderer when call "showNotification", and unmount it when NotifierRenderer calls onHidden.
+ * - collects default params from props and stores them in the ref to avoid re-renders of the NotifierManager.
  */
 const NotifierRootComponent = React.forwardRef<
   NotifierInterface,
@@ -40,126 +45,77 @@ const NotifierRootComponent = React.forwardRef<
     rnScreensOverlayViewStyle,
     ...defaultParamsProps
   } = props;
+  const localRef = useRef<NotifierInterface | null>(null);
 
-  const isShown = useRef(false);
-  const callStack = useRef<Array<ShowNotificationParams>>([]);
-  const notificationRef = useRef<NotifierRendererMethods>(null);
-  const [currentNotification, setCurrentNotification] =
-    useState<Notification>();
-
-  const hideNotification = useCallback((callback?: Animated.EndCallback) => {
-    if (!isShown.current) {
-      return;
-    }
-
-    notificationRef.current?.hideNotification?.(callback);
-  }, []);
-
-  const showNotification = useCallback(
-    <ComponentType extends React.ElementType = typeof NotificationComponent>(
-      functionParams: ShowNotificationParams<ComponentType>
-    ) => {
-      const params = {
-        ...defaultParamsProps,
-        ...functionParams,
-        componentProps: {
-          ...defaultParamsProps?.componentProps,
-          ...functionParams?.componentProps,
-        },
-      };
-
-      const { queueMode, ...notificationParams } = params;
-
-      if (isShown.current) {
-        const queueAction: Record<QueueMode, () => void> = {
-          standby: () => callStack.current.push(params),
-          next: () => callStack.current.unshift(params),
-          immediate: () => {
-            callStack.current.unshift(params);
-            hideNotification();
-          },
-          reset: () => {
-            callStack.current = [params];
-            hideNotification();
-          },
-        };
-        queueAction[queueMode ?? 'reset']();
-        return;
-      }
-
-      setCurrentNotification({
-        ...notificationParams,
-        Component: notificationParams.Component ?? NotificationComponent,
-        swipeEnabled: notificationParams.swipeEnabled ?? DEFAULT_SWIPE_ENABLED,
-        showAnimationDuration:
-          notificationParams?.showAnimationDuration ??
-          notificationParams?.animationDuration ??
-          DEFAULT_ANIMATION_DURATION,
-        hideAnimationDuration:
-          notificationParams?.hideAnimationDuration ??
-          notificationParams?.animationDuration ??
-          DEFAULT_ANIMATION_DURATION,
-        duration: notificationParams.duration ?? DEFAULT_DURATION,
-        swipePixelsToClose:
-          notificationParams?.swipePixelsToClose ?? SWIPE_PIXELS_TO_CLOSE,
-        swipeAnimationDuration:
-          notificationParams?.swipeAnimationDuration ??
-          SWIPE_ANIMATION_DURATION,
-        showEasing:
-          notificationParams?.showEasing ?? notificationParams?.easing,
-        hideEasing:
-          notificationParams?.hideEasing ?? notificationParams?.easing,
-      });
-      isShown.current = true;
-    },
-    [defaultParamsProps, hideNotification]
-  );
-
-  const clearQueue = useCallback(
-    (hideDisplayedNotification?: boolean) => {
-      callStack.current = [];
-
-      if (hideDisplayedNotification) {
-        hideNotification();
-      }
-    },
-    [hideNotification]
-  );
-
-  useMethodsHookup({
-    ref,
-    omitGlobalMethodsHookup,
-    showNotification,
-    hideNotification,
-    clearQueue,
-  });
-
-  const onHidden = useCallback(() => setCurrentNotification(undefined), []);
-
+  // since we don't rely on defaultParamsProps during the render, and access it only during "showNotification" call
+  // - this little trick allows us to avoid re-render of NotifierManager component, which triggers ref change, which breaks "refs" array order.
+  const defaultParams = useRef<ShowNotificationParams>(defaultParamsProps);
   useEffect(() => {
-    if (currentNotification) return;
-    isShown.current = false;
+    defaultParams.current = defaultParamsProps;
+  }, [defaultParamsProps]);
 
-    const nextNotification = callStack.current.shift();
-    if (nextNotification) {
-      showNotification(nextNotification);
-    }
-  }, [showNotification, currentNotification]);
+  const setRef = useCallback(
+    (newRef: NotifierInterface | null) => {
+      // set user-specified ref to the notification if it was provided
+      if (typeof ref === 'function') {
+        ref(newRef);
+      } else if (!!ref && 'current' in ref) {
+        ref.current = newRef;
+      }
+
+      // if newRef is not null and omitGlobalMethodsHookup != true - store ref to current instance
+      if (newRef && !omitGlobalMethodsHookup) {
+        // add it to the array to access the notification via global Notifier method
+        addRef(newRef);
+        // store ref locally to be able to remove it from the array when needed
+        localRef.current = newRef;
+      }
+      if (!newRef && localRef.current) {
+        // remove the ref when it's changes to null and it was previously set
+        removeRef(localRef.current);
+      }
+    },
+    // changes of the "ref" or "omitGlobalMethodsHookup" on the fly (after component was mounted)
+    // would change the order of refs
+    [ref, omitGlobalMethodsHookup]
+  );
 
   return (
     <FullWindowOverlay
       useOverlay={useRNScreensOverlay}
       viewStyle={rnScreensOverlayViewStyle}
     >
-      {!!currentNotification && (
-        <NotifierRenderer
-          notification={currentNotification}
-          onHiddenCallback={onHidden}
-          ref={notificationRef}
-        />
-      )}
+      <NotifierManager ref={setRef} defaultParams={defaultParams} />
     </FullWindowOverlay>
   );
 });
+
+const getLastRef = () => {
+  const lastRef = refs.findLast((ref) => ref?.current !== null);
+  return lastRef ? lastRef.current : null;
+};
+
+const broadcast = (fn: (ref: NotifierInterface) => void) => {
+  refs.forEach((ref) => {
+    if (ref.current) {
+      fn(ref.current);
+    }
+  });
+};
+
+export const Notifier: GlobalNotifierInterface = {
+  showNotification: (params) => getLastRef()?.showNotification(params),
+  hideNotification: (onHidden) => getLastRef()?.hideNotification(onHidden),
+  clearQueue: (hideDisplayedNotification) =>
+    getLastRef()?.clearQueue(hideDisplayedNotification),
+  broadcast: {
+    showNotification: (params) =>
+      broadcast((ref) => ref.showNotification(params)),
+    hideNotification: (onHidden) =>
+      broadcast((ref) => ref.hideNotification(onHidden)),
+    clearQueue: (hideDisplayedNotification) =>
+      broadcast((ref) => ref.clearQueue(hideDisplayedNotification)),
+  },
+};
 
 export const NotifierRoot = memo(NotifierRootComponent);
