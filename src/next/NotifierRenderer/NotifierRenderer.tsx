@@ -192,3 +192,6 @@ const NotifierRendererComponent = forwardRef<
 });
 
 export const NotifierRenderer = memo(NotifierRendererComponent);
+
+NotifierRendererComponent.displayName = 'ForwardRef(NotifierRenderer)';
+NotifierRenderer.displayName = 'Memo(NotifierRenderer)';

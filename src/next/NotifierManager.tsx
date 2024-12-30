@@ -159,3 +159,6 @@ const NotifierManagerComponent = React.forwardRef<
 });
 
 export const NotifierManager = memo(NotifierManagerComponent);
+
+NotifierManagerComponent.displayName = 'ForwardRef(NotifierManager)';
+NotifierManager.displayName = 'Memo(NotifierManager)';

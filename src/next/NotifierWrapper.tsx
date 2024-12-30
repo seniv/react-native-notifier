@@ -15,3 +15,7 @@ export const NotifierWrapper = forwardRef<
     <NotifierRoot ref={ref} {...defaultParams} />
   </>
 ));
+
+export type NotifierWrapper = NotifierInterface;
+
+NotifierWrapper.displayName = 'ForwardRef(NotifierWrapper)';

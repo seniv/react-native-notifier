@@ -119,3 +119,7 @@ export const Notifier: GlobalNotifierInterface = {
 };
 
 export const NotifierRoot = memo(NotifierRootComponent);
+export type NotifierRoot = NotifierInterface;
+
+NotifierRootComponent.displayName = 'ForwardRef(NotifierRoot)';
+NotifierRoot.displayName = 'Memo(NotifierRoot)';
