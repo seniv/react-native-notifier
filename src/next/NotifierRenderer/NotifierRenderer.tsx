@@ -16,7 +16,6 @@ import styles from '../Notifier.styles';
 import { AnimationState, type Notification } from '../types';
 import { useLayout } from './NotifierRenderer.hooks';
 import { MAX_SWIPE_Y } from '../constants';
-import { getAnimationStyle } from './NotifierRenderer.helpers';
 
 export interface NotifierRendererMethods {
   hideNotification: (callback?: Animated.EndCallback) => void;
@@ -147,16 +146,7 @@ const NotifierRendererComponent = forwardRef<
     }
   };
 
-  const { Component, containerStyle } = notification;
-
-  const additionalContainerStyle =
-    typeof containerStyle === 'function'
-      ? containerStyle({
-          animationState,
-          swipeTranslationY,
-          componentHeight,
-        })
-      : containerStyle;
+  const { Component, containerStyle, animationFunction } = notification;
 
   return (
     <PanGestureHandler
@@ -169,12 +159,12 @@ const NotifierRendererComponent = forwardRef<
         ref={ref}
         style={[
           styles.container,
-          getAnimationStyle({
+          containerStyle,
+          animationFunction({
             animationState,
             componentHeight,
             swipeTranslationY,
           }),
-          additionalContainerStyle,
         ]}
       >
         <TouchableWithoutFeedback onPress={onPress}>

@@ -26,6 +26,7 @@ import {
   NotifierRenderer,
   type NotifierRendererMethods,
 } from './NotifierRenderer/NotifierRenderer';
+import { defaultAnimationFunction } from './NotifierRenderer/NotifierRenderer.helpers';
 
 interface NotifierManagerProps {
   defaultParams: RefObject<ShowNotificationParams>;
@@ -110,6 +111,8 @@ const NotifierManagerComponent = React.forwardRef<
           notificationParams?.showEasing ?? notificationParams?.easing,
         hideEasing:
           notificationParams?.hideEasing ?? notificationParams?.easing,
+        animationFunction:
+          notificationParams.animationFunction ?? defaultAnimationFunction,
       });
       isShown.current = true;
     },

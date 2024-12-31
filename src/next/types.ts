@@ -23,8 +23,6 @@ export type AnimationFunction = (
   param: AnimationFunctionParam
 ) => AnimatedViewProps['style'];
 
-type ContainerStyleParam = AnimationFunction | AnimatedViewProps['style'];
-
 export interface ShowParams {
   /** How fast notification will appear/disappear
    * @default 300 */
@@ -119,10 +117,15 @@ export interface ShowNotificationParams<
    * @default 'reset' */
   queueMode?: QueueMode;
 
-  /** Styles Object or A function that will receive `translateY: Animated.Value` as first parameter and should return Styles that will be used in container. Using this parameter it is possible to create your own animations of the notification. BE CAREFUL!! when set `transform` style it will override default animation.
+  /** Styles Object that will be used in container.
    * @default null
    */
-  containerStyle?: ContainerStyleParam;
+  containerStyle?: AnimatedViewProps['style'];
+
+  /** Function that receives object with various `Animated.Value` and should return Styles that will be used to animate the notification. When set, result of the function will replace default animation
+   * @default null
+   */
+  animationFunction?: AnimationFunction;
 
   /** props of Animated Container
    * @default {}
@@ -149,6 +152,7 @@ export type Notification = Omit<
       | 'duration'
       | 'swipePixelsToClose'
       | 'swipeAnimationDuration'
+      | 'animationFunction'
     >
   >;
 

@@ -38,7 +38,7 @@ const getFinalAnimationStateAndTranslateY = ({
   };
 };
 
-export const getContainerStyleOpacityTransformScale: AnimationFunction = (
+export const opacityTransformScaleAnimationFunction: AnimationFunction = (
   param
 ) => {
   const { stateClamped, translateYClamped } =
@@ -70,7 +70,7 @@ export const getContainerStyleOpacityTransformScale: AnimationFunction = (
   };
 };
 
-export const getContainerStyleClassicWithOverSwipe: AnimationFunction = (
+export const classicWithOverSwipeAnimationFunction: AnimationFunction = (
   param
 ) => {
   const { translateY } = getFinalAnimationStateAndTranslateY(param);
@@ -87,15 +87,14 @@ export const getContainerStyleClassicWithOverSwipe: AnimationFunction = (
   };
 };
 
-export const getContainerStyleOpacityOnly: AnimationFunction = (param) => {
+export const opacityOnlyAnimationFunction: AnimationFunction = (param) => {
   const { stateClamped } = getFinalAnimationStateAndTranslateY(param);
   return {
     opacity: stateClamped,
-    transform: undefined,
   };
 };
 
-export const getContainerStyleScaleOnly: AnimationFunction = (param) => {
+export const scaleOnlyAnimationFunction: AnimationFunction = (param) => {
   const { stateClamped } = getFinalAnimationStateAndTranslateY(param);
   return {
     // use opacity to avoid flickering when scale = 1 while state = 0
@@ -116,7 +115,7 @@ export const getContainerStyleScaleOnly: AnimationFunction = (param) => {
   };
 };
 
-export const getContainerStyleScaleAndRotation: AnimationFunction = (param) => {
+export const scaleAndRotationAnimationFunction: AnimationFunction = (param) => {
   const { stateClamped } = getFinalAnimationStateAndTranslateY(param);
   return {
     // use opacity to avoid flickering when scale = 1 while state = 0
@@ -145,7 +144,7 @@ export const getContainerStyleScaleAndRotation: AnimationFunction = (param) => {
 };
 
 // Code from README.md example
-export const getContainerStyleWithTranslateAndScale: AnimationFunction = (
+export const translateAndScaleAnimationFunction: AnimationFunction = (
   param
 ) => {
   const { stateClamped, translateYClamped } =
@@ -171,7 +170,7 @@ export const getContainerStyleWithTranslateAndScale: AnimationFunction = (
   };
 };
 
-export const getContainerStyleBottomPosition: AnimationFunction = ({
+export const bottomPositionAnimationFunction: AnimationFunction = ({
   animationState,
   componentHeight,
   swipeTranslationY,
