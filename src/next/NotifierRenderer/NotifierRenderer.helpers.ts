@@ -1,35 +1,45 @@
 import { Animated } from 'react-native';
 import type { AnimationFunction } from '../types';
-import { MAX_SWIPE_Y, MIN_SWIPE_Y } from '../constants';
+import { limitTranslateBySwipeDirection } from '../utils/animationDirection';
 
 export const defaultAnimationFunction: AnimationFunction = ({
+  swipeDirection,
   animationState,
-  componentHeight,
+  hiddenTranslateXValue,
+  hiddenTranslateYValue,
+  swipeTranslationX,
   swipeTranslationY,
 }) => {
-  // interpolate animationState which goes from 0 to 1, to have "-componentHeight" when animationState = 0, and "0" when animationState = 1,
-  // in result, notification will slide from top side of the screen when notification appears, and then slide to the top when it disappears
-  const animationTranslateY = Animated.multiply(
-    Animated.subtract(animationState, 1),
-    componentHeight
+  // invert state to make it easier to multiply later
+  const invertedState = Animated.subtract(1, animationState);
+
+  // multiply invertedState by the hiddenTranslate* values, so when animationState = 1,
+  // both animationTranslate* would have 0, and when animationState = 0, both animationTranslate* would equal hiddenTranslate*Value
+  const animationTranslateX = Animated.multiply(
+    invertedState,
+    hiddenTranslateXValue
   );
-  // clamp swipeTranslationY value so it doesn't goes higher than 0 (from -9999 to 0)
-  // it doesn't allow to drag notification down.
-  const swipeTranslationYInterpolated = swipeTranslationY.interpolate({
-    inputRange: [MIN_SWIPE_Y, MAX_SWIPE_Y],
-    outputRange: [MIN_SWIPE_Y, MAX_SWIPE_Y],
-    extrapolate: 'clamp',
+  const animationTranslateY = Animated.multiply(
+    invertedState,
+    hiddenTranslateYValue
+  );
+
+  // clamp swipeTranslation values depending on the swipeDirection parameter
+  const { translateX, translateY } = limitTranslateBySwipeDirection({
+    swipeDirection,
+    translateX: swipeTranslationX,
+    translateY: swipeTranslationY,
   });
 
   return {
     transform: [
       {
-        // translateY to the sum of animationTranslateY and swipeTranslationYInterpolated.
-        // which should be between "-componentHeight" and "0"
-        translateY: Animated.add(
-          animationTranslateY,
-          swipeTranslationYInterpolated
-        ),
+        // add value base on animationState to the clamped swipe translation
+        translateX: Animated.add(animationTranslateX, translateX),
+      },
+      {
+        // add value base on animationState to the clamped swipe translation
+        translateY: Animated.add(animationTranslateY, translateY),
       },
     ],
   };

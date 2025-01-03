@@ -12,7 +12,6 @@ import { Notification as NotificationComponent } from './components';
 import {
   DEFAULT_ANIMATION_DURATION,
   DEFAULT_DURATION,
-  DEFAULT_SWIPE_ENABLED,
   SWIPE_ANIMATION_DURATION,
   SWIPE_PIXELS_TO_CLOSE,
 } from './constants';
@@ -92,7 +91,6 @@ const NotifierManagerComponent = React.forwardRef<
       setCurrentNotification({
         ...notificationParams,
         Component: notificationParams.Component ?? NotificationComponent,
-        swipeEnabled: notificationParams.swipeEnabled ?? DEFAULT_SWIPE_ENABLED,
         showAnimationDuration:
           notificationParams?.showAnimationDuration ??
           notificationParams?.animationDuration ??
@@ -113,6 +111,13 @@ const NotifierManagerComponent = React.forwardRef<
           notificationParams?.hideEasing ?? notificationParams?.easing,
         animationFunction:
           notificationParams.animationFunction ?? defaultAnimationFunction,
+        enterFrom: notificationParams.enterFrom ?? 'top',
+        exitTo:
+          notificationParams.exitTo ?? notificationParams.enterFrom ?? 'top',
+        swipeDirection:
+          notificationParams.swipeDirection ??
+          notificationParams.enterFrom ??
+          'top',
       });
       isShown.current = true;
     },

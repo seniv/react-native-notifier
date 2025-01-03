@@ -14,8 +14,9 @@ import {
 import { Animated, View } from 'react-native';
 import styles from '../Notifier.styles';
 import { AnimationState, type Notification } from '../types';
-import { useLayout } from './NotifierRenderer.hooks';
-import { MAX_SWIPE_Y } from '../constants';
+import { useGestureEvent, useLayout } from './NotifierRenderer.hooks';
+import { getSwipedOutDirection } from '../utils/animationDirection';
+import { resetSwipeAnimation } from '../utils/animations';
 
 export interface NotifierRendererMethods {
   hideNotification: (callback?: Animated.EndCallback) => void;
@@ -39,19 +40,24 @@ const NotifierRendererComponent = forwardRef<
   NotifierRendererMethods,
   NotifierRendererProps
 >(({ notification, onHiddenCallback }, notificationRef) => {
-  const { componentHeight, onLayout, ref } = useLayout();
+  const {
+    componentHeight,
+    componentWidth,
+    hiddenTranslateXValue,
+    hiddenTranslateYValue,
+    onLayout,
+    updateHiddenValueByDirection,
+    ref,
+  } = useLayout(notification.enterFrom);
+
+  const { onGestureEvent, swipeTranslationX, swipeTranslationY } =
+    useGestureEvent();
+
   const animationState = useRef(
     new Animated.Value(AnimationState.Hidden)
   ).current;
-  const swipeTranslationY = useRef(new Animated.Value(0)).current;
   const hideTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const isHidingRef = useRef(false);
-
-  const onGestureEvent = useRef(
-    Animated.event([{ nativeEvent: { translationY: swipeTranslationY } }], {
-      useNativeDriver: true,
-    })
-  ).current;
 
   const onStartHiding = () => {
     notification.onStartHiding?.();
@@ -66,6 +72,8 @@ const NotifierRendererComponent = forwardRef<
 
   const hideNotification = (callback?: Animated.EndCallback) => {
     if (isHidingRef.current) return;
+
+    updateHiddenValueByDirection(notification.exitTo);
 
     Animated.timing(animationState, {
       toValue: AnimationState.Hidden,
@@ -120,23 +128,32 @@ const NotifierRendererComponent = forwardRef<
     }
     setHideTimer();
 
-    const swipePixelsToClose = -notification.swipePixelsToClose;
-    const isSwipedOut = nativeEvent.translationY < swipePixelsToClose;
+    const swipedOutDirection = getSwipedOutDirection({
+      swipeDirection: notification.swipeDirection,
+      swipePixelsToClose: notification.swipePixelsToClose,
+      translationX: nativeEvent.translationX,
+      translationY: nativeEvent.translationY,
+    });
 
-    Animated.timing(isSwipedOut ? animationState : swipeTranslationY, {
-      toValue: isSwipedOut ? AnimationState.Hidden : MAX_SWIPE_Y,
+    if (swipedOutDirection === 'none') {
+      resetSwipeAnimation({
+        notification,
+        swipeTranslationX,
+        swipeTranslationY,
+      });
+      return;
+    }
+
+    updateHiddenValueByDirection(swipedOutDirection);
+
+    Animated.timing(animationState, {
+      toValue: AnimationState.Hidden,
       easing: notification.swipeEasing,
       duration: notification.swipeAnimationDuration,
       useNativeDriver: true,
-    }).start(() => {
-      if (isSwipedOut) {
-        onHidden();
-      }
-    });
+    }).start(onHidden);
 
-    if (isSwipedOut) {
-      onStartHiding();
-    }
+    onStartHiding();
   };
 
   const onPress = () => {
@@ -150,7 +167,7 @@ const NotifierRendererComponent = forwardRef<
 
   return (
     <PanGestureHandler
-      enabled={notification.swipeEnabled}
+      enabled={notification.swipeDirection !== 'none'}
       onGestureEvent={onGestureEvent}
       onHandlerStateChange={onHandlerStateChange}
     >
@@ -161,8 +178,13 @@ const NotifierRendererComponent = forwardRef<
           styles.container,
           containerStyle,
           animationFunction({
+            swipeDirection: notification.swipeDirection,
             animationState,
             componentHeight,
+            componentWidth,
+            hiddenTranslateXValue,
+            hiddenTranslateYValue,
+            swipeTranslationX,
             swipeTranslationY,
           }),
         ]}
