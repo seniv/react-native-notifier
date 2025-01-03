@@ -1,4 +1,4 @@
-import { Animated, Platform } from 'react-native';
+import { Animated } from 'react-native';
 import type {
   AnimationFunction,
   AnimationFunctionParam,
@@ -165,43 +165,6 @@ export const translateAndScaleAnimationFunction: AnimationFunction = (
           outputRange: [1, 0, 1],
           extrapolate: 'clamp',
         }),
-      },
-    ],
-  };
-};
-
-export const bottomPositionAnimationFunction: AnimationFunction = ({
-  animationState,
-  componentHeight,
-  swipeTranslationY,
-}) => {
-  const swipeTranslationYInverted = Animated.multiply(swipeTranslationY, -1);
-  const state = Animated.add(
-    Animated.divide(swipeTranslationYInverted, componentHeight),
-    animationState
-  );
-
-  const stateClamped = state.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 1],
-    extrapolate: 'clamp',
-  });
-
-  const translateYClamped = Animated.multiply(
-    Animated.subtract(stateClamped, 1),
-    Animated.multiply(componentHeight, -1)
-  );
-  return {
-    // unset "top" property that was used in default styles
-    top: Platform.select({
-      web: 'unset' as unknown as number,
-      default: undefined,
-    }),
-    // add bottom margin
-    bottom: 10,
-    transform: [
-      {
-        translateY: translateYClamped,
       },
     ],
   };
