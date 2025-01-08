@@ -1,6 +1,6 @@
 import { Notifier } from 'react-native-notifier/next';
 import Button from '../components/Button';
-import { Platform, ScrollView } from 'react-native';
+import { ScrollView } from 'react-native';
 import { isAndroid } from '../constants';
 import {
   classicWithOverSwipeAnimationFunction,
@@ -86,25 +86,6 @@ export const CustomAnimationsTabScreen = () => {
             title: 'Animation from code example',
             description: 'Scale and Translate',
             animationFunction: translateAndScaleAnimationFunction,
-          })
-        }
-      />
-      <Button
-        title="Bottom Position"
-        onPress={() =>
-          Notifier.showNotification({
-            title: 'Bottom Position',
-            description:
-              'Moved to the bottom using containerStyle and enterFrom properties',
-            containerStyle: {
-              top: Platform.select({
-                web: 'unset' as unknown as number,
-                default: undefined,
-              }),
-              // add bottom margin
-              bottom: 50,
-            },
-            enterFrom: 'bottom',
           })
         }
       />
