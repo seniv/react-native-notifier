@@ -7,7 +7,7 @@ import React, {
   useState,
   type RefObject,
 } from 'react';
-import { Animated } from 'react-native';
+import { Animated, Platform } from 'react-native';
 import { Notification as NotificationComponent } from './components';
 import {
   DEFAULT_ANIMATION_DURATION,
@@ -26,6 +26,7 @@ import {
   type NotifierRendererMethods,
 } from './NotifierRenderer/NotifierRenderer';
 import { defaultAnimationFunction } from './NotifierRenderer/NotifierRenderer.helpers';
+import { getDefaultEnterFromBasedOnPosition } from './utils/position';
 
 interface NotifierManagerProps {
   defaultParams: RefObject<ShowNotificationParams>;
@@ -88,6 +89,11 @@ const NotifierManagerComponent = React.forwardRef<
         return;
       }
 
+      const position = notificationParams.position ?? 'top';
+      const enterFrom =
+        notificationParams.enterFrom ??
+        getDefaultEnterFromBasedOnPosition(position);
+
       setCurrentNotification({
         ...notificationParams,
         Component: notificationParams.Component ?? NotificationComponent,
@@ -111,13 +117,14 @@ const NotifierManagerComponent = React.forwardRef<
           notificationParams?.hideEasing ?? notificationParams?.easing,
         animationFunction:
           notificationParams.animationFunction ?? defaultAnimationFunction,
-        enterFrom: notificationParams.enterFrom ?? 'top',
-        exitTo:
-          notificationParams.exitTo ?? notificationParams.enterFrom ?? 'top',
-        swipeDirection:
-          notificationParams.swipeDirection ??
-          notificationParams.enterFrom ??
-          'top',
+        position,
+        enterFrom,
+        exitTo: notificationParams.exitTo ?? enterFrom ?? 'top',
+        swipeDirection: notificationParams.swipeDirection ?? enterFrom ?? 'top',
+        ignoreKeyboard:
+          notificationParams.ignoreKeyboard ?? Platform.OS !== 'ios',
+        additionalKeyboardOffset:
+          notificationParams.additionalKeyboardOffset ?? 0,
       });
       isShown.current = true;
     },

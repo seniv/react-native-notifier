@@ -12,11 +12,12 @@ import {
   type PanGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 import { Animated, View } from 'react-native';
-import styles from '../Notifier.styles';
+import { styles, positionStyles } from '../Notifier.styles';
 import { AnimationState, type Notification } from '../types';
 import { useGestureEvent, useLayout } from './NotifierRenderer.hooks';
 import { getSwipedOutDirection } from '../utils/animationDirection';
 import { resetSwipeAnimation } from '../utils/animations';
+import { RenderComponentWithOffsets } from '../RenderComponentWithOffsets';
 
 export interface NotifierRendererMethods {
   hideNotification: (callback?: Animated.EndCallback) => void;
@@ -30,7 +31,7 @@ interface NotifierRendererProps {
  *
  * Lifecycle:
  * 1. Component gets mounted in hidden state
- * 2. Synchronously calculate layout using "useLayout" hook, set componentHeight
+ * 2. Synchronously calculate layout using "useLayout" hook, set component dimensions (height, width, hidden values)
  * 3. Start "showing" animation in useEffect
  * 4. When notification is shown, start "hiding" timer if needed, handle user interaction such as press or gesture
  * 5. Start "hiding" animation when timer is finished or by user interaction
@@ -48,7 +49,9 @@ const NotifierRendererComponent = forwardRef<
     onLayout,
     updateHiddenValueByDirection,
     ref,
-  } = useLayout(notification.enterFrom);
+  } = useLayout({
+    enterFrom: notification.enterFrom,
+  });
 
   const { onGestureEvent, swipeTranslationX, swipeTranslationY } =
     useGestureEvent();
@@ -163,8 +166,6 @@ const NotifierRendererComponent = forwardRef<
     }
   };
 
-  const { Component, containerStyle, animationFunction } = notification;
-
   return (
     <PanGestureHandler
       enabled={notification.swipeDirection !== 'none'}
@@ -176,8 +177,9 @@ const NotifierRendererComponent = forwardRef<
         ref={ref}
         style={[
           styles.container,
-          containerStyle,
-          animationFunction({
+          positionStyles[notification.position],
+          notification.containerStyle,
+          notification.animationFunction({
             swipeDirection: notification.swipeDirection,
             animationState,
             componentHeight,
@@ -191,11 +193,7 @@ const NotifierRendererComponent = forwardRef<
       >
         <TouchableWithoutFeedback onPress={onPress}>
           <View ref={ref} onLayout={onLayout}>
-            <Component
-              title={notification.title}
-              description={notification.description}
-              {...notification.componentProps}
-            />
+            <RenderComponentWithOffsets notification={notification} />
           </View>
         </TouchableWithoutFeedback>
       </Animated.View>

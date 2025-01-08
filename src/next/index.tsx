@@ -14,4 +14,8 @@ export type {
   AnimationFunction,
   AnimationFunctionParam,
   AnimationState,
+  Position,
+  Offsets,
+  ViewWithOffsetsComponent,
+  NotifierComponentProps,
 } from './types';

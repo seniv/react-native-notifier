@@ -6,7 +6,7 @@ import {
   type TextStyle,
   type StyleProp,
 } from 'react-native';
-import { SafeAreaInsetsView } from './SafeAreaInsetsView';
+import type { NotifierComponentProps } from '../types';
 
 type AlertTypes = 'error' | 'warn' | 'info' | 'success';
 
@@ -36,7 +36,7 @@ const s = StyleSheet.create({
   },
 });
 
-export interface AlertComponentProps {
+export interface AlertComponentProps extends NotifierComponentProps {
   /** Background color will be changed depending on the type. Available values: `error`(red), `success`(green), `warn`(orange) and `info`(blue).
    * @default 'success' */
   alertType: AlertTypes;
@@ -57,7 +57,7 @@ export interface AlertComponentProps {
    * @default null */
   maxDescriptionLines?: number;
 
-  /** A container of the component. Set it in case you use different SafeAreaView than the standard
+  /** A container of the component. Set it in case you use different SafeAreaView than the custom `ViewWithOffsets`
    * @default SafeAreaView */
   ContainerComponent?: React.ElementType;
 
@@ -70,14 +70,7 @@ export interface AlertComponentProps {
   descriptionStyle?: StyleProp<TextStyle>;
 }
 
-interface AlertComponentAllProps extends AlertComponentProps {
-  title?: string;
-  description?: string;
-}
-
-export const AlertComponent: React.FunctionComponent<
-  AlertComponentAllProps
-> = ({
+export const AlertComponent = ({
   title,
   titleStyle,
   description,
@@ -88,8 +81,9 @@ export const AlertComponent: React.FunctionComponent<
   ContainerComponent,
   maxTitleLines,
   maxDescriptionLines,
-}) => {
-  const Container = ContainerComponent ?? SafeAreaInsetsView;
+  ViewWithOffsets,
+}: AlertComponentProps) => {
+  const Container = ContainerComponent ?? ViewWithOffsets;
   const textStyle = textColor ? { color: textColor } : null;
   return (
     <Container

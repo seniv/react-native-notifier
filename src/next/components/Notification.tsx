@@ -10,7 +10,7 @@ import {
   type ViewStyle,
   type StyleProp,
 } from 'react-native';
-import { SafeAreaInsetsView } from './SafeAreaInsetsView';
+import type { NotifierComponentProps } from '../types';
 
 const s = StyleSheet.create({
   container: {
@@ -26,8 +26,7 @@ const s = StyleSheet.create({
 
     backgroundColor: '#ffffff',
     borderRadius: 5,
-    marginTop: 10,
-    marginHorizontal: 10,
+    margin: 10,
     paddingVertical: 10,
     paddingHorizontal: 10,
     flexDirection: 'row',
@@ -57,7 +56,7 @@ const s = StyleSheet.create({
   },
 });
 
-export interface NotificationComponentProps {
+export interface NotificationComponentProps extends NotifierComponentProps {
   /** Passed to `<Image />` as `source` param.
    * @default null */
   imageSource?: ImageSourcePropType;
@@ -70,7 +69,7 @@ export interface NotificationComponentProps {
    * @default null */
   maxDescriptionLines?: number;
 
-  /** A container of the component. Set it in case you use different SafeAreaView than the standard
+  /** A container of the component. Set it in case you use different SafeAreaView than the custom `ViewWithOffsets`
    * @default SafeAreaView */
   ContainerComponent?: React.ElementType;
 
@@ -92,14 +91,7 @@ export interface NotificationComponentProps {
   imageStyle?: StyleProp<ImageStyle>;
 }
 
-interface NotificationComponentAllProps extends NotificationComponentProps {
-  title?: string;
-  description?: string;
-}
-
-export const NotificationComponent: React.FunctionComponent<
-  NotificationComponentAllProps
-> = ({
+export const NotificationComponent = ({
   title,
   titleStyle,
   description,
@@ -110,8 +102,9 @@ export const NotificationComponent: React.FunctionComponent<
   maxTitleLines,
   maxDescriptionLines,
   containerStyle,
-}) => {
-  const Container = ContainerComponent ?? SafeAreaInsetsView;
+  ViewWithOffsets,
+}: NotificationComponentProps) => {
+  const Container = ContainerComponent ?? ViewWithOffsets;
   return (
     <Container>
       <View style={[s.container, containerStyle]}>

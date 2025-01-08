@@ -2,12 +2,16 @@ import { useCallback, useLayoutEffect, useRef } from 'react';
 import { Animated, View } from 'react-native';
 import { getHiddenTranslateValues } from '../utils/animationDirection';
 import type { Direction } from '../types';
+import { MAX_VALUE } from '../constants';
 
+interface UseLayoutParams {
+  enterFrom: Direction;
+}
 /**
  * Calculates component dimensions and hiddenTranslate* values by using reference and onLayout function
  * Also, can update hiddenTranslate* values by using updateHiddenValueByDirection function depending on the direction
  */
-export const useLayout = (enterFrom: Direction) => {
+export const useLayout = ({ enterFrom }: UseLayoutParams) => {
   const ref = useRef<View>(null);
   // store current direction to handle the case when component dimensions changes (trigger onLayout)
   // while active direction != enterFrom (e.g. when exitTo is different than enterFrom, and notification started hiding animation).
@@ -18,16 +22,16 @@ export const useLayout = (enterFrom: Direction) => {
   // and Animated.Value is passed to animationFunction for convenience of creating custom animation
   const componentHeightRef = useRef(0);
   const componentWidthRef = useRef(0);
-  const componentHeight = useRef(new Animated.Value(1)).current;
-  const componentWidth = useRef(new Animated.Value(1)).current;
+  const componentHeight = useRef(new Animated.Value(MAX_VALUE)).current;
+  const componentWidth = useRef(new Animated.Value(MAX_VALUE)).current;
 
   // store hidden hiddenTranslate values that changes depending on direction from which, or to which notification should animate
   // this value dynamically changes it 3 cases:
   // 1. when notification appears, it will have values depending on enterFrom params and component dimensions
   // 2. when "hiding" animation starts, it will have values depending on exitTo param and component dimensions
   // 3. when user manually swipe-out the notification, it will depend on direction of the swipe, which depends on swipeDirection params.
-  const hiddenTranslateYValue = useRef(new Animated.Value(-1)).current;
-  const hiddenTranslateXValue = useRef(new Animated.Value(0)).current;
+  const hiddenTranslateYValue = useRef(new Animated.Value(-MAX_VALUE)).current;
+  const hiddenTranslateXValue = useRef(new Animated.Value(-MAX_VALUE)).current;
 
   const updateHiddenValueByDirection = useCallback(
     (direction: Direction) => {

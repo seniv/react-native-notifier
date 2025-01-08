@@ -1,9 +1,23 @@
 import { NotificationComponent } from './components/Notification';
-import { Animated, View, type StyleProp, type ViewStyle } from 'react-native';
+import {
+  Animated,
+  View,
+  type StyleProp,
+  type ViewProps,
+  type ViewStyle,
+} from 'react-native';
 import type { ElementType } from 'react';
 
 export type Direction = 'top' | 'bottom' | 'left' | 'right';
 export type SwipeDirection = Direction | 'horizontal' | 'none';
+
+export type Position =
+  | 'top'
+  | 'bottom'
+  | 'topLeft'
+  | 'topRight'
+  | 'bottomLeft'
+  | 'bottomRight';
 
 type AnimatedViewProps = React.ComponentProps<
   Animated.AnimatedComponent<typeof View>
@@ -19,19 +33,23 @@ export interface AnimationFunctionParam {
   swipeTranslationY: Animated.Value;
   /** `Animated.Value` that contain height of notification component.
    *
-   * Correct `componentHeight` will be calculated before UI will be rendered, so you can rely on it.
+   * When using New Architecture(Fabric), Correct `componentHeight` should be calculated before UI will be rendered, but sometime it can have few milliseconds delay.
    *
    * If `AnimationFunction` would return styles that somehow changes size of the component (e.g. `scale` property) while `animationState = 0` - height of the component can be calculated incorrectly, so keep it in mind.
    *
-   * Initial value is set to `1` to prevent issues when you try to divide something by `componentHeight`. **BE CAREFUL!**, it can contain `0` when your component returns empty view or nullable value. So try to avoid dividing by `componentHeight` or avoid situations when your Notification Component can return something that has `height = 0` */
+   * Initial value is set to `9999` to prevent 2 issues:
+   * 1. avoid glitch in case component height calculated few milliseconds after the initial render;
+   * 2. avoid crash when you try to divide something by `componentHeight`. **BE CAREFUL!**, it can contain `0` when your component returns empty view or nullable value. So try to avoid dividing by `componentHeight` or avoid situations when your Notification Component can return something that has `height = 0` */
   componentHeight: Animated.Value;
   /** `Animated.Value` that contain width of notification component.
    *
-   * Correct `componentWidth` will be calculated before UI will be rendered, so you can rely on it.
+   * When using New Architecture(Fabric), Correct `componentWidth` should be calculated before UI will be rendered, but sometime it can have few milliseconds delay.
    *
    * If `AnimationFunction` would return styles that somehow changes size of the component (e.g. `scale` property) while `animationState = 0` - width of the component can be calculated incorrectly, so keep it in mind.
    *
-   * Initial value is set to `1` to prevent issues when you try to divide something by `componentWidth`. **BE CAREFUL!**, it can contain `0` when your component returns empty view or nullable value. So try to avoid dividing by `componentWidth` or avoid situations when your Notification Component can return something that has `width = 0` */
+   * Initial value is set to `9999` to prevent 2 issues:
+   * 1. avoid glitch in case component width calculated few milliseconds after the initial render;
+   * 2. avoid crash when you try to divide something by `componentWidth`. **BE CAREFUL!**, it can contain `0` when your component returns empty view or nullable value. So try to avoid dividing by `componentWidth` or avoid situations when your Notification Component can return something that has `width = 0` */
   componentWidth: Animated.Value;
   /** Value that depends on component width and direction from which notification enters, or to which notification exits.
    * It will dynamically change during notification lifecycle depending on what happens with the notification.
@@ -59,6 +77,33 @@ export interface AnimationFunctionParam {
 export type AnimationFunction = (
   param: AnimationFunctionParam
 ) => AnimatedViewProps['style'];
+
+export interface Offsets {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
+export type ViewWithOffsetsComponent = (
+  props: { mode?: 'padding' | 'margin' } & ViewProps
+) => JSX.Element;
+
+export interface NotifierComponentProps {
+  /** `title` param from `showNotification` function */
+  title?: string;
+  /** `description` param from `showNotification` function */
+  description?: string;
+  /** offset values is a sum of `safeAriaInsets`(if `ignoreSafeAreaInsets != true`) + keyboard height(for bottom position) + `additionalOffsets` from param */
+  offsets: Offsets;
+  /**
+   * Regular `View` with `offsets` set as `padding` or `margin` depending on the `mode` prop.
+   * Use it as container of your Component if you need to automatically handle safe area insets and keyboard height.
+   * @param props same as ViewProps
+   * @param props.mode `padding` | `margin`
+   */
+  ViewWithOffsets: ViewWithOffsetsComponent;
+}
 
 export interface ShowParams {
   /** How fast notification will appear/disappear
@@ -121,6 +166,30 @@ export interface ShowParams {
    * @default 3000 */
   duration?: number;
 
+  /** Ignores offsets from `useSafeAreaInsets` hook
+   * @default false */
+  ignoreSafeAreaInsets?: boolean;
+
+  /** Ignores keyboard height offset (when use bottom positions)
+   *
+   * On __iOS__ `false` by default, `true` on other platforms.
+   * @default true */
+  ignoreKeyboard?: boolean;
+
+  /** Additional bottom offset when keyboard is visible.
+   * Works only when `ignoreKeyboard != true`.
+   * @default 0 */
+  additionalKeyboardOffset?: number;
+
+  /** Offsets in addition to the safeAreaInsets
+   * @default null */
+  additionalOffsets?: Partial<Offsets>;
+
+  /** Position of the notification
+   * @default 'top'
+   */
+  position?: Position;
+
   /** Direction from which notification will appear
    * @default 'top'
    */
@@ -158,7 +227,7 @@ export interface ShowNotificationParams<
    * @default {} */
   componentProps?: Omit<
     React.ComponentProps<ComponentType>,
-    'title' | 'description'
+    keyof NotifierComponentProps
   >;
 
   /** Determines the order in which notifications are shown. Read more in the [Queue Mode](https://github.com/seniv/react-native-notifier#queue-mode) section.
@@ -200,9 +269,12 @@ export type Notification = Omit<
       | 'swipePixelsToClose'
       | 'swipeAnimationDuration'
       | 'animationFunction'
+      | 'position'
       | 'enterFrom'
       | 'exitTo'
       | 'swipeDirection'
+      | 'ignoreKeyboard'
+      | 'additionalKeyboardOffset'
     >
   >;
 
