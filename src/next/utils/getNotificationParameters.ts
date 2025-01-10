@@ -1,28 +1,22 @@
 import type React from 'react';
 import type {
-  AnimationConfig,
   Direction,
   Notification,
   Position,
   ShowNotificationParams,
 } from '../types';
 import { DEFAULT_DURATION, SWIPE_PIXELS_TO_CLOSE } from '../constants';
-import { Notification as NotificationComponent } from '../components';
+import {
+  Notification as NotificationComponent,
+  Alert as AlertComponent,
+} from '../components';
 import { defaultAnimationFunction } from '../NotifierRenderer/NotifierRenderer.helpers';
 import { Platform } from 'react-native';
-
-const defaultShowHideAnimationConfig: AnimationConfig = {
-  method: 'timing',
-  config: {
-    duration: 300,
-  },
-};
-const defaultSwipeAnimationConfig: AnimationConfig = {
-  method: 'timing',
-  config: {
-    duration: 200,
-  },
-};
+import {
+  spring as springAnimationConfig,
+  timing200 as timing200AnimationConfig,
+  timing300 as timing300AnimationConfig,
+} from './animationConfigs';
 
 const getDefaultEnterFromBasedOnPosition = (position?: Position): Direction => {
   if (!position) return 'top';
@@ -78,12 +72,14 @@ export const getNotificationParameters = ({
     ignoreKeyboard: params.ignoreKeyboard ?? Platform.OS !== 'ios',
     additionalKeyboardOffset: params.additionalKeyboardOffset ?? 0,
     showAnimationConfig:
-      params.showAnimationConfig ?? defaultShowHideAnimationConfig,
-    hideAnimationConfig:
-      params.hideAnimationConfig ?? defaultShowHideAnimationConfig,
+      params.showAnimationConfig ??
+      (params.Component === AlertComponent
+        ? timing300AnimationConfig
+        : springAnimationConfig),
+    hideAnimationConfig: params.hideAnimationConfig ?? timing300AnimationConfig,
     swipeOutAnimationConfig:
-      params.swipeOutAnimationConfig ?? defaultSwipeAnimationConfig,
+      params.swipeOutAnimationConfig ?? timing200AnimationConfig,
     resetSwipeAnimationConfig:
-      params.resetSwipeAnimationConfig ?? defaultSwipeAnimationConfig,
+      params.resetSwipeAnimationConfig ?? timing200AnimationConfig,
   };
 };

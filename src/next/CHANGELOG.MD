@@ -6,6 +6,7 @@
 - "Hide Timer" (`duration` param) now starts after the "appearing" animation is finished, instead of starting when "appearing" animation is just started. If you had long appearing animation, you can reduce the `duration` param (3 seconds by default)
 - `swipeEnabled` parameter was removed. To disable swipes, set `swipeDirection: 'none'`
 - Parameters `animationDuration`, `showAnimationDuration`, `hideAnimationDuration`, `swipeAnimationDuration`, `easing`, `showEasing`, `hideEasing`, `swipeEasing` was removed. Use `showAnimationConfig`, `hideAnimationConfig`, `swipeOutAnimationConfig`, `resetSwipeAnimationConfig` instead.
+- Default `showAnimationConfig` set to spring animation when `Component != NotifierComponents.Alert`
 
 # Features
 - Support for different positions. Notification can be placed at `top`, `bottom`, or at any edge of the screen using `position` parameter.
@@ -17,6 +18,7 @@
 - Custom handling for safe area insets (based on `react-native-safe-area-context`'s `useSafeAreaInsets` hook) in all built-in components + simple API to use the same insets in custom components. It also handles keyboard offset when notification displayed at bottom `position`. All components receives `offsets` object and `ViewWithOffsets` component as props. Related params: `ignoreSafeAreaInsets`, `ignoreKeyboard`, `additionalKeyboardOffset`, `additionalOffsets`.
 - Using new `*AnimationConfig` parameters, now it's possible to run __Spring__ animations with fully-customizable config.
 - Export additional TypeScript types, such as `NotifierComponentProps` which contain all base props for custom components, `AnimationFunction` for custom animations, `AnimationFunctionParam`, `Position`, `Offsets` and `ViewWithOffsetsComponent`.
+- New built-in component: `SimpleToast`
 
 # Bug Fixes
 - When you mount `NotifierWrapper`/`NotifierRoot` with `omitGlobalMethodsHookup={true}`, and then set it `false`, global methods will be hooked up correctly.

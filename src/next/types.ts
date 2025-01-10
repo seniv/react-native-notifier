@@ -124,39 +124,30 @@ export interface NotifierComponentProps {
 export interface ShowParams {
   /** Config of the function that runs the "showing" animation. `timing` or `spring` method can be used. `useNativeDriver` is `true` by default, but it can be disabled.
    * @default
-   * {
-   *   method: 'timing',
-   *   config: { duration: 300 },
-   * }
+   * animationConfigs.timing300 // when use NotifierComponents.Alert component
+   * animationConfigs.spring // for any other component
    * @example
    * {
    *   method: 'spring',
-   *   config: { friction: 8 },
-   * }*/
+   *   config: {
+   *     friction: 8
+   *   },
+   * }
+   * // or use one of presets:
+   * animationConfigs.timing300
+   * */
   showAnimationConfig?: AnimationConfig;
 
   /** Config of the function that runs the "hiding" animation. `timing` or `spring` method can be used. `useNativeDriver` is `true` by default, but it can be disabled.
-   * @default
-   * {
-   *   method: 'timing',
-   *   config: { duration: 300 },
-   * } */
+   * @default animationConfigs.timing300 */
   hideAnimationConfig?: AnimationConfig;
 
   /** Config of the function that runs animation that hides notification after it was swiped-out. `timing` or `spring` method can be used. `useNativeDriver` is `true` by default, but it can be disabled.
-   * @default
-   * {
-   *   method: 'timing',
-   *   config: { duration: 200 },
-   * } */
+   * @default animationConfigs.timing200 */
   swipeOutAnimationConfig?: AnimationConfig;
 
   /** Config of the function that runs animation that returns the notification back to "shown" position after it was moved/swiped by the user. `timing` or `spring` method can be used. `useNativeDriver` is `true` by default, but it can be disabled.
-   * @default
-   * {
-   *   method: 'timing',
-   *   config: { duration: 200 },
-   * } */
+   * @default animationConfigs.timing200 */
   resetSwipeAnimationConfig?: AnimationConfig;
 
   /** Function called when entering animation is finished
