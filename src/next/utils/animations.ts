@@ -12,17 +12,15 @@ export const resetSwipeAnimation = ({
   notification,
 }: ResetSwipeAnimationParams) => {
   Animated.parallel([
-    Animated.timing(swipeTranslationX, {
-      toValue: 0,
-      easing: notification.swipeEasing,
-      duration: notification.swipeAnimationDuration,
+    Animated[notification.resetSwipeAnimationConfig.method](swipeTranslationX, {
       useNativeDriver: true,
+      ...notification.resetSwipeAnimationConfig.config,
+      toValue: 0,
     }),
-    Animated.timing(swipeTranslationY, {
-      toValue: 0,
-      easing: notification.swipeEasing,
-      duration: notification.swipeAnimationDuration,
+    Animated[notification.resetSwipeAnimationConfig.method](swipeTranslationY, {
       useNativeDriver: true,
+      ...notification.resetSwipeAnimationConfig.config,
+      toValue: 0,
     }),
   ]).start();
 };

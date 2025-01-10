@@ -8,6 +8,22 @@ import {
 } from 'react-native';
 import type { ElementType } from 'react';
 
+interface OptionalNativeDriver {
+  useNativeDriver?: boolean;
+}
+interface AnimationTimingConfig {
+  method: 'timing';
+  config: Omit<Animated.TimingAnimationConfig, 'toValue' | 'useNativeDriver'> &
+    OptionalNativeDriver;
+}
+
+interface AnimationSpringConfig {
+  method: 'spring';
+  config: Omit<Animated.SpringAnimationConfig, 'toValue' | 'useNativeDriver'> &
+    OptionalNativeDriver;
+}
+export type AnimationConfig = AnimationTimingConfig | AnimationSpringConfig;
+
 export type Direction = 'top' | 'bottom' | 'left' | 'right';
 export type SwipeDirection = Direction | 'horizontal' | 'none';
 
@@ -106,29 +122,42 @@ export interface NotifierComponentProps {
 }
 
 export interface ShowParams {
-  /** How fast notification will appear/disappear
-   * @default 300 */
-  animationDuration?: number;
+  /** Config of the function that runs the "showing" animation. `timing` or `spring` method can be used. `useNativeDriver` is `true` by default, but it can be disabled.
+   * @default
+   * {
+   *   method: 'timing',
+   *   config: { duration: 300 },
+   * }
+   * @example
+   * {
+   *   method: 'spring',
+   *   config: { friction: 8 },
+   * }*/
+  showAnimationConfig?: AnimationConfig;
 
-  /** How fast notification will appear.
-   * @default animationDuration || 300 */
-  showAnimationDuration?: number;
+  /** Config of the function that runs the "hiding" animation. `timing` or `spring` method can be used. `useNativeDriver` is `true` by default, but it can be disabled.
+   * @default
+   * {
+   *   method: 'timing',
+   *   config: { duration: 300 },
+   * } */
+  hideAnimationConfig?: AnimationConfig;
 
-  /** How fast notification will disappear.
-   * @default animationDuration || 300 */
-  hideAnimationDuration?: number;
+  /** Config of the function that runs animation that hides notification after it was swiped-out. `timing` or `spring` method can be used. `useNativeDriver` is `true` by default, but it can be disabled.
+   * @default
+   * {
+   *   method: 'timing',
+   *   config: { duration: 200 },
+   * } */
+  swipeOutAnimationConfig?: AnimationConfig;
 
-  /** Animation easing. Details: https://reactnative.dev/docs/easing
-   * @default null */
-  easing?: Animated.TimingAnimationConfig['easing'];
-
-  /** Show Animation easing.
-   * @default easing || null */
-  showEasing?: Animated.TimingAnimationConfig['easing'];
-
-  /** Hide Animation easing.
-   * @default easing || null */
-  hideEasing?: Animated.TimingAnimationConfig['easing'];
+  /** Config of the function that runs animation that returns the notification back to "shown" position after it was moved/swiped by the user. `timing` or `spring` method can be used. `useNativeDriver` is `true` by default, but it can be disabled.
+   * @default
+   * {
+   *   method: 'timing',
+   *   config: { duration: 200 },
+   * } */
+  resetSwipeAnimationConfig?: AnimationConfig;
 
   /** Function called when entering animation is finished
    * @default null */
@@ -150,17 +179,9 @@ export interface ShowParams {
    * @default true */
   hideOnPress?: boolean;
 
-  /** How many pixels user should swipe-up notification to dismiss it
+  /** How many pixels user should move the notification to dismiss it
    * @default 20 */
   swipePixelsToClose?: number;
-
-  /** Animation easing after user finished swiping
-   * @default null */
-  swipeEasing?: Animated.TimingAnimationConfig['easing'];
-
-  /** How fast should be animation after user finished swiping
-   * @default 200 */
-  swipeAnimationDuration?: number;
 
   /** Time after notification will disappear. Set to `0` to not hide notification automatically
    * @default 3000 */
@@ -255,19 +276,13 @@ export enum AnimationState {
   Shown = 1,
 }
 
-export type Notification = Omit<
-  ShowNotificationParams,
-  'queueMode' | 'animationDuration' | 'easing'
-> &
+export type Notification = Omit<ShowNotificationParams, 'queueMode'> &
   Required<
     Pick<
       ShowNotificationParams,
       | 'Component'
-      | 'showAnimationDuration'
-      | 'hideAnimationDuration'
       | 'duration'
       | 'swipePixelsToClose'
-      | 'swipeAnimationDuration'
       | 'animationFunction'
       | 'position'
       | 'enterFrom'
@@ -275,6 +290,10 @@ export type Notification = Omit<
       | 'swipeDirection'
       | 'ignoreKeyboard'
       | 'additionalKeyboardOffset'
+      | 'showAnimationConfig'
+      | 'hideAnimationConfig'
+      | 'swipeOutAnimationConfig'
+      | 'resetSwipeAnimationConfig'
     >
   >;
 

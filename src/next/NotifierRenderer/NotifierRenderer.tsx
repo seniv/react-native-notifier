@@ -78,11 +78,10 @@ const NotifierRendererComponent = forwardRef<
 
     updateHiddenValueByDirection(notification.exitTo);
 
-    Animated.timing(animationState, {
-      toValue: AnimationState.Hidden,
-      easing: notification.hideEasing,
-      duration: notification.hideAnimationDuration,
+    Animated[notification.hideAnimationConfig.method](animationState, {
       useNativeDriver: true,
+      ...notification.hideAnimationConfig.config,
+      toValue: AnimationState.Hidden,
     }).start((result) => {
       onHidden();
       callback?.(result);
@@ -104,11 +103,10 @@ const NotifierRendererComponent = forwardRef<
   };
 
   useEffect(() => {
-    Animated.timing(animationState, {
-      toValue: AnimationState.Shown,
-      easing: notification.showEasing,
-      duration: notification.showAnimationDuration,
+    Animated[notification.showAnimationConfig.method](animationState, {
       useNativeDriver: true,
+      ...notification.showAnimationConfig.config,
+      toValue: AnimationState.Shown,
     }).start(() => {
       setHideTimer();
       notification.onShown?.();
@@ -149,11 +147,10 @@ const NotifierRendererComponent = forwardRef<
 
     updateHiddenValueByDirection(swipedOutDirection);
 
-    Animated.timing(animationState, {
-      toValue: AnimationState.Hidden,
-      easing: notification.swipeEasing,
-      duration: notification.swipeAnimationDuration,
+    Animated[notification.swipeOutAnimationConfig.method](animationState, {
       useNativeDriver: true,
+      ...notification.swipeOutAnimationConfig.config,
+      toValue: AnimationState.Hidden,
     }).start(onHidden);
 
     onStartHiding();

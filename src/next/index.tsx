@@ -14,6 +14,7 @@ export type {
   AnimationFunction,
   AnimationFunctionParam,
   AnimationState,
+  AnimationConfig,
   Position,
   Offsets,
   ViewWithOffsetsComponent,

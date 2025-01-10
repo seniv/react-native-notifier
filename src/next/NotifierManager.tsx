@@ -7,14 +7,7 @@ import React, {
   useState,
   type RefObject,
 } from 'react';
-import { Animated, Platform } from 'react-native';
-import { Notification as NotificationComponent } from './components';
-import {
-  DEFAULT_ANIMATION_DURATION,
-  DEFAULT_DURATION,
-  SWIPE_ANIMATION_DURATION,
-  SWIPE_PIXELS_TO_CLOSE,
-} from './constants';
+import { Animated } from 'react-native';
 import type {
   ShowNotificationParams,
   NotifierInterface,
@@ -25,8 +18,7 @@ import {
   NotifierRenderer,
   type NotifierRendererMethods,
 } from './NotifierRenderer/NotifierRenderer';
-import { defaultAnimationFunction } from './NotifierRenderer/NotifierRenderer.helpers';
-import { getDefaultEnterFromBasedOnPosition } from './utils/position';
+import { getNotificationParameters } from './utils/getNotificationParameters';
 
 interface NotifierManagerProps {
   defaultParams: RefObject<ShowNotificationParams>;
@@ -58,19 +50,11 @@ const NotifierManagerComponent = React.forwardRef<
   }, []);
 
   const showNotification = useCallback(
-    <ComponentType extends React.ElementType = typeof NotificationComponent>(
-      functionParams: ShowNotificationParams<ComponentType>
-    ) => {
-      const params = {
-        ...defaultParamsProps.current,
-        ...functionParams,
-        componentProps: {
-          ...defaultParamsProps.current?.componentProps,
-          ...functionParams?.componentProps,
-        },
-      };
-
-      const { queueMode, ...notificationParams } = params;
+    (functionParams: ShowNotificationParams) => {
+      const { queueMode, ...params } = getNotificationParameters({
+        defaultParamsProps,
+        functionParams,
+      });
 
       if (isShown.current) {
         const queueAction: Record<QueueMode, () => void> = {
@@ -89,43 +73,7 @@ const NotifierManagerComponent = React.forwardRef<
         return;
       }
 
-      const position = notificationParams.position ?? 'top';
-      const enterFrom =
-        notificationParams.enterFrom ??
-        getDefaultEnterFromBasedOnPosition(position);
-
-      setCurrentNotification({
-        ...notificationParams,
-        Component: notificationParams.Component ?? NotificationComponent,
-        showAnimationDuration:
-          notificationParams?.showAnimationDuration ??
-          notificationParams?.animationDuration ??
-          DEFAULT_ANIMATION_DURATION,
-        hideAnimationDuration:
-          notificationParams?.hideAnimationDuration ??
-          notificationParams?.animationDuration ??
-          DEFAULT_ANIMATION_DURATION,
-        duration: notificationParams.duration ?? DEFAULT_DURATION,
-        swipePixelsToClose:
-          notificationParams?.swipePixelsToClose ?? SWIPE_PIXELS_TO_CLOSE,
-        swipeAnimationDuration:
-          notificationParams?.swipeAnimationDuration ??
-          SWIPE_ANIMATION_DURATION,
-        showEasing:
-          notificationParams?.showEasing ?? notificationParams?.easing,
-        hideEasing:
-          notificationParams?.hideEasing ?? notificationParams?.easing,
-        animationFunction:
-          notificationParams.animationFunction ?? defaultAnimationFunction,
-        position,
-        enterFrom,
-        exitTo: notificationParams.exitTo ?? enterFrom ?? 'top',
-        swipeDirection: notificationParams.swipeDirection ?? enterFrom ?? 'top',
-        ignoreKeyboard:
-          notificationParams.ignoreKeyboard ?? Platform.OS !== 'ios',
-        additionalKeyboardOffset:
-          notificationParams.additionalKeyboardOffset ?? 0,
-      });
+      setCurrentNotification(params);
       isShown.current = true;
     },
     [defaultParamsProps, hideNotification]
