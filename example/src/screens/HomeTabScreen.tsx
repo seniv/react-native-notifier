@@ -25,9 +25,19 @@ export const HomeTabScreen = () => {
             title: 'John Doe',
             description: 'Hello! Can you help me with notifications?',
             duration: 0,
-            showAnimationDuration: 800,
-            showEasing: Easing.bounce,
-            hideEasing: Easing.circle,
+            showAnimationConfig: {
+              method: 'timing',
+              config: {
+                duration: 800,
+                easing: Easing.bounce,
+              },
+            },
+            hideAnimationConfig: {
+              method: 'timing',
+              config: {
+                easing: Easing.circle,
+              },
+            },
 
             onStartHiding: () => console.log('Start Hiding'),
             onHidden: () => console.log('Hidden'),
@@ -117,8 +127,12 @@ export const HomeTabScreen = () => {
           notifierRef.current?.showNotification({
             title: 'Called using ref!',
             description: 'Amazing!',
-            showAnimationDuration: 5000,
-            duration: 7000,
+            showAnimationConfig: {
+              method: 'timing',
+              config: {
+                duration: 5000,
+              },
+            },
             onShown: () => console.log('Notification shown'),
           })
         }
