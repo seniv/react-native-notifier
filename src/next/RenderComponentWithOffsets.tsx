@@ -1,18 +1,58 @@
 import { memo, useCallback, useEffect, useState } from 'react';
 import type { Notification, Offsets, ViewWithOffsetsComponent } from './types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Keyboard, Platform, View } from 'react-native';
+import {
+  Keyboard,
+  Platform,
+  View,
+  type KeyboardEventListener,
+} from 'react-native';
 
-export const useOffsets = ({
+const useKeyboard = ({
+  ignoreKeyboard,
+}: Pick<Notification, 'ignoreKeyboard'>) => {
+  const [keyboardHeight, setKeyboardHeight] = useState(() =>
+    ignoreKeyboard ? 0 : (Keyboard.metrics()?.height ?? 0)
+  );
+
+  useEffect(() => {
+    if (ignoreKeyboard) return;
+
+    const onShow: KeyboardEventListener = ({ endCoordinates }) =>
+      setKeyboardHeight(endCoordinates.height);
+    const onHide: KeyboardEventListener = () => setKeyboardHeight(0);
+
+    const listeners = [
+      Keyboard.addListener('keyboardDidShow', onShow),
+      Keyboard.addListener('keyboardDidHide', onHide),
+    ];
+
+    if (Platform.OS === 'ios') {
+      listeners.push(
+        Keyboard.addListener('keyboardWillShow', onShow),
+        Keyboard.addListener('keyboardWillHide', onHide)
+      );
+    }
+
+    return () => {
+      listeners.forEach((listener) => listener.remove());
+    };
+  }, [ignoreKeyboard]);
+
+  return {
+    keyboardHeight,
+  };
+};
+
+const useOffsets = ({
   additionalOffsets,
   position,
   ignoreSafeAreaInsets,
   ignoreKeyboard,
   additionalKeyboardOffset,
 }: Notification): Offsets => {
-  const [keyboardHeight, setKeyboardHeight] = useState(() =>
-    ignoreKeyboard ? 0 : (Keyboard.metrics()?.height ?? 0)
-  );
+  const { keyboardHeight } = useKeyboard({ ignoreKeyboard });
+
   const finalKeyboardOffset =
     keyboardHeight > 0 ? keyboardHeight + additionalKeyboardOffset : 0;
 
@@ -27,24 +67,6 @@ export const useOffsets = ({
     Math.max(safeAreaInsets.bottom, finalKeyboardOffset) +
     (additionalOffsets?.bottom ?? 0);
   const left = safeAreaInsets.left + (additionalOffsets?.left ?? 0);
-
-  useEffect(() => {
-    if (ignoreKeyboard) return;
-
-    const show = Keyboard.addListener(
-      Platform.OS === 'android' ? 'keyboardDidShow' : 'keyboardWillShow',
-      ({ endCoordinates }) => setKeyboardHeight(endCoordinates.height)
-    );
-    const hide = Keyboard.addListener(
-      Platform.OS === 'android' ? 'keyboardDidHide' : 'keyboardWillHide',
-      () => setKeyboardHeight(0)
-    );
-
-    return () => {
-      show.remove();
-      hide.remove();
-    };
-  }, [ignoreKeyboard]);
 
   switch (position) {
     case 'top':
