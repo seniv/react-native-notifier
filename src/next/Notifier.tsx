@@ -105,12 +105,15 @@ const broadcast = (fn: (ref: NotifierInterface) => void) => {
 
 export const Notifier: GlobalNotifierInterface = {
   showNotification: (params) => getLastRef()?.showNotification(params),
+  updateNotification: (params) => getLastRef()?.updateNotification(params),
   hideNotification: (onHidden) => getLastRef()?.hideNotification(onHidden),
   clearQueue: (hideDisplayedNotification) =>
     getLastRef()?.clearQueue(hideDisplayedNotification),
   broadcast: {
     showNotification: (params) =>
       broadcast((ref) => ref.showNotification(params)),
+    updateNotification: (params) =>
+      broadcast((ref) => ref.updateNotification(params)),
     hideNotification: (onHidden) =>
       broadcast((ref) => ref.hideNotification(onHidden)),
     clearQueue: (hideDisplayedNotification) =>

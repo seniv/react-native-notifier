@@ -13,6 +13,7 @@ import type {
   NotifierInterface,
   Notification,
   QueueMode,
+  UpdateNotificationParams,
 } from './types';
 import {
   NotifierRenderer,
@@ -27,7 +28,7 @@ interface NotifierManagerProps {
 /** Component manages queue and exports methods to display/hide notification, and clear the queue
  * Responsibilities:
  * - manages queue
- * - export methods "showNotification", "hideNotification", "clearQueue" via reference
+ * - export methods "showNotification", "updateNotification", "hideNotification", "clearQueue" via reference
  * - set currentNotification state and use default parameters passed via props
  * - mount NotifierRenderer when call "showNotification", and unmount it when NotifierRenderer calls onHidden.
  */
@@ -35,19 +36,60 @@ const NotifierManagerComponent = React.forwardRef<
   NotifierInterface,
   NotifierManagerProps
 >(({ defaultParams: defaultParamsProps }, ref) => {
-  const isShown = useRef(false);
-  const callStack = useRef<Array<ShowNotificationParams>>([]);
+  const currentNotificationId = useRef<string | number | null>(null);
+  const callStack = useRef<Array<Notification>>([]);
   const notificationRef = useRef<NotifierRendererMethods>(null);
   const [currentNotification, setCurrentNotification] =
     useState<Notification>();
 
   const hideNotification = useCallback((callback?: Animated.EndCallback) => {
-    if (!isShown.current) {
+    if (!currentNotificationId.current) {
       return;
     }
 
     notificationRef.current?.hideNotification?.(callback);
   }, []);
+
+  const updateNotification = useCallback(
+    (newParams: UpdateNotificationParams<any>) => {
+      if (!currentNotificationId.current) {
+        return false;
+      }
+
+      setCurrentNotification((currentParams) => {
+        if (!currentParams) return currentParams;
+        return {
+          ...currentParams,
+          ...newParams,
+        };
+      });
+      return true;
+    },
+    []
+  );
+
+  const getNotificationMethodsForId = useCallback(
+    (id: string | number) => ({
+      hide: (callback?: Animated.EndCallback) => {
+        if (id !== currentNotificationId.current) return;
+        return hideNotification(callback);
+      },
+      update: (params: UpdateNotificationParams<any>) => {
+        if (id !== currentNotificationId.current) {
+          const callStackItem = callStack.current.find(
+            (item) => item.id === id
+          );
+          if (callStackItem) {
+            Object.assign(callStackItem, params);
+          }
+          return !!callStackItem;
+        }
+        return updateNotification(params);
+      },
+      isVisible: () => id === currentNotificationId.current,
+    }),
+    [hideNotification, updateNotification]
+  );
 
   const showNotification = useCallback(
     (functionParams: ShowNotificationParams) => {
@@ -56,7 +98,10 @@ const NotifierManagerComponent = React.forwardRef<
         functionParams,
       });
 
-      if (isShown.current) {
+      if (currentNotificationId.current) {
+        if (params.id === currentNotificationId.current)
+          return getNotificationMethodsForId(params.id);
+
         const queueAction: Record<QueueMode, () => void> = {
           standby: () => callStack.current.push(params),
           next: () => callStack.current.unshift(params),
@@ -70,13 +115,14 @@ const NotifierManagerComponent = React.forwardRef<
           },
         };
         queueAction[queueMode ?? 'reset']?.();
-        return;
+        return getNotificationMethodsForId(params.id);
       }
-
+      currentNotificationId.current = params.id;
       setCurrentNotification(params);
-      isShown.current = true;
+
+      return getNotificationMethodsForId(params.id);
     },
-    [defaultParamsProps, hideNotification]
+    [defaultParamsProps, hideNotification, getNotificationMethodsForId]
   );
 
   const clearQueue = useCallback(
@@ -94,17 +140,18 @@ const NotifierManagerComponent = React.forwardRef<
     ref,
     () => ({
       showNotification,
+      updateNotification,
       hideNotification,
       clearQueue,
     }),
-    [showNotification, hideNotification, clearQueue]
+    [showNotification, hideNotification, clearQueue, updateNotification]
   );
 
   const onHidden = useCallback(() => setCurrentNotification(undefined), []);
 
   useEffect(() => {
     if (currentNotification) return;
-    isShown.current = false;
+    currentNotificationId.current = null;
 
     const nextNotification = callStack.current.shift();
     if (nextNotification) {

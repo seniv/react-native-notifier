@@ -246,6 +246,10 @@ export interface ShowNotificationParams<
    * @default 'reset' */
   queueMode?: QueueMode;
 
+  /** Unique ID of the notification. If notification with the same ID already shown, call of `showNotification` will be ignored.
+   * @default Math.random() */
+  id?: string | number;
+
   /** Styles Object that will be used in container.
    * @default null
    */
@@ -285,6 +289,7 @@ export type Notification = Omit<ShowNotificationParams, 'queueMode'> &
       | 'hideAnimationConfig'
       | 'swipeOutAnimationConfig'
       | 'resetSwipeAnimationConfig'
+      | 'id'
     >
   >;
 
@@ -308,14 +313,40 @@ export interface NotifierProps extends ShowNotificationParams {
   rnScreensOverlayViewStyle?: StyleProp<ViewStyle>;
 }
 
+export type UpdateNotificationParams<
+  ComponentType extends ElementType = typeof NotificationComponent,
+> = Omit<ShowNotificationParams<ComponentType>, 'queueMode' | 'id'>;
+
+interface ShowNotificationReturnType<
+  ComponentType extends ElementType = typeof NotificationComponent,
+> {
+  /** Update this exact notification, if visible - will be updated immediately,
+   * if it waits in the queue - it will be updated in the queue and will be displayed with updated parameters.
+   *
+   * Returns true if notification was updated */
+  update(params: UpdateNotificationParams<ComponentType>): boolean;
+  /** Hide this exact notification */
+  hide(onHidden?: Animated.EndCallback): void;
+  /** Is this exact notification visible */
+  isVisible(): boolean;
+}
+
 export interface NotifierInterface {
-  /** Show notification with params. */
+  /** Show notification with params. Returns `update`, `hide` and `isVisible` functions. */
   showNotification<
     ComponentType extends ElementType = typeof NotificationComponent,
   >(
     params: ShowNotificationParams<ComponentType>
-  ): void;
-  /** Hide notification and run callback function when notification completely hidden. */
+  ): ShowNotificationReturnType<ComponentType>;
+
+  /** Update currently visible notification. Returns true if notification was updated */
+  updateNotification<
+    ComponentType extends ElementType = typeof NotificationComponent,
+  >(
+    params: UpdateNotificationParams<ComponentType>
+  ): boolean;
+
+  /** Hide currently visible notification and run callback function when notification completely hidden. */
   hideNotification(onHidden?: Animated.EndCallback): void;
 
   /** Clear [notifications queue](#queue-mode) and optionally hide currently displayed notification.
@@ -324,9 +355,24 @@ export interface NotifierInterface {
   clearQueue(hideDisplayedNotification?: boolean): void;
 }
 
-export interface GlobalNotifierInterface extends NotifierInterface {
+export interface GlobalNotifierInterface
+  extends Omit<NotifierInterface, 'showNotification' | 'updateNotification'> {
+  /** Show notification with params. Returns `update`, `hide` and `isVisible` functions if at least one Notifier is mounted. */
+  showNotification<
+    ComponentType extends ElementType = typeof NotificationComponent,
+  >(
+    params: ShowNotificationParams<ComponentType>
+  ): ShowNotificationReturnType<ComponentType> | void;
+
+  /** Update currently visible notification. Returns true if notification was updated */
+  updateNotification<
+    ComponentType extends ElementType = typeof NotificationComponent,
+  >(
+    params: UpdateNotificationParams<ComponentType>
+  ): boolean | void;
+
   /** Broadcasts the command to all currently mounted instances of Notifier, not only to the last one.
    *
    * Useful to hide all currently visible notifications via `Notifier.broadcast.hideNotification()` or clear queue.*/
-  broadcast: NotifierInterface;
+  broadcast: Omit<GlobalNotifierInterface, 'broadcast'>;
 }

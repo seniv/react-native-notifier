@@ -12,7 +12,9 @@
 - Support for different positions. Notification can be placed at `top`, `bottom`, or at any edge of the screen using `position` parameter.
 - Introduced new params: `enterFrom`, `exitTo`, and `swipeDirection`. These params change the direction of the entering/exiting animation and allow you to swipe notifications not only to the top but also left, right, and down.
 - New `animationFunction` parameter that allows to create custom animations.
-- Thanks to New Architecture, now component dimensions can be calculated synchronously, which makes overall animations way smoother and reduces number of glitches.
+- Now each notification has it's own ID, be default it's random number, and can be assigned to something specific. If notification with the same ID already shown, call of `showNotification` will be ignored.
+- New `updateNotification` method which updates _currently visible_ notification.
+- Call of `showNotification` function returns `update`, `hide` and `isVisible` functions which allows to manipulate with the notification.
 - You can mount multiple instances of `NotifierWrapper`/`NotifierRoot`, and still can control them using global `Notifier.*` methods. Component that was mounted the last will be controlled by the methods, but if you unmount it, control will go to the previously mounted one. The most common use case is to have one Notifier at root level (App.tsx), and also mount some more Notifiers somewhere in the modals.
 - It's possible to broadcast commands to all currently mounted instances of Notifier via `Notifier.broadcast.*`. Can be useful to hide all notifications (or clear queue + hide) using `Notifier.broadcast.hideNotification()`.
 - Custom handling for safe area insets (based on `react-native-safe-area-context`'s `useSafeAreaInsets` hook) in all built-in components + simple API to use the same insets in custom components. It also handles keyboard offset when notification displayed at bottom `position`. All components receives `offsets` object and `ViewWithOffsets` component as props. Related params: `ignoreSafeAreaInsets`, `ignoreKeyboard`, `additionalKeyboardOffset`, `additionalOffsets`.

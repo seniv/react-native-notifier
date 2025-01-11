@@ -61,6 +61,7 @@ export const getNotificationParameters = ({
 
   return {
     ...params,
+    id: params.id ?? Math.random(),
     Component: params.Component ?? NotificationComponent,
     duration: params.duration ?? DEFAULT_DURATION,
     swipePixelsToClose: params?.swipePixelsToClose ?? SWIPE_PIXELS_TO_CLOSE,
