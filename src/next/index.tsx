@@ -6,6 +6,7 @@ export { Easing } from 'react-native';
 export * from './NotifierWrapper';
 export { clamp as animatedClamp } from './utils/animated';
 export * as animationConfigs from './utils/animationConfigs';
+export * as animationFunctions from './utils/animationFunctions';
 export { limitTranslateBySwipeDirection } from './utils/animationDirection';
 export type {
   NotifierInterface,

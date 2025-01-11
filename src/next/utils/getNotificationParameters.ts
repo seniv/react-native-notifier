@@ -1,4 +1,5 @@
 import type React from 'react';
+import { Platform } from 'react-native';
 import type {
   Direction,
   Notification,
@@ -10,8 +11,7 @@ import {
   Notification as NotificationComponent,
   Alert as AlertComponent,
 } from '../components';
-import { defaultAnimationFunction } from '../NotifierRenderer/NotifierRenderer.helpers';
-import { Platform } from 'react-native';
+import { slide as slideAnimationFunction } from './animationFunctions';
 import {
   spring as springAnimationConfig,
   timing200 as timing200AnimationConfig,
@@ -65,7 +65,7 @@ export const getNotificationParameters = ({
     Component: params.Component ?? NotificationComponent,
     duration: params.duration ?? DEFAULT_DURATION,
     swipePixelsToClose: params?.swipePixelsToClose ?? SWIPE_PIXELS_TO_CLOSE,
-    animationFunction: params.animationFunction ?? defaultAnimationFunction,
+    animationFunction: params.animationFunction ?? slideAnimationFunction,
     position,
     enterFrom,
     exitTo: params.exitTo ?? enterFrom ?? 'top',

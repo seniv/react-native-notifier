@@ -256,7 +256,15 @@ export interface ShowNotificationParams<
   containerStyle?: AnimatedViewProps['style'];
 
   /** Function that receives object with various `Animated.Value` and should return Styles that will be used to animate the notification. When set, result of the function will replace default animation
-   * @default null
+   * @default animationFunctions.slide
+   * @example
+   * export const fadeInOut: AnimationFunction = ({ animationState }) => {
+   *   return {
+   *     opacity: animationState,
+   *   };
+   * };
+   * // or use one of presets:
+   * animationFunctions.fadeInOut
    */
   animationFunction?: AnimationFunction;
 

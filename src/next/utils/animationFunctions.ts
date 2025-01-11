@@ -2,7 +2,7 @@ import { Animated } from 'react-native';
 import type { AnimationFunction } from '../types';
 import { limitTranslateBySwipeDirection } from '../utils/animationDirection';
 
-export const defaultAnimationFunction: AnimationFunction = ({
+export const slide: AnimationFunction = ({
   swipeDirection,
   animationState,
   hiddenTranslateXValue,
@@ -42,5 +42,11 @@ export const defaultAnimationFunction: AnimationFunction = ({
         translateY: Animated.add(animationTranslateY, translateY),
       },
     ],
+  };
+};
+
+export const fadeInOut: AnimationFunction = ({ animationState }) => {
+  return {
+    opacity: animationState,
   };
 };
