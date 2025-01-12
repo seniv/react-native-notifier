@@ -278,7 +278,9 @@ export interface ShowNotificationParams<
    * - `resetTimer` - reset(prolong) the `duration` timer
    * - `shake` - shake the notification
    * - `shakeAndResetTimer` - shake the notification and reset the `duration` timer
-   * @default 'shakeAndResetTimer' */
+   * @default 'shakeAndResetTimer'
+   * 'resetTimer' // when use NotifierComponents.Alert component
+   * 'shakeAndResetTimer' // for any other component*/
   ifAlreadyShown?: IfAlreadyShown;
 
   /** Determines the order in which notifications are shown. Read more in the [Queue Mode](https://github.com/seniv/react-native-notifier#queue-mode) section.
@@ -289,9 +291,18 @@ export interface ShowNotificationParams<
    * @default 'reset' */
   queueMode?: QueueMode;
 
-  /** Unique ID of the notification. If notification with the same ID already shown, result of the `showNotification` will depend on `ifAlreadyShown` parameter.
-   * @default Math.random() */
+  /** A manually provided ID. If supplied, it overrides any generation strategy. If notification with the same ID already shown, result of the `showNotification` will depend on `ifAlreadyShown` parameter.
+   * @default
+   * Math.random()
+   * // or hash of the parameters, based on the `idStrategy` parameter
+   *  */
   id?: string | number;
+
+  /** Specifies how the ID should be generated if none is manually provided.
+   * `hash` - derives an ID from `showNotification` parameters. Multiple calls of the `showNotification` with same parameters will have the same ID.
+   * `random` - creates a random ID
+   * @default 'hash' */
+  idStrategy?: 'hash' | 'random';
 
   /** Styles Object that will be used in container.
    * @default null
@@ -324,7 +335,7 @@ export enum AnimationState {
 
 export type Notification = Omit<
   ShowNotificationParams,
-  'queueMode' | 'ifAlreadyShown'
+  'queueMode' | 'ifAlreadyShown' | 'idStrategy'
 > &
   Required<
     Pick<

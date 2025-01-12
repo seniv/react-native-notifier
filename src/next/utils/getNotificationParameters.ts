@@ -1,5 +1,6 @@
 import type React from 'react';
 import { Platform } from 'react-native';
+import hashSum from 'hash-sum';
 import type {
   Direction,
   Notification,
@@ -53,7 +54,7 @@ export const getNotificationParameters = ({
   defaultParamsProps,
   functionParams,
 }: GetNotificationParametersParams): GetNotificationParametersReturnType => {
-  const params = {
+  const { idStrategy, ...params } = {
     ...defaultParamsProps.current,
     ...functionParams,
     componentProps: {
@@ -66,9 +67,8 @@ export const getNotificationParameters = ({
   const enterFrom =
     params.enterFrom ?? getDefaultEnterFromBasedOnPosition(position);
 
-  return {
+  const paramsResult = {
     ...params,
-    id: params.id ?? Math.random(),
     Component: params.Component ?? NotificationComponent,
     duration: params.duration ?? DEFAULT_DURATION,
     swipePixelsToClose: params?.swipePixelsToClose ?? SWIPE_PIXELS_TO_CLOSE,
@@ -90,7 +90,22 @@ export const getNotificationParameters = ({
     resetSwipeAnimationConfig:
       params.resetSwipeAnimationConfig ?? timing200AnimationConfig,
     shakingConfig: params.shakingConfig ?? defaultShakingConfig,
-    ifAlreadyShown: params.ifAlreadyShown ?? 'shakeAndResetTimer',
+    ifAlreadyShown:
+      params.ifAlreadyShown ??
+      (params.Component === AlertComponent
+        ? 'resetTimer'
+        : 'shakeAndResetTimer'),
     queueMode: params.queueMode ?? 'reset',
   };
+
+  let id = paramsResult.id;
+  if (!id) {
+    if (idStrategy === 'random') {
+      id = Math.random();
+    } else {
+      id = hashSum(paramsResult);
+    }
+  }
+
+  return { id, ...paramsResult };
 };

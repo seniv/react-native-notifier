@@ -4074,6 +4074,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/hash-sum@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@types/hash-sum@npm:1.0.2"
+  checksum: 190589750c9de62fb0303b45fe9320d1433c87374bdbb1091f3489dc702095ba6a34f8954683d2fe4fdc9c115ae53707a2405da5e8139eb14d2bbbad900e953d
+  languageName: node
+  linkType: hard
+
 "@types/http-cache-semantics@npm:^4.0.2":
   version: 4.0.4
   resolution: "@types/http-cache-semantics@npm:4.0.4"
@@ -9054,6 +9061,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hash-sum@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "hash-sum@npm:2.0.0"
+  checksum: efeeacf09ecbd467202865403c3a1991fa15d4f4903c1148ecbe13223fdbf9ec6d7dc661e17e5ce6e776cd70d67b6ee4c82e0171318962435be45c1155175f3f
+  languageName: node
+  linkType: hard
+
 "hasown@npm:^2.0.0, hasown@npm:^2.0.1, hasown@npm:^2.0.2":
   version: 2.0.2
   resolution: "hasown@npm:2.0.2"
@@ -13877,6 +13891,7 @@ __metadata:
     "@evilmartians/lefthook": ^1.5.0
     "@react-native/eslint-config": ^0.76.5
     "@release-it/conventional-changelog": ^5.0.0
+    "@types/hash-sum": ^1.0.2
     "@types/jest": ^29.5.5
     "@types/react": ^18.2.44
     commitlint: ^17.0.2
@@ -13884,6 +13899,7 @@ __metadata:
     eslint: ^8.51.0
     eslint-config-prettier: ^9.0.0
     eslint-plugin-prettier: ^5.0.1
+    hash-sum: ^2.0.0
     jest: ^29.7.0
     prettier: ^3.0.3
     react: 18.3.1
@@ -13897,6 +13913,7 @@ __metadata:
     react: "*"
     react-native: "*"
     react-native-gesture-handler: "*"
+    react-native-safe-area-context: "*"
   languageName: unknown
   linkType: soft
 
