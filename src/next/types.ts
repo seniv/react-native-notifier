@@ -24,6 +24,15 @@ interface AnimationSpringConfig {
 }
 export type AnimationConfig = AnimationTimingConfig | AnimationSpringConfig;
 
+export interface ShakingConfig {
+  distance: number;
+  numberOfRepeats: number;
+  duration: number;
+  vertical?: boolean;
+  easing?: Animated.TimingAnimationConfig['easing'];
+  useNativeDriver?: boolean;
+}
+
 export type Direction = 'top' | 'bottom' | 'left' | 'right';
 export type SwipeDirection = Direction | 'horizontal' | 'none';
 
@@ -89,6 +98,10 @@ export interface AnimationFunctionParam {
    * Overall, this value is the position where notification should be, when `animationState = 0`
    */
   hiddenTranslateYValue: Animated.Value;
+  /** translateX value that moves the notification when it "shakes" */
+  shakingTranslationX: Animated.Value;
+  /** translateY value that moves the notification when it "shakes" */
+  shakingTranslationY: Animated.Value;
 }
 export type AnimationFunction = (
   param: AnimationFunctionParam
@@ -216,6 +229,17 @@ export interface ShowParams {
    * @default enterFrom || 'top'
    */
   swipeDirection?: SwipeDirection;
+
+  /** Config of the shaking animation. `useNativeDriver` is `true` by default, but it can be disabled.
+   * @default
+   * {
+   *   distance: 5,
+   *   vertical: false,
+   *   numberOfRepeats: 3,
+   *   duration: 50,
+   * }
+   * */
+  shakingConfig?: ShakingConfig;
 }
 
 export type QueueMode = 'immediate' | 'next' | 'standby' | 'reset';
@@ -298,6 +322,7 @@ export type Notification = Omit<ShowNotificationParams, 'queueMode'> &
       | 'swipeOutAnimationConfig'
       | 'resetSwipeAnimationConfig'
       | 'id'
+      | 'shakingConfig'
     >
   >;
 
@@ -335,12 +360,14 @@ interface ShowNotificationReturnType<
   update(params: UpdateNotificationParams<ComponentType>): boolean;
   /** Hide this exact notification */
   hide(onHidden?: Animated.EndCallback): void;
+  /** Shakes this exact notification to attract the user's attention. If pass true as the first parameter, the `duration` timer will reset(prolong) */
+  shake(resetTimer?: boolean): void;
   /** Is this exact notification visible */
   isVisible(): boolean;
 }
 
 export interface NotifierInterface {
-  /** Show notification with params. Returns `update`, `hide` and `isVisible` functions. */
+  /** Show notification with params. Returns `update`, `hide`, `shake` and `isVisible` functions. */
   showNotification<
     ComponentType extends ElementType = typeof NotificationComponent,
   >(
@@ -354,6 +381,9 @@ export interface NotifierInterface {
     params: UpdateNotificationParams<ComponentType>
   ): boolean;
 
+  /** Shakes currently visible notification to attract the user's attention. If pass true as the first parameter, the `duration` timer will reset(prolong) */
+  shakeNotification(resetTimer?: boolean): void;
+
   /** Hide currently visible notification and run callback function when notification completely hidden. */
   hideNotification(onHidden?: Animated.EndCallback): void;
 
@@ -365,7 +395,7 @@ export interface NotifierInterface {
 
 export interface GlobalNotifierInterface
   extends Omit<NotifierInterface, 'showNotification' | 'updateNotification'> {
-  /** Show notification with params. Returns `update`, `hide` and `isVisible` functions if at least one Notifier is mounted. */
+  /** Show notification with params. Returns `update`, `hide`, `shake` and `isVisible` functions if at least one Notifier is mounted. */
   showNotification<
     ComponentType extends ElementType = typeof NotificationComponent,
   >(

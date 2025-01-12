@@ -14,13 +14,17 @@ import {
 import { Animated, View } from 'react-native';
 import { styles, positionStyles } from '../Notifier.styles';
 import { AnimationState, type Notification } from '../types';
-import { useGestureEvent, useLayout } from './NotifierRenderer.hooks';
+import {
+  useSwipeAnimationValues,
+  useLayout,
+  useShaking,
+} from './NotifierRenderer.hooks';
 import { getSwipedOutDirection } from '../utils/animationDirection';
-import { resetSwipeAnimation } from '../utils/animations';
 import { RenderComponentWithOffsets } from '../RenderComponentWithOffsets';
 
 export interface NotifierRendererMethods {
-  hideNotification: (callback?: Animated.EndCallback) => void;
+  hideNotification(callback?: Animated.EndCallback): void;
+  shake(resetTimer?: boolean): void;
 }
 interface NotifierRendererProps {
   notification: Notification;
@@ -41,20 +45,12 @@ const NotifierRendererComponent = forwardRef<
   NotifierRendererMethods,
   NotifierRendererProps
 >(({ notification, onHiddenCallback }, notificationRef) => {
-  const {
-    componentHeight,
-    componentWidth,
-    hiddenTranslateXValue,
-    hiddenTranslateYValue,
-    onLayout,
-    updateHiddenValueByDirection,
-    ref,
-  } = useLayout({
-    enterFrom: notification.enterFrom,
-  });
+  const { layoutAnimationValues, onLayout, updateHiddenValueByDirection, ref } =
+    useLayout(notification);
+  const { shake, shakingAnimationValues } = useShaking(notification);
 
-  const { onGestureEvent, swipeTranslationX, swipeTranslationY } =
-    useGestureEvent();
+  const { onGestureEvent, resetSwipeAnimation, swipeAnimationValues } =
+    useSwipeAnimationValues(notification);
 
   const animationState = useRef(
     new Animated.Value(AnimationState.Hidden)
@@ -68,7 +64,10 @@ const NotifierRendererComponent = forwardRef<
     clearTimeout(hideTimerRef.current);
   };
 
-  const onHidden = () => {
+  const onHidingAnimationFinished = (result: Animated.EndResult) => {
+    if (!result.finished) {
+      return;
+    }
     notification.onHidden?.();
     onHiddenCallback();
   };
@@ -83,16 +82,12 @@ const NotifierRendererComponent = forwardRef<
       ...notification.hideAnimationConfig.config,
       toValue: AnimationState.Hidden,
     }).start((result) => {
-      onHidden();
+      onHidingAnimationFinished(result);
       callback?.(result);
     });
 
     onStartHiding();
   };
-
-  useImperativeHandle(notificationRef, () => ({
-    hideNotification,
-  }));
 
   const setHideTimer = () => {
     const duration = notification.duration;
@@ -101,6 +96,25 @@ const NotifierRendererComponent = forwardRef<
       hideTimerRef.current = setTimeout(hideNotification, duration);
     }
   };
+
+  const shakeWithTimerReset = (resetTimer?: boolean) => {
+    if (resetTimer) {
+      isHidingRef.current = false;
+      setHideTimer();
+      resetSwipeAnimation();
+      Animated[notification.showAnimationConfig.method](animationState, {
+        useNativeDriver: true,
+        ...notification.showAnimationConfig.config,
+        toValue: AnimationState.Shown,
+      }).start();
+    }
+    shake();
+  };
+
+  useImperativeHandle(notificationRef, () => ({
+    hideNotification,
+    shake: shakeWithTimerReset,
+  }));
 
   useEffect(() => {
     Animated[notification.showAnimationConfig.method](animationState, {
@@ -137,11 +151,7 @@ const NotifierRendererComponent = forwardRef<
     });
 
     if (swipedOutDirection === 'none') {
-      resetSwipeAnimation({
-        notification,
-        swipeTranslationX,
-        swipeTranslationY,
-      });
+      resetSwipeAnimation();
       return;
     }
 
@@ -151,7 +161,7 @@ const NotifierRendererComponent = forwardRef<
       useNativeDriver: true,
       ...notification.swipeOutAnimationConfig.config,
       toValue: AnimationState.Hidden,
-    }).start(onHidden);
+    }).start(onHidingAnimationFinished);
 
     onStartHiding();
   };
@@ -179,12 +189,9 @@ const NotifierRendererComponent = forwardRef<
           notification.animationFunction({
             swipeDirection: notification.swipeDirection,
             animationState,
-            componentHeight,
-            componentWidth,
-            hiddenTranslateXValue,
-            hiddenTranslateYValue,
-            swipeTranslationX,
-            swipeTranslationY,
+            ...layoutAnimationValues,
+            ...swipeAnimationValues,
+            ...shakingAnimationValues,
           }),
         ]}
       >

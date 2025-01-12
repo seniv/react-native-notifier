@@ -1,16 +1,16 @@
 import { Animated } from 'react-native';
 import type { Notification } from '../types';
 
-interface ResetSwipeAnimationParams {
+interface RunResetSwipeAnimationParams {
   swipeTranslationX: Animated.Value;
   swipeTranslationY: Animated.Value;
   notification: Notification;
 }
-export const resetSwipeAnimation = ({
+export const runResetSwipeAnimation = ({
   swipeTranslationX,
   swipeTranslationY,
   notification,
-}: ResetSwipeAnimationParams) => {
+}: RunResetSwipeAnimationParams) => {
   Animated.parallel([
     Animated[notification.resetSwipeAnimationConfig.method](swipeTranslationX, {
       useNativeDriver: true,

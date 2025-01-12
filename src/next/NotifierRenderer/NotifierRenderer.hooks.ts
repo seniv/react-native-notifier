@@ -1,17 +1,15 @@
 import { useCallback, useLayoutEffect, useRef } from 'react';
 import { Animated, View } from 'react-native';
 import { getHiddenTranslateValues } from '../utils/animationDirection';
-import type { Direction } from '../types';
+import type { Direction, Notification } from '../types';
 import { MAX_VALUE } from '../constants';
+import { runResetSwipeAnimation } from '../utils/animations';
 
-interface UseLayoutParams {
-  enterFrom: Direction;
-}
 /**
  * Calculates component dimensions and hiddenTranslate* values by using reference and onLayout function
  * Also, can update hiddenTranslate* values by using updateHiddenValueByDirection function depending on the direction
  */
-export const useLayout = ({ enterFrom }: UseLayoutParams) => {
+export const useLayout = ({ enterFrom }: Notification) => {
   const ref = useRef<View>(null);
   // store current direction to handle the case when component dimensions changes (trigger onLayout)
   // while active direction != enterFrom (e.g. when exitTo is different than enterFrom, and notification started hiding animation).
@@ -32,6 +30,13 @@ export const useLayout = ({ enterFrom }: UseLayoutParams) => {
   // 3. when user manually swipe-out the notification, it will depend on direction of the swipe, which depends on swipeDirection params.
   const hiddenTranslateYValue = useRef(new Animated.Value(-MAX_VALUE)).current;
   const hiddenTranslateXValue = useRef(new Animated.Value(-MAX_VALUE)).current;
+
+  const layoutAnimationValues = useRef({
+    componentHeight,
+    componentWidth,
+    hiddenTranslateYValue,
+    hiddenTranslateXValue,
+  }).current;
 
   const updateHiddenValueByDirection = useCallback(
     (direction: Direction) => {
@@ -87,19 +92,20 @@ export const useLayout = ({ enterFrom }: UseLayoutParams) => {
   }, [measureLayout]);
 
   return {
-    componentHeight,
-    componentWidth,
-    hiddenTranslateXValue,
-    hiddenTranslateYValue,
+    layoutAnimationValues,
     ref,
     onLayout,
     updateHiddenValueByDirection,
   };
 };
 
-export const useGestureEvent = () => {
+export const useSwipeAnimationValues = (notification: Notification) => {
   const swipeTranslationX = useRef(new Animated.Value(0)).current;
   const swipeTranslationY = useRef(new Animated.Value(0)).current;
+  const swipeAnimationValues = useRef({
+    swipeTranslationX,
+    swipeTranslationY,
+  }).current;
 
   const onGestureEvent = useRef(
     Animated.event(
@@ -117,5 +123,61 @@ export const useGestureEvent = () => {
     )
   ).current;
 
-  return { swipeTranslationX, swipeTranslationY, onGestureEvent };
+  const resetSwipeAnimation = useCallback(() => {
+    runResetSwipeAnimation({
+      notification,
+      swipeTranslationX,
+      swipeTranslationY,
+    });
+  }, [notification, swipeTranslationX, swipeTranslationY]);
+
+  return {
+    swipeAnimationValues,
+    onGestureEvent,
+    resetSwipeAnimation,
+  };
+};
+
+export const useShaking = ({ shakingConfig }: Notification) => {
+  const shakingTranslationX = useRef(new Animated.Value(0)).current;
+  const shakingTranslationY = useRef(new Animated.Value(0)).current;
+  const shakingAnimationValues = useRef({
+    shakingTranslationX,
+    shakingTranslationY,
+  }).current;
+
+  const shake = useCallback(() => {
+    const { distance, vertical, numberOfRepeats, ...config } = shakingConfig;
+    const value = vertical ? shakingTranslationY : shakingTranslationX;
+    Animated.sequence([
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(value, {
+            toValue: distance,
+            useNativeDriver: true,
+            ...config,
+          }),
+          Animated.timing(value, {
+            toValue: -distance,
+            useNativeDriver: true,
+            ...config,
+          }),
+        ]),
+        {
+          iterations: numberOfRepeats,
+          resetBeforeIteration: false,
+        }
+      ),
+      Animated.timing(value, {
+        toValue: 0,
+        useNativeDriver: true,
+        ...config,
+      }),
+    ]).start();
+  }, [shakingConfig, shakingTranslationX, shakingTranslationY]);
+
+  return {
+    shake,
+    shakingAnimationValues,
+  };
 };

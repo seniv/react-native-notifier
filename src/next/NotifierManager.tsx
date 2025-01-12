@@ -50,6 +50,14 @@ const NotifierManagerComponent = React.forwardRef<
     notificationRef.current?.hideNotification?.(callback);
   }, []);
 
+  const shakeNotification = useCallback((resetTimer?: boolean) => {
+    if (!currentNotificationId.current) {
+      return;
+    }
+
+    notificationRef.current?.shake?.(resetTimer);
+  }, []);
+
   const updateNotification = useCallback(
     (newParams: UpdateNotificationParams<any>) => {
       if (!currentNotificationId.current) {
@@ -86,9 +94,13 @@ const NotifierManagerComponent = React.forwardRef<
         }
         return updateNotification(params);
       },
+      shake: (resetTimer?: boolean) => {
+        if (id !== currentNotificationId.current) return;
+        return shakeNotification(resetTimer);
+      },
       isVisible: () => id === currentNotificationId.current,
     }),
-    [hideNotification, updateNotification]
+    [hideNotification, shakeNotification, updateNotification]
   );
 
   const showNotification = useCallback(
@@ -141,10 +153,17 @@ const NotifierManagerComponent = React.forwardRef<
     () => ({
       showNotification,
       updateNotification,
+      shakeNotification,
       hideNotification,
       clearQueue,
     }),
-    [showNotification, hideNotification, clearQueue, updateNotification]
+    [
+      showNotification,
+      updateNotification,
+      shakeNotification,
+      hideNotification,
+      clearQueue,
+    ]
   );
 
   const onHidden = useCallback(() => setCurrentNotification(undefined), []);

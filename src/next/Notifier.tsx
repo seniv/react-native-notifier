@@ -106,6 +106,8 @@ const broadcast = (fn: (ref: NotifierInterface) => void) => {
 export const Notifier: GlobalNotifierInterface = {
   showNotification: (params) => getLastRef()?.showNotification(params),
   updateNotification: (params) => getLastRef()?.updateNotification(params),
+  shakeNotification: (resetTimer) =>
+    getLastRef()?.shakeNotification(resetTimer),
   hideNotification: (onHidden) => getLastRef()?.hideNotification(onHidden),
   clearQueue: (hideDisplayedNotification) =>
     getLastRef()?.clearQueue(hideDisplayedNotification),
@@ -114,6 +116,8 @@ export const Notifier: GlobalNotifierInterface = {
       broadcast((ref) => ref.showNotification(params)),
     updateNotification: (params) =>
       broadcast((ref) => ref.updateNotification(params)),
+    shakeNotification: (resetTimer) =>
+      broadcast((ref) => ref.shakeNotification(resetTimer)),
     hideNotification: (onHidden) =>
       broadcast((ref) => ref.hideNotification(onHidden)),
     clearQueue: (hideDisplayedNotification) =>
