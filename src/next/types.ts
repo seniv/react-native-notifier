@@ -242,6 +242,12 @@ export interface ShowParams {
   shakingConfig?: ShakingConfig;
 }
 
+export type IfAlreadyShown =
+  | 'ignore'
+  | 'shake'
+  | 'shakeAndResetTimer'
+  | 'resetTimer'
+  | 'proceed';
 export type QueueMode = 'immediate' | 'next' | 'standby' | 'reset';
 
 export interface ShowNotificationParams<
@@ -266,11 +272,24 @@ export interface ShowNotificationParams<
     keyof NotifierComponentProps
   >;
 
+  /** What to do if notification __with the same ID(!)__ already shown.
+   * - `proceed` - proceed to the `queueMode` step
+   * - `ignore` - ignores the call of `showNotification` method
+   * - `resetTimer` - reset(prolong) the `duration` timer
+   * - `shake` - shake the notification
+   * - `shakeAndResetTimer` - shake the notification and reset the `duration` timer
+   * @default 'shakeAndResetTimer' */
+  ifAlreadyShown?: IfAlreadyShown;
+
   /** Determines the order in which notifications are shown. Read more in the [Queue Mode](https://github.com/seniv/react-native-notifier#queue-mode) section.
+   * - `reset` - Clear notification queue and immediately display the new notification.
+   * - `standby` - Add notification to the end of the queue.
+   * - `next` - Put notification in the first place in the queue. Will be shown right after the current notification disappears.
+   * - `immediate` - Similar to next, but also it will hide currently displayed notification.
    * @default 'reset' */
   queueMode?: QueueMode;
 
-  /** Unique ID of the notification. If notification with the same ID already shown, call of `showNotification` will be ignored.
+  /** Unique ID of the notification. If notification with the same ID already shown, result of the `showNotification` will depend on `ifAlreadyShown` parameter.
    * @default Math.random() */
   id?: string | number;
 
@@ -303,7 +322,10 @@ export enum AnimationState {
   Shown = 1,
 }
 
-export type Notification = Omit<ShowNotificationParams, 'queueMode'> &
+export type Notification = Omit<
+  ShowNotificationParams,
+  'queueMode' | 'ifAlreadyShown'
+> &
   Required<
     Pick<
       ShowNotificationParams,
@@ -348,7 +370,10 @@ export interface NotifierProps extends ShowNotificationParams {
 
 export type UpdateNotificationParams<
   ComponentType extends ElementType = typeof NotificationComponent,
-> = Omit<ShowNotificationParams<ComponentType>, 'queueMode' | 'id'>;
+> = Omit<
+  ShowNotificationParams<ComponentType>,
+  'queueMode' | 'id' | 'ifAlreadyShown'
+>;
 
 interface ShowNotificationReturnType<
   ComponentType extends ElementType = typeof NotificationComponent,

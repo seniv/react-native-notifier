@@ -48,7 +48,7 @@ interface GetNotificationParametersParams {
   functionParams: ShowNotificationParams;
 }
 type GetNotificationParametersReturnType = Notification &
-  Pick<ShowNotificationParams, 'queueMode'>;
+  Required<Pick<ShowNotificationParams, 'queueMode' | 'ifAlreadyShown'>>;
 export const getNotificationParameters = ({
   defaultParamsProps,
   functionParams,
@@ -90,5 +90,7 @@ export const getNotificationParameters = ({
     resetSwipeAnimationConfig:
       params.resetSwipeAnimationConfig ?? timing200AnimationConfig,
     shakingConfig: params.shakingConfig ?? defaultShakingConfig,
+    ifAlreadyShown: params.ifAlreadyShown ?? 'shakeAndResetTimer',
+    queueMode: params.queueMode ?? 'reset',
   };
 };

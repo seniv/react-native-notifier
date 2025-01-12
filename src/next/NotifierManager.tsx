@@ -43,20 +43,26 @@ const NotifierManagerComponent = React.forwardRef<
     useState<Notification>();
 
   const hideNotification = useCallback((callback?: Animated.EndCallback) => {
-    if (!currentNotificationId.current) {
-      return;
-    }
+    if (!currentNotificationId.current) return;
 
     notificationRef.current?.hideNotification?.(callback);
   }, []);
 
-  const shakeNotification = useCallback((resetTimer?: boolean) => {
-    if (!currentNotificationId.current) {
-      return;
-    }
+  const resetNotificationTimer = useCallback(() => {
+    if (!currentNotificationId.current) return;
 
-    notificationRef.current?.shake?.(resetTimer);
+    notificationRef.current?.resetTimer?.();
   }, []);
+
+  const shakeNotification = useCallback(
+    (resetTimerParam?: boolean) => {
+      if (!currentNotificationId.current) return;
+
+      if (resetTimerParam) resetNotificationTimer();
+      notificationRef.current?.shake?.();
+    },
+    [resetNotificationTimer]
+  );
 
   const updateNotification = useCallback(
     (newParams: UpdateNotificationParams<any>) => {
@@ -94,9 +100,9 @@ const NotifierManagerComponent = React.forwardRef<
         }
         return updateNotification(params);
       },
-      shake: (resetTimer?: boolean) => {
+      shake: (resetTimerParam?: boolean) => {
         if (id !== currentNotificationId.current) return;
-        return shakeNotification(resetTimer);
+        return shakeNotification(resetTimerParam);
       },
       isVisible: () => id === currentNotificationId.current,
     }),
@@ -105,14 +111,32 @@ const NotifierManagerComponent = React.forwardRef<
 
   const showNotification = useCallback(
     (functionParams: ShowNotificationParams) => {
-      const { queueMode, ...params } = getNotificationParameters({
-        defaultParamsProps,
-        functionParams,
-      });
+      const { queueMode, ifAlreadyShown, ...params } =
+        getNotificationParameters({
+          defaultParamsProps,
+          functionParams,
+        });
 
       if (currentNotificationId.current) {
-        if (params.id === currentNotificationId.current)
+        if (
+          params.id === currentNotificationId.current &&
+          ifAlreadyShown !== 'proceed'
+        ) {
+          switch (ifAlreadyShown) {
+            case 'shake': {
+              shakeNotification();
+              break;
+            }
+            case 'shakeAndResetTimer': {
+              shakeNotification(true);
+              break;
+            }
+            case 'resetTimer':
+              resetNotificationTimer();
+          }
+
           return getNotificationMethodsForId(params.id);
+        }
 
         const queueAction: Record<QueueMode, () => void> = {
           standby: () => callStack.current.push(params),
@@ -126,7 +150,7 @@ const NotifierManagerComponent = React.forwardRef<
             hideNotification();
           },
         };
-        queueAction[queueMode ?? 'reset']?.();
+        queueAction[queueMode]?.();
         return getNotificationMethodsForId(params.id);
       }
       currentNotificationId.current = params.id;
@@ -134,7 +158,13 @@ const NotifierManagerComponent = React.forwardRef<
 
       return getNotificationMethodsForId(params.id);
     },
-    [defaultParamsProps, hideNotification, getNotificationMethodsForId]
+    [
+      defaultParamsProps,
+      getNotificationMethodsForId,
+      resetNotificationTimer,
+      shakeNotification,
+      hideNotification,
+    ]
   );
 
   const clearQueue = useCallback(

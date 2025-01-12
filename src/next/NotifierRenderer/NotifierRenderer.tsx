@@ -3,6 +3,7 @@ import {
   memo,
   useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
 } from 'react';
 import {
@@ -24,7 +25,8 @@ import { RenderComponentWithOffsets } from '../RenderComponentWithOffsets';
 
 export interface NotifierRendererMethods {
   hideNotification(callback?: Animated.EndCallback): void;
-  shake(resetTimer?: boolean): void;
+  shake(): void;
+  resetTimer(): void;
 }
 interface NotifierRendererProps {
   notification: Notification;
@@ -97,23 +99,21 @@ const NotifierRendererComponent = forwardRef<
     }
   };
 
-  const shakeWithTimerReset = (resetTimer?: boolean) => {
-    if (resetTimer) {
-      isHidingRef.current = false;
-      setHideTimer();
-      resetSwipeAnimation();
-      Animated[notification.showAnimationConfig.method](animationState, {
-        useNativeDriver: true,
-        ...notification.showAnimationConfig.config,
-        toValue: AnimationState.Shown,
-      }).start();
-    }
-    shake();
+  const resetTimer = () => {
+    isHidingRef.current = false;
+    setHideTimer();
+    resetSwipeAnimation();
+    Animated[notification.showAnimationConfig.method](animationState, {
+      useNativeDriver: true,
+      ...notification.showAnimationConfig.config,
+      toValue: AnimationState.Shown,
+    }).start();
   };
 
   useImperativeHandle(notificationRef, () => ({
     hideNotification,
-    shake: shakeWithTimerReset,
+    shake,
+    resetTimer,
   }));
 
   useEffect(() => {
@@ -173,6 +173,28 @@ const NotifierRendererComponent = forwardRef<
     }
   };
 
+  const animationFunctionParam = useMemo(
+    () => ({
+      swipeDirection: notification.swipeDirection,
+      animationState,
+      ...layoutAnimationValues,
+      ...swipeAnimationValues,
+      ...shakingAnimationValues,
+    }),
+    [
+      animationState,
+      layoutAnimationValues,
+      notification.swipeDirection,
+      shakingAnimationValues,
+      swipeAnimationValues,
+    ]
+  );
+  const { animationFunction } = notification;
+  const animationStyle = useMemo(
+    () => animationFunction(animationFunctionParam),
+    [animationFunction, animationFunctionParam]
+  );
+
   return (
     <PanGestureHandler
       enabled={notification.swipeDirection !== 'none'}
@@ -186,13 +208,7 @@ const NotifierRendererComponent = forwardRef<
           styles.container,
           positionStyles[notification.position],
           notification.containerStyle,
-          notification.animationFunction({
-            swipeDirection: notification.swipeDirection,
-            animationState,
-            ...layoutAnimationValues,
-            ...swipeAnimationValues,
-            ...shakingAnimationValues,
-          }),
+          animationStyle,
         ]}
       >
         <TouchableWithoutFeedback onPress={onPress}>
