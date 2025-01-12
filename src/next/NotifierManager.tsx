@@ -111,7 +111,7 @@ const NotifierManagerComponent = React.forwardRef<
 
   const showNotification = useCallback(
     (functionParams: ShowNotificationParams) => {
-      const { queueMode, ifAlreadyShown, ...params } =
+      const { queueMode, duplicateBehavior, ...params } =
         getNotificationParameters({
           defaultParamsProps,
           functionParams,
@@ -120,9 +120,9 @@ const NotifierManagerComponent = React.forwardRef<
       if (currentNotificationId.current) {
         if (
           params.id === currentNotificationId.current &&
-          ifAlreadyShown !== 'proceed'
+          duplicateBehavior !== 'proceed'
         ) {
-          switch (ifAlreadyShown) {
+          switch (duplicateBehavior) {
             case 'shake': {
               shakeNotification();
               break;

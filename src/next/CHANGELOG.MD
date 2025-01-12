@@ -12,8 +12,8 @@
 - Support for different positions. Notification can be placed at `top`, `bottom`, or at any edge of the screen using `position` parameter.
 - Introduced new params: `enterFrom`, `exitTo`, and `swipeDirection`. These params change the direction of the entering/exiting animation and allow you to swipe notifications not only to the top but also left, right, and down.
 - New `animationFunction` parameter that allows to create custom animations.
-- Now each notification has it's own ID. Default value depends on the `idStrategy` parameter, and can be assigned to something specific. If notification with the same ID already shown, result of the `showNotification` will depend on `ifAlreadyShown` parameter.
-- New `ifAlreadyShown` parameter which describes how Notifier should behave if notification __with the same ID__ already shown.
+- Now each notification has it's own ID. Default value depends on the `idStrategy` parameter, and can be assigned to something specific. If notification with the same ID already shown, result of the `showNotification` will depend on `duplicateBehavior` parameter.
+- New `duplicateBehavior` parameter which describes how Notifier should behave if notification __with the same ID__ already shown.
 - `idStrategy` parameter which changes default ID (if no ID provided manually) generation method.
 - New `updateNotification` method which updates _currently visible_ notification.
 - New `shakeNotification` method which shakes _currently visible_ notification to attract the user's attention and (optionally) reset the `duration` timer.

@@ -242,7 +242,7 @@ export interface ShowParams {
   shakingConfig?: ShakingConfig;
 }
 
-export type IfAlreadyShown =
+export type DuplicateBehavior =
   | 'ignore'
   | 'shake'
   | 'shakeAndResetTimer'
@@ -281,7 +281,7 @@ export interface ShowNotificationParams<
    * @default 'shakeAndResetTimer'
    * 'resetTimer' // when use NotifierComponents.Alert component
    * 'shakeAndResetTimer' // for any other component*/
-  ifAlreadyShown?: IfAlreadyShown;
+  duplicateBehavior?: DuplicateBehavior;
 
   /** Determines the order in which notifications are shown. Read more in the [Queue Mode](https://github.com/seniv/react-native-notifier#queue-mode) section.
    * - `reset` - Clear notification queue and immediately display the new notification.
@@ -291,7 +291,7 @@ export interface ShowNotificationParams<
    * @default 'reset' */
   queueMode?: QueueMode;
 
-  /** A manually provided ID. If supplied, it overrides any generation strategy. If notification with the same ID already shown, result of the `showNotification` will depend on `ifAlreadyShown` parameter.
+  /** A manually provided ID. If supplied, it overrides any generation strategy. If notification with the same ID already shown, result of the `showNotification` will depend on `duplicateBehavior` parameter.
    * @default
    * Math.random()
    * // or hash of the parameters, based on the `idStrategy` parameter
@@ -335,7 +335,7 @@ export enum AnimationState {
 
 export type Notification = Omit<
   ShowNotificationParams,
-  'queueMode' | 'ifAlreadyShown' | 'idStrategy'
+  'queueMode' | 'duplicateBehavior' | 'idStrategy'
 > &
   Required<
     Pick<
@@ -383,7 +383,7 @@ export type UpdateNotificationParams<
   ComponentType extends ElementType = typeof NotificationComponent,
 > = Omit<
   ShowNotificationParams<ComponentType>,
-  'queueMode' | 'id' | 'ifAlreadyShown'
+  'queueMode' | 'id' | 'duplicateBehavior'
 >;
 
 interface ShowNotificationReturnType<
