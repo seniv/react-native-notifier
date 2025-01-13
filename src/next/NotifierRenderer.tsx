@@ -13,12 +13,13 @@ import {
   type PanGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
 import { Animated, View } from 'react-native';
-import { styles, positionStyles } from '../Notifier.styles';
-import { AnimationState, type Notification } from '../types';
-import { useSwipeAnimationValues, useLayout } from './NotifierRenderer.hooks';
-import { getSwipedOutDirection } from '../utils/animationDirection';
-import { RenderComponentWithOffsets } from '../RenderComponentWithOffsets';
-import { useShaking } from '../hooks/useShaking';
+import { styles, positionStyles } from './Notifier.styles';
+import { AnimationState, type Notification } from './types';
+import { getSwipedOutDirection } from './utils/animationDirection';
+import { RenderComponentWithOffsets } from './RenderComponentWithOffsets';
+import { useShaking } from './hooks/useShaking';
+import { useLayout } from './hooks/useLayout';
+import { useSwipeAnimationValues } from './hooks/useSwipeAnimationValues';
 
 export interface NotifierRendererMethods {
   hideNotification(callback?: Animated.EndCallback): void;

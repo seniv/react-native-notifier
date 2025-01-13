@@ -7,7 +7,6 @@ import type {
   Position,
   ShowNotificationParams,
 } from '../types';
-import { DEFAULT_DURATION, SWIPE_PIXELS_TO_CLOSE } from '../constants';
 import {
   Notification as NotificationComponent,
   Alert as AlertComponent,
@@ -67,8 +66,8 @@ export const getNotificationParameters = ({
   const paramsResult = {
     ...params,
     Component: params.Component ?? NotificationComponent,
-    duration: params.duration ?? DEFAULT_DURATION,
-    swipePixelsToClose: params?.swipePixelsToClose ?? SWIPE_PIXELS_TO_CLOSE,
+    duration: params.duration ?? 3000,
+    swipePixelsToClose: params?.swipePixelsToClose ?? 20,
     animationFunction: params.animationFunction ?? slideAnimationFunction,
     position,
     enterFrom,

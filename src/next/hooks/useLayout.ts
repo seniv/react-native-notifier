@@ -2,8 +2,7 @@ import { useCallback, useLayoutEffect, useRef } from 'react';
 import { Animated, View } from 'react-native';
 import { getHiddenTranslateValues } from '../utils/animationDirection';
 import type { Direction, Notification } from '../types';
-import { MAX_VALUE } from '../constants';
-import { runResetSwipeAnimation } from '../utils/animations';
+import { FABRIC_ENABLED, MAX_VALUE } from '../constants';
 
 /**
  * Calculates component dimensions and hiddenTranslate* values by using reference and onLayout function
@@ -58,7 +57,26 @@ export const useLayout = ({ enterFrom }: Notification) => {
     [hiddenTranslateXValue, hiddenTranslateYValue]
   );
 
+  const updateLayoutValues = useCallback(
+    ({ height, width }: { height: number; width: number }) => {
+      componentHeightRef.current = height;
+      componentWidthRef.current = width;
+      componentHeight.setValue(height);
+      componentWidth.setValue(width);
+
+      updateHiddenValueByDirection(currentDirection.current);
+    },
+    [componentHeight, componentWidth, updateHiddenValueByDirection]
+  );
+
   const measureLayout = useCallback(() => {
+    if (!FABRIC_ENABLED) {
+      ref.current?.measureInWindow((_x, _y, width, height) =>
+        updateLayoutValues({ width, height })
+      );
+      return;
+    }
+
     // TODO: update function once "getBoundingClientRect" function will be officially released
     // @ts-ignore
     let rect = ref.current?.getBoundingClientRect?.();
@@ -72,17 +90,15 @@ export const useLayout = ({ enterFrom }: Notification) => {
       });
     }
 
-    componentHeightRef.current = rect.height;
-    componentWidthRef.current = rect.width;
-    componentHeight.setValue(rect.height);
-    componentWidth.setValue(rect.width);
+    updateLayoutValues({ width: rect.width, height: rect.height });
+  }, [updateLayoutValues]);
 
-    updateHiddenValueByDirection(currentDirection.current);
-  }, [componentHeight, componentWidth, updateHiddenValueByDirection]);
+  useLayoutEffect(() => {
+    if (!FABRIC_ENABLED) return;
+    measureLayout();
+  });
 
-  useLayoutEffect(measureLayout);
-
-  const shouldIgnoreLayoutRef = useRef(true);
+  const shouldIgnoreLayoutRef = useRef(FABRIC_ENABLED);
   const onLayout = useCallback(() => {
     if (shouldIgnoreLayoutRef.current) {
       shouldIgnoreLayoutRef.current = false;
@@ -96,44 +112,5 @@ export const useLayout = ({ enterFrom }: Notification) => {
     ref,
     onLayout,
     updateHiddenValueByDirection,
-  };
-};
-
-export const useSwipeAnimationValues = (notification: Notification) => {
-  const swipeTranslationX = useRef(new Animated.Value(0)).current;
-  const swipeTranslationY = useRef(new Animated.Value(0)).current;
-  const swipeAnimationValues = useRef({
-    swipeTranslationX,
-    swipeTranslationY,
-  }).current;
-
-  const onGestureEvent = useRef(
-    Animated.event(
-      [
-        {
-          nativeEvent: {
-            translationX: swipeTranslationX,
-            translationY: swipeTranslationY,
-          },
-        },
-      ],
-      {
-        useNativeDriver: true,
-      }
-    )
-  ).current;
-
-  const resetSwipeAnimation = useCallback(() => {
-    runResetSwipeAnimation({
-      notification,
-      swipeTranslationX,
-      swipeTranslationY,
-    });
-  }, [notification, swipeTranslationX, swipeTranslationY]);
-
-  return {
-    swipeAnimationValues,
-    onGestureEvent,
-    resetSwipeAnimation,
   };
 };

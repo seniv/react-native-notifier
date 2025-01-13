@@ -18,7 +18,7 @@ import type {
 import {
   NotifierRenderer,
   type NotifierRendererMethods,
-} from './NotifierRenderer/NotifierRenderer';
+} from './NotifierRenderer';
 import { getNotificationParameters } from './utils/getNotificationParameters';
 
 interface NotifierManagerProps {
