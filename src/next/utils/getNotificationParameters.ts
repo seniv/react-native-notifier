@@ -18,13 +18,10 @@ import {
   timing200 as timing200AnimationConfig,
   timing300 as timing300AnimationConfig,
 } from './animationConfigs';
-
-const defaultShakingConfig = {
-  distance: 5,
-  vertical: false,
-  numberOfRepeats: 3,
-  duration: 50,
-};
+import {
+  horizontal as horizontalShakingConfig,
+  onlyUp as onlyUpShakingConfig,
+} from './shakingConfigs';
 
 const getDefaultEnterFromBasedOnPosition = (position?: Position): Direction => {
   if (!position) return 'top';
@@ -89,12 +86,12 @@ export const getNotificationParameters = ({
       params.swipeOutAnimationConfig ?? timing200AnimationConfig,
     resetSwipeAnimationConfig:
       params.resetSwipeAnimationConfig ?? timing200AnimationConfig,
-    shakingConfig: params.shakingConfig ?? defaultShakingConfig,
-    duplicateBehavior:
-      params.duplicateBehavior ??
+    shakingConfig:
+      params.shakingConfig ??
       (params.Component === AlertComponent
-        ? 'resetTimer'
-        : 'shakeAndResetTimer'),
+        ? onlyUpShakingConfig
+        : horizontalShakingConfig),
+    duplicateBehavior: params.duplicateBehavior ?? 'shakeAndResetTimer',
     queueMode: params.queueMode ?? 'reset',
   };
 

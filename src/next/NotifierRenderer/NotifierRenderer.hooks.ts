@@ -147,18 +147,19 @@ export const useShaking = ({ shakingConfig }: Notification) => {
   }).current;
 
   const shake = useCallback(() => {
-    const { distance, vertical, numberOfRepeats, ...config } = shakingConfig;
+    const { minValue, maxValue, vertical, numberOfRepeats, ...config } =
+      shakingConfig;
     const value = vertical ? shakingTranslationY : shakingTranslationX;
     Animated.sequence([
       Animated.loop(
         Animated.sequence([
           Animated.timing(value, {
-            toValue: distance,
+            toValue: maxValue,
             useNativeDriver: true,
             ...config,
           }),
           Animated.timing(value, {
-            toValue: -distance,
+            toValue: minValue,
             useNativeDriver: true,
             ...config,
           }),

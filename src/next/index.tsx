@@ -7,6 +7,7 @@ export * from './NotifierWrapper';
 export { clamp as animatedClamp } from './utils/animated';
 export * as animationConfigs from './utils/animationConfigs';
 export * as animationFunctions from './utils/animationFunctions';
+export * as shakingConfigs from './utils/shakingConfigs';
 export { limitTranslateBySwipeDirection } from './utils/animationDirection';
 export type {
   NotifierInterface,
@@ -21,4 +22,5 @@ export type {
   Offsets,
   ViewWithOffsetsComponent,
   NotifierComponentProps,
+  ShakingConfig,
 } from './types';

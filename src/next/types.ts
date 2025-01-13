@@ -25,7 +25,8 @@ interface AnimationSpringConfig {
 export type AnimationConfig = AnimationTimingConfig | AnimationSpringConfig;
 
 export interface ShakingConfig {
-  distance: number;
+  minValue: number;
+  maxValue: number;
   numberOfRepeats: number;
   duration: number;
   vertical?: boolean;
@@ -230,10 +231,14 @@ export interface ShowParams {
    */
   swipeDirection?: SwipeDirection;
 
-  /** Config of the shaking animation. `useNativeDriver` is `true` by default, but it can be disabled.
+  /** Config of the shaking animation. Moves the notification from `minValue` to `maxValue` `numberOfRepeats` times in horizontal or vertical direction. `useNativeDriver` is `true` by default, but it can be disabled.
    * @default
+   * shakingConfigs.onlyUp // when use NotifierComponents.Alert component
+   * shakingConfigs.horizontal // for any other component
+   * @example
    * {
-   *   distance: 5,
+   *   minValue: -5,
+   *   maxValue: 5,
    *   vertical: false,
    *   numberOfRepeats: 3,
    *   duration: 50,
@@ -278,9 +283,7 @@ export interface ShowNotificationParams<
    * - `resetTimer` - reset(prolong) the `duration` timer
    * - `shake` - shake the notification
    * - `shakeAndResetTimer` - shake the notification and reset the `duration` timer
-   * @default 'shakeAndResetTimer'
-   * 'resetTimer' // when use NotifierComponents.Alert component
-   * 'shakeAndResetTimer' // for any other component*/
+   * @default 'shakeAndResetTimer' */
   duplicateBehavior?: DuplicateBehavior;
 
   /** Determines the order in which notifications are shown. Read more in the [Queue Mode](https://github.com/seniv/react-native-notifier#queue-mode) section.
