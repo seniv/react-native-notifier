@@ -15,13 +15,10 @@ import {
 import { Animated, View } from 'react-native';
 import { styles, positionStyles } from '../Notifier.styles';
 import { AnimationState, type Notification } from '../types';
-import {
-  useSwipeAnimationValues,
-  useLayout,
-  useShaking,
-} from './NotifierRenderer.hooks';
+import { useSwipeAnimationValues, useLayout } from './NotifierRenderer.hooks';
 import { getSwipedOutDirection } from '../utils/animationDirection';
 import { RenderComponentWithOffsets } from '../RenderComponentWithOffsets';
+import { useShaking } from '../hooks/useShaking';
 
 export interface NotifierRendererMethods {
   hideNotification(callback?: Animated.EndCallback): void;
