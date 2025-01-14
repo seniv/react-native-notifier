@@ -32,6 +32,7 @@ export const PositionsTabScreen = () => {
             title: 'Bottom Position',
             description: 'Moved to the bottom using position parameter',
             position: 'bottom',
+            duration: 5000,
           })
         }
       />

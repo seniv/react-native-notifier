@@ -1,7 +1,7 @@
 import { Animated } from 'react-native';
 import type {
   AnimationFunction,
-  AnimationFunctionParam,
+  AnimationFunctionParams,
 } from 'react-native-notifier/next';
 
 // utility function that returns convenient values for easier animations
@@ -9,7 +9,7 @@ const getFinalAnimationStateAndTranslateY = ({
   animationState,
   componentHeight,
   swipeTranslationY,
-}: AnimationFunctionParam) => {
+}: AnimationFunctionParams) => {
   const finalState = Animated.add(
     Animated.divide(swipeTranslationY, componentHeight),
     animationState
