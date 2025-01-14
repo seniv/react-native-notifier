@@ -4,7 +4,7 @@ import type {
   Notification,
   Offsets,
   ViewWithOffsetsComponent,
-} from './types';
+} from '../types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Animated,

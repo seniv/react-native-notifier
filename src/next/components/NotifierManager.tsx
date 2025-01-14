@@ -15,12 +15,12 @@ import type {
   QueueMode,
   UpdateNotificationParams,
   ShowNotificationReturnType,
-} from './types';
+} from '../types';
 import {
   NotifierRenderer,
   type NotifierRendererMethods,
 } from './NotifierRenderer';
-import { getNotificationParameters } from './utils/getNotificationParameters';
+import { getNotificationParameters } from '../utils/getNotificationParameters';
 
 interface NotifierManagerProps {
   defaultParams: RefObject<ShowNotificationParams>;

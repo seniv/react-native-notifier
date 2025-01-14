@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import { NotifierRoot } from './Notifier';
-import type { NotifierInterface, NotifierProps } from './types';
+import type { NotifierInterface, NotifierProps } from '../types';
 
 interface NotifierWrapperProps extends NotifierProps {
   children: React.ReactNode;

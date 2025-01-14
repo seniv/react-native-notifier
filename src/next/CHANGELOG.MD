@@ -21,7 +21,7 @@
 - It's possible to broadcast commands to all currently mounted instances of Notifier via `Notifier.broadcast.*`. Can be useful to hide all notifications (or clear queue + hide) using `Notifier.broadcast.hideNotification()`.
 - Custom handling for safe area insets (based on `react-native-safe-area-context`'s `useSafeAreaInsets` hook) in all built-in components + simple API to use the same insets in custom components. It also handles keyboard offset when notification displayed at bottom `position`. All components receives `offsets` object and `ViewWithOffsets` component as props. Related params: `ignoreSafeAreaInsets`, `ignoreKeyboard`, `additionalKeyboardOffset`, `additionalOffsets`.
 - Using new `*AnimationConfig` parameters, now it's possible to run __Spring__ animations with fully-customizable config.
-- Export additional TypeScript types, such as `NotifierComponentProps` which contain all base props for custom components, `AnimationFunction` for custom animations, `AnimationFunctionParams`, `Position`, `Offsets` and `ViewWithOffsetsComponent`.
+- Export additional TypeScript types, such as `NotifierComponentProps` which contain all base props for custom components, `AnimationFunction` for custom animations, `AnimationFunctionParams`, `Position`, `Offsets`, `ViewWithOffsetsComponent`, `Direction`, `DuplicateBehavior`, and `SwipeDirection`.
 - New built-in component: `SimpleToast`
 - All components receives `hide` function and `animationFunctionParams` object as props.
 

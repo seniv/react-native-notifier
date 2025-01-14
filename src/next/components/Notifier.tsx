@@ -10,8 +10,8 @@ import type {
   NotifierInterface,
   NotifierProps,
   ShowNotificationParams,
-} from './types';
-import { FullWindowOverlay } from '../components/FullWindowOverlay';
+} from '../types';
+import { FullWindowOverlay } from './FullWindowOverlay';
 import { NotifierManager } from './NotifierManager';
 
 // we store references to all currently mounted instances of NotifierRoot / NotifierWrapper where omitGlobalMethodsHookup != true

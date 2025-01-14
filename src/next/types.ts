@@ -1,4 +1,4 @@
-import { NotificationComponent } from './components/Notification';
+import { NotificationComponent } from './ui-components/Notification';
 import {
   Animated,
   View,

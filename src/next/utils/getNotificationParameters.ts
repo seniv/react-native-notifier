@@ -10,7 +10,7 @@ import type {
 import {
   Notification as NotificationComponent,
   Alert as AlertComponent,
-} from '../components';
+} from '../ui-components';
 import { slide as slideAnimationFunction } from './animationFunctions';
 import {
   spring as springAnimationConfig,
