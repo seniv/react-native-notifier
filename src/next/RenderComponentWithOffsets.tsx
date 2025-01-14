@@ -1,7 +1,13 @@
 import { memo, useCallback, useEffect, useState } from 'react';
-import type { Notification, Offsets, ViewWithOffsetsComponent } from './types';
+import type {
+  AnimationFunctionParams,
+  Notification,
+  Offsets,
+  ViewWithOffsetsComponent,
+} from './types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
+  Animated,
   Keyboard,
   Platform,
   View,
@@ -88,9 +94,15 @@ const useOffsets = ({
 
 interface RenderComponentWithOffsetsProps {
   notification: Notification;
+  hide: (callback?: Animated.EndCallback) => void;
+  animationFunctionParams: AnimationFunctionParams;
 }
 export const RenderComponentWithOffsets = memo(
-  ({ notification }: RenderComponentWithOffsetsProps) => {
+  ({
+    notification,
+    animationFunctionParams,
+    hide,
+  }: RenderComponentWithOffsetsProps) => {
     const offsets = useOffsets(notification);
 
     const ViewWithOffsets = useCallback<ViewWithOffsetsComponent>(
@@ -119,6 +131,8 @@ export const RenderComponentWithOffsets = memo(
         description={notification.description}
         offsets={offsets}
         ViewWithOffsets={ViewWithOffsets}
+        hide={hide}
+        animationFunctionParams={animationFunctionParams}
         {...notification.componentProps}
       />
     );

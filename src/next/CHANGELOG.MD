@@ -1,5 +1,4 @@
 # BREAKING CHANGES
-- Animations will work correctly only with New Architecture (Fabric renderer) enabled.
 - `Component` gets unmounted while notification is not visible.
 - `containerStyle` now receives simple style object and can't be used to change animation. Use `animationFunction` instead.
 - now `react-native-safe-area-context` library is internally used, so make sure you have `react-native-safe-area-context` installed and `NotifierRoot/Wrapper` is wrapped by `SafeAreaProvider`.
@@ -22,9 +21,21 @@
 - It's possible to broadcast commands to all currently mounted instances of Notifier via `Notifier.broadcast.*`. Can be useful to hide all notifications (or clear queue + hide) using `Notifier.broadcast.hideNotification()`.
 - Custom handling for safe area insets (based on `react-native-safe-area-context`'s `useSafeAreaInsets` hook) in all built-in components + simple API to use the same insets in custom components. It also handles keyboard offset when notification displayed at bottom `position`. All components receives `offsets` object and `ViewWithOffsets` component as props. Related params: `ignoreSafeAreaInsets`, `ignoreKeyboard`, `additionalKeyboardOffset`, `additionalOffsets`.
 - Using new `*AnimationConfig` parameters, now it's possible to run __Spring__ animations with fully-customizable config.
-- Export additional TypeScript types, such as `NotifierComponentProps` which contain all base props for custom components, `AnimationFunction` for custom animations, `AnimationFunctionParam`, `Position`, `Offsets` and `ViewWithOffsetsComponent`.
+- Export additional TypeScript types, such as `NotifierComponentProps` which contain all base props for custom components, `AnimationFunction` for custom animations, `AnimationFunctionParams`, `Position`, `Offsets` and `ViewWithOffsetsComponent`.
 - New built-in component: `SimpleToast`
+- All components receives `hide` function and `animationFunctionParams` object as props.
 
 # Bug Fixes
 - When you mount `NotifierWrapper`/`NotifierRoot` with `omitGlobalMethodsHookup={true}`, and then set it `false`, global methods will be hooked up correctly.
 - Fixed appearing animation that can slightly jump when very big notification appears.
+
+# Known Issues
+- When `useRNScreensOverlay` is `true`, the bottom `position` will not work. If you require a bottom position with `useRNScreensOverlay`, you can adjust the container style by using the `rnScreensOverlayViewStyle` parameter as follows:
+
+```typescript
+rnScreensOverlayViewStyle={{
+  width: '100%',
+  position: 'absolute',
+  bottom: 0,
+}}
+```

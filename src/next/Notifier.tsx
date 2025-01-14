@@ -101,6 +101,7 @@ const broadcast = (fn: (ref: NotifierInterface) => void) => {
       fn(ref.current);
     }
   });
+  return undefined;
 };
 
 export const Notifier: GlobalNotifierInterface = {

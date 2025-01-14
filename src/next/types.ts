@@ -48,7 +48,7 @@ export type Position =
 type AnimatedViewProps = React.ComponentProps<
   Animated.AnimatedComponent<typeof View>
 >;
-export interface AnimationFunctionParam {
+export interface AnimationFunctionParams {
   /** value from params, internally used in default animationFunction to limit swipe direction. */
   swipeDirection: SwipeDirection;
   /** `Animated.Value` from 0 to 1, where 0 = notification completely hidden, and 1 = notification fully visible */
@@ -105,7 +105,7 @@ export interface AnimationFunctionParam {
   shakingTranslationY: Animated.Value;
 }
 export type AnimationFunction = (
-  param: AnimationFunctionParam
+  params: AnimationFunctionParams
 ) => AnimatedViewProps['style'];
 
 export interface Offsets {
@@ -133,6 +133,10 @@ export interface NotifierComponentProps {
    * @param props.mode `padding` | `margin`
    */
   ViewWithOffsets: ViewWithOffsetsComponent;
+  /** A function that hides the notification. Almost like the `Notifier.hideNotification`, but it ensures that it will hide this exact notification. */
+  hide: (callback?: Animated.EndCallback) => void;
+  /** The same parameter that is passed to the `animationFunction`. Can be useful to animate something inside the component based on the `animationFunctionParams.animationState` */
+  animationFunctionParams: AnimationFunctionParams;
 }
 
 export interface ShowParams {
@@ -312,7 +316,7 @@ export interface ShowNotificationParams<
    */
   containerStyle?: AnimatedViewProps['style'];
 
-  /** Function that receives object with various `Animated.Value` and should return Styles that will be used to animate the notification. When set, result of the function will replace default animation
+  /** Function that receives object with various `Animated.Value` and should return Styles that will be used to animate the notification. When set, result of the function will replace default animation. This function will be called only once.
    * @default animationFunctions.slide
    * @example
    * export const fadeInOut: AnimationFunction = ({ animationState }) => {
@@ -389,7 +393,7 @@ export type UpdateNotificationParams<
   'queueMode' | 'id' | 'duplicateBehavior'
 >;
 
-interface ShowNotificationReturnType<
+export interface ShowNotificationReturnType<
   ComponentType extends ElementType = typeof NotificationComponent,
 > {
   /** Update this exact notification, if visible - will be updated immediately,
@@ -403,10 +407,12 @@ interface ShowNotificationReturnType<
   shake(resetTimer?: boolean): void;
   /** Is this exact notification visible */
   isVisible(): boolean;
+  /** ID of the notification */
+  id: string | number;
 }
 
 export interface NotifierInterface {
-  /** Show notification with params. Returns `update`, `hide`, `shake` and `isVisible` functions. */
+  /** Show notification with params. Returns `update`, `hide`, `shake`, `isVisible` functions and `id` field. */
   showNotification<
     ComponentType extends ElementType = typeof NotificationComponent,
   >(
@@ -434,19 +440,19 @@ export interface NotifierInterface {
 
 export interface GlobalNotifierInterface
   extends Omit<NotifierInterface, 'showNotification' | 'updateNotification'> {
-  /** Show notification with params. Returns `update`, `hide`, `shake` and `isVisible` functions if at least one Notifier is mounted. */
+  /** Show notification with params. Returns `update`, `hide`, `shake`, `isVisible` functions and `id` field if at least one Notifier is mounted. */
   showNotification<
     ComponentType extends ElementType = typeof NotificationComponent,
   >(
     params: ShowNotificationParams<ComponentType>
-  ): ShowNotificationReturnType<ComponentType> | void;
+  ): ShowNotificationReturnType<ComponentType> | undefined;
 
   /** Update currently visible notification. Returns true if notification was updated */
   updateNotification<
     ComponentType extends ElementType = typeof NotificationComponent,
   >(
     params: UpdateNotificationParams<ComponentType>
-  ): boolean | void;
+  ): boolean | undefined;
 
   /** Broadcasts the command to all currently mounted instances of Notifier, not only to the last one.
    *

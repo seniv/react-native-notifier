@@ -171,7 +171,7 @@ const NotifierRendererComponent = forwardRef<
     }
   };
 
-  const animationFunctionParam = useMemo(
+  const animationFunctionParams = useMemo(
     () => ({
       swipeDirection: notification.swipeDirection,
       animationState,
@@ -189,8 +189,8 @@ const NotifierRendererComponent = forwardRef<
   );
   const { animationFunction } = notification;
   const animationStyle = useMemo(
-    () => animationFunction(animationFunctionParam),
-    [animationFunction, animationFunctionParam]
+    () => animationFunction(animationFunctionParams),
+    [animationFunction, animationFunctionParams]
   );
 
   return (
@@ -211,7 +211,11 @@ const NotifierRendererComponent = forwardRef<
       >
         <TouchableWithoutFeedback onPress={onPress}>
           <View ref={ref} onLayout={onLayout}>
-            <RenderComponentWithOffsets notification={notification} />
+            <RenderComponentWithOffsets
+              notification={notification}
+              hide={hideNotification}
+              animationFunctionParams={animationFunctionParams}
+            />
           </View>
         </TouchableWithoutFeedback>
       </Animated.View>

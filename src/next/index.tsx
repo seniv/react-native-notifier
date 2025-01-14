@@ -15,7 +15,7 @@ export type {
   ShowNotificationParams,
   NotifierProps,
   AnimationFunction,
-  AnimationFunctionParam,
+  AnimationFunctionParams,
   AnimationState,
   AnimationConfig,
   Position,

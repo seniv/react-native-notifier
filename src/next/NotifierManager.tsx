@@ -14,6 +14,7 @@ import type {
   Notification,
   QueueMode,
   UpdateNotificationParams,
+  ShowNotificationReturnType,
 } from './types';
 import {
   NotifierRenderer,
@@ -83,7 +84,7 @@ const NotifierManagerComponent = React.forwardRef<
   );
 
   const getNotificationMethodsForId = useCallback(
-    (id: string | number) => ({
+    (id: string | number): ShowNotificationReturnType<any> => ({
       hide: (callback?: Animated.EndCallback) => {
         if (id !== currentNotificationId.current) return;
         return hideNotification(callback);
@@ -105,6 +106,7 @@ const NotifierManagerComponent = React.forwardRef<
         return shakeNotification(resetTimerParam);
       },
       isVisible: () => id === currentNotificationId.current,
+      id,
     }),
     [hideNotification, shakeNotification, updateNotification]
   );
