@@ -11,16 +11,11 @@ import {
   Notification as NotificationComponent,
   Alert as AlertComponent,
 } from '../ui-components';
-import { slide as slideAnimationFunction } from './animationFunctions';
 import {
-  spring as springAnimationConfig,
-  timing200 as timing200AnimationConfig,
-  timing300 as timing300AnimationConfig,
-} from './animationConfigs';
-import {
-  horizontal as horizontalShakingConfig,
-  onlyUp as onlyUpShakingConfig,
-} from './shakingConfigs';
+  animationConfigs,
+  animationFunctions,
+  shakingConfigs,
+} from '../parameters';
 
 const getDefaultEnterFromBasedOnPosition = (position?: Position): Direction => {
   if (!position) return 'top';
@@ -68,7 +63,7 @@ export const getNotificationParameters = ({
     Component: params.Component ?? NotificationComponent,
     duration: params.duration ?? 3000,
     swipePixelsToClose: params?.swipePixelsToClose ?? 20,
-    animationFunction: params.animationFunction ?? slideAnimationFunction,
+    animationFunction: params.animationFunction ?? animationFunctions.slide,
     position,
     enterFrom,
     exitTo: params.exitTo ?? enterFrom ?? 'top',
@@ -78,18 +73,19 @@ export const getNotificationParameters = ({
     showAnimationConfig:
       params.showAnimationConfig ??
       (params.Component === AlertComponent
-        ? timing300AnimationConfig
-        : springAnimationConfig),
-    hideAnimationConfig: params.hideAnimationConfig ?? timing300AnimationConfig,
+        ? animationConfigs.timing300
+        : animationConfigs.spring),
+    hideAnimationConfig:
+      params.hideAnimationConfig ?? animationConfigs.timing300,
     swipeOutAnimationConfig:
-      params.swipeOutAnimationConfig ?? timing200AnimationConfig,
+      params.swipeOutAnimationConfig ?? animationConfigs.timing200,
     resetSwipeAnimationConfig:
-      params.resetSwipeAnimationConfig ?? timing200AnimationConfig,
+      params.resetSwipeAnimationConfig ?? animationConfigs.timing200,
     shakingConfig:
       params.shakingConfig ??
       (params.Component === AlertComponent
-        ? onlyUpShakingConfig
-        : horizontalShakingConfig),
+        ? shakingConfigs.onlyUp
+        : shakingConfigs.horizontal),
     duplicateBehavior: params.duplicateBehavior ?? 'shakeAndResetTimer',
     queueMode: params.queueMode ?? 'reset',
   };
