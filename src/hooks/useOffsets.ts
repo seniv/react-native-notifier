@@ -21,9 +21,10 @@ export const useOffsets = ({
 
   const top = safeAreaInsets.top + (additionalOffsets?.top ?? 0);
   const right = safeAreaInsets.right + (additionalOffsets?.right ?? 0);
-  const bottom =
-    Math.max(safeAreaInsets.bottom, finalKeyboardOffset) +
-    (additionalOffsets?.bottom ?? 0);
+  const bottom = Math.max(
+    safeAreaInsets.bottom + (additionalOffsets?.bottom ?? 0),
+    finalKeyboardOffset
+  );
   const left = safeAreaInsets.left + (additionalOffsets?.left ?? 0);
 
   switch (position) {
