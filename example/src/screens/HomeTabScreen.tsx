@@ -1,9 +1,5 @@
 import { ScrollView } from 'react-native';
-import {
-  Easing,
-  Notifier,
-  NotifierComponents,
-} from 'react-native-notifier/next';
+import { Easing, Notifier, NotifierComponents } from 'react-native-notifier';
 import Button from '../components/Button';
 import CustomComponent from '../components/CustomComponent';
 

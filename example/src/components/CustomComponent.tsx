@@ -1,5 +1,5 @@
 import { StyleSheet, View, Text } from 'react-native';
-import type { NotifierComponentProps } from 'react-native-notifier/next';
+import type { NotifierComponentProps } from 'react-native-notifier';
 
 const customStyles = StyleSheet.create({
   safeArea: {

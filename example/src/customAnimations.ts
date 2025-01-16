@@ -2,7 +2,7 @@ import { Animated } from 'react-native';
 import type {
   AnimationFunction,
   AnimationFunctionParams,
-} from 'react-native-notifier/next';
+} from 'react-native-notifier';
 
 // utility function that returns convenient values for easier animations
 const getFinalAnimationStateAndTranslateY = ({

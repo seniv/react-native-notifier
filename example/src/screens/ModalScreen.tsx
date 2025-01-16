@@ -2,7 +2,7 @@ import {
   Notifier,
   NotifierComponents,
   NotifierRoot,
-} from 'react-native-notifier/next';
+} from 'react-native-notifier';
 import Button from '../components/Button';
 import { isIos } from '../constants';
 import { useAppStore } from '../store';

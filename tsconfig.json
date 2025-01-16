@@ -3,7 +3,6 @@
     "rootDir": ".",
     "paths": {
       "react-native-notifier": ["./src/index"],
-      "react-native-notifier/next": ["./src/next/index"],
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

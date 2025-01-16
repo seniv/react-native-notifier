@@ -3,7 +3,7 @@ import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { NotifierWrapper } from 'react-native-notifier/next';
+import { NotifierWrapper } from 'react-native-notifier';
 import { isAndroid, notifierRef } from './constants';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomeTabScreen } from './screens/HomeTabScreen';

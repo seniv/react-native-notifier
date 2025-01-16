@@ -1,4 +1,4 @@
-import { Notifier, NotifierRoot } from 'react-native-notifier/next';
+import { Notifier, NotifierRoot } from 'react-native-notifier';
 import {
   ScrollView,
   StyleSheet,
