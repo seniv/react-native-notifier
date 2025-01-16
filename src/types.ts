@@ -139,7 +139,90 @@ export interface NotifierComponentProps {
   animationFunctionParams: AnimationFunctionParams;
 }
 
-export interface ShowParams {
+export type DuplicateBehavior =
+  | 'ignore'
+  | 'shake'
+  | 'shakeAndResetTimer'
+  | 'resetTimer'
+  | 'proceed';
+
+export type QueueMode = 'immediate' | 'next' | 'standby' | 'reset';
+
+export interface ShowNotificationParams<
+  ComponentType extends ElementType = ElementType,
+> {
+  /** Title of notification. __Passed to `Component`.__
+   * @default null */
+  title?: string;
+
+  /** Description of notification. __Passed to `Component`.__
+   * @default null */
+  description?: string;
+
+  /** Component of the notification body. You can use one of the [built-in components](https://github.com/seniv/react-native-notifier#components), or your [custom component](https://github.com/seniv/react-native-notifier#custom-component).
+   * @default NotifierComponents.Notification */
+  Component?: ComponentType;
+
+  /** Additional props that are passed to `Component`. See all available props of built-in components in the [components section](https://github.com/seniv/react-native-notifier#components)
+   * @default {} */
+  componentProps?: Omit<
+    React.ComponentProps<ComponentType>,
+    keyof NotifierComponentProps
+  >;
+
+  /** What to do if notification __with the same ID(!)__ already shown.
+   * - `proceed` - proceed to the `queueMode` step
+   * - `ignore` - ignores the call of `showNotification` method
+   * - `resetTimer` - reset(prolong) the `duration` timer
+   * - `shake` - shake the notification
+   * - `shakeAndResetTimer` - shake the notification and reset the `duration` timer
+   * @default 'shakeAndResetTimer' */
+  duplicateBehavior?: DuplicateBehavior;
+
+  /** Determines the order in which notifications are shown. Read more in the [Queue Mode](https://github.com/seniv/react-native-notifier#queue-mode) section.
+   * - `reset` - Clear notification queue and immediately display the new notification.
+   * - `standby` - Add notification to the end of the queue.
+   * - `next` - Put notification in the first place in the queue. Will be shown right after the current notification disappears.
+   * - `immediate` - Similar to next, but also it will hide currently displayed notification.
+   * @default 'reset' */
+  queueMode?: QueueMode;
+
+  /** A manually provided ID. If supplied, it overrides any generation strategy. If notification with the same ID already shown, result of the `showNotification` will depend on `duplicateBehavior` parameter.
+   * @default
+   * Math.random()
+   * // or hash of the parameters, based on the `idStrategy` parameter
+   *  */
+  id?: string | number;
+
+  /** Specifies how the ID should be generated if none is manually provided.
+   * `hash` - derives an ID from `showNotification` parameters. Multiple calls of the `showNotification` with same parameters will have the same ID.
+   * `random` - creates a random ID
+   * @default 'hash' */
+  idStrategy?: 'hash' | 'random';
+
+  /** Styles Object that will be used in container.
+   * @default null
+   */
+  containerStyle?: AnimatedViewProps['style'];
+
+  /** Function that receives object with various `Animated.Value` and should return Styles that will be used to animate the notification. When set, result of the function will replace default animation. This function will be called only once.
+   * @default animationFunctions.slide
+   * @example
+   * export const fadeInOut: AnimationFunction = ({ animationState }) => {
+   *   return {
+   *     opacity: animationState,
+   *   };
+   * };
+   * // or use one of presets:
+   * animationFunctions.fadeInOut
+   */
+  animationFunction?: AnimationFunction;
+
+  /** props of Animated Container
+   * @default {}
+   */
+  containerProps?: Omit<AnimatedViewProps, 'style'>;
+
   /** Config of the function that runs the "showing" animation. `timing` or `spring` method can be used. `useNativeDriver` is `true` by default, but it can be disabled.
    * @default
    * animationConfigs.timing300 // when use NotifierComponents.Alert component
@@ -249,90 +332,6 @@ export interface ShowParams {
    * }
    * */
   shakingConfig?: ShakingConfig;
-}
-
-export type DuplicateBehavior =
-  | 'ignore'
-  | 'shake'
-  | 'shakeAndResetTimer'
-  | 'resetTimer'
-  | 'proceed';
-export type QueueMode = 'immediate' | 'next' | 'standby' | 'reset';
-
-export interface ShowNotificationParams<
-  ComponentType extends ElementType = ElementType,
-> extends ShowParams {
-  /** Title of notification. __Passed to `Component`.__
-   * @default null */
-  title?: string;
-
-  /** Description of notification. __Passed to `Component`.__
-   * @default null */
-  description?: string;
-
-  /** Component of the notification body. You can use one of the [built-in components](https://github.com/seniv/react-native-notifier#components), or your [custom component](https://github.com/seniv/react-native-notifier#custom-component).
-   * @default NotifierComponents.Notification */
-  Component?: ComponentType;
-
-  /** Additional props that are passed to `Component`. See all available props of built-in components in the [components section](https://github.com/seniv/react-native-notifier#components)
-   * @default {} */
-  componentProps?: Omit<
-    React.ComponentProps<ComponentType>,
-    keyof NotifierComponentProps
-  >;
-
-  /** What to do if notification __with the same ID(!)__ already shown.
-   * - `proceed` - proceed to the `queueMode` step
-   * - `ignore` - ignores the call of `showNotification` method
-   * - `resetTimer` - reset(prolong) the `duration` timer
-   * - `shake` - shake the notification
-   * - `shakeAndResetTimer` - shake the notification and reset the `duration` timer
-   * @default 'shakeAndResetTimer' */
-  duplicateBehavior?: DuplicateBehavior;
-
-  /** Determines the order in which notifications are shown. Read more in the [Queue Mode](https://github.com/seniv/react-native-notifier#queue-mode) section.
-   * - `reset` - Clear notification queue and immediately display the new notification.
-   * - `standby` - Add notification to the end of the queue.
-   * - `next` - Put notification in the first place in the queue. Will be shown right after the current notification disappears.
-   * - `immediate` - Similar to next, but also it will hide currently displayed notification.
-   * @default 'reset' */
-  queueMode?: QueueMode;
-
-  /** A manually provided ID. If supplied, it overrides any generation strategy. If notification with the same ID already shown, result of the `showNotification` will depend on `duplicateBehavior` parameter.
-   * @default
-   * Math.random()
-   * // or hash of the parameters, based on the `idStrategy` parameter
-   *  */
-  id?: string | number;
-
-  /** Specifies how the ID should be generated if none is manually provided.
-   * `hash` - derives an ID from `showNotification` parameters. Multiple calls of the `showNotification` with same parameters will have the same ID.
-   * `random` - creates a random ID
-   * @default 'hash' */
-  idStrategy?: 'hash' | 'random';
-
-  /** Styles Object that will be used in container.
-   * @default null
-   */
-  containerStyle?: AnimatedViewProps['style'];
-
-  /** Function that receives object with various `Animated.Value` and should return Styles that will be used to animate the notification. When set, result of the function will replace default animation. This function will be called only once.
-   * @default animationFunctions.slide
-   * @example
-   * export const fadeInOut: AnimationFunction = ({ animationState }) => {
-   *   return {
-   *     opacity: animationState,
-   *   };
-   * };
-   * // or use one of presets:
-   * animationFunctions.fadeInOut
-   */
-  animationFunction?: AnimationFunction;
-
-  /** props of Animated Container
-   * @default {}
-   */
-  containerProps?: Omit<AnimatedViewProps, 'style'>;
 }
 
 export enum AnimationState {
