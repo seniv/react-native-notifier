@@ -1,8 +1,3 @@
-export const MIN_TRANSLATE_Y = -1000;
-export const MAX_TRANSLATE_Y = 0;
-export const DEFAULT_COMPONENT_HEIGHT = 200;
-export const DEFAULT_DURATION = 3000;
-export const DEFAULT_ANIMATION_DURATION = 300;
-export const SWIPE_PIXELS_TO_CLOSE = 20;
-export const SWIPE_ANIMATION_DURATION = 200;
-export const DEFAULT_SWIPE_ENABLED = true;
+// @ts-expect-error
+export const FABRIC_ENABLED = global?.nativeFabricUIManager != null;
+export const MAX_VALUE = 9999;
