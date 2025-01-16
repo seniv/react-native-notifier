@@ -1,161 +1,171 @@
-import { Animated, Platform } from 'react-native';
+import { Animated } from 'react-native';
+import type {
+  AnimationFunction,
+  AnimationFunctionParams,
+} from 'react-native-notifier';
 
-export const getContainerStyleOpacityTransformScale = (
-  translateY: Animated.Value
-) => ({
-  opacity: translateY.interpolate({
-    inputRange: [-200, 0],
+// utility function that returns convenient values for easier animations
+const getFinalAnimationStateAndTranslateY = ({
+  animationState,
+  componentHeight,
+  swipeTranslationY,
+}: AnimationFunctionParams) => {
+  const finalState = Animated.add(
+    Animated.divide(swipeTranslationY, componentHeight),
+    animationState
+  );
+  const translateY = Animated.multiply(
+    Animated.subtract(finalState, 1),
+    componentHeight
+  );
+
+  const stateClamped = finalState.interpolate({
+    inputRange: [0, 1],
     outputRange: [0, 1],
     extrapolate: 'clamp',
-  }),
-  transform: [
-    {
-      translateY: translateY.interpolate({
-        inputRange: [-1000, 0],
-        outputRange: [-1000, 0],
-        extrapolate: 'clamp',
-      }),
-    },
-    {
-      scale: translateY.interpolate({
-        inputRange: [-1000, -200, 0],
-        outputRange: [0, 0.5, 1],
-        extrapolate: 'clamp',
-      }),
-    },
-  ],
-});
+  });
 
-export const getContainerStyleClassicWithOverSwipe = (
-  translateY: Animated.Value
-) => ({
-  transform: [
-    {
-      // from negative values to 0 it is dragging as usual, but dragging down is 20x slower.
-      // On iOS it is dragging down with some kind of a "delay"
-      // when notification component is wrapped with SafeAreaView (it is wrapped in all default components).
-      translateY: translateY.interpolate({
-        inputRange: [-1, 0, 20],
-        outputRange: [-1, 0, 1],
-      }),
-    },
-  ],
-});
+  const translateYClamped = Animated.multiply(
+    Animated.subtract(stateClamped, 1),
+    componentHeight
+  );
 
-export const getContainerStyleOpacityOnly = (translateY: Animated.Value) => ({
-  opacity: translateY.interpolate({
-    inputRange: [-200, 0],
-    outputRange: [0, 1],
-    extrapolate: 'clamp',
-  }),
-  // Transform used to move Notification out of the screen when it is already transparent
-  transform: [
-    {
-      translateY: translateY.interpolate({
-        inputRange: [-1000, -200, 0],
-        outputRange: [-1000, 0, 0],
-        extrapolate: 'clamp',
-      }),
-    },
-  ],
-});
+  return {
+    finalState,
+    translateY,
+    stateClamped,
+    translateYClamped,
+  };
+};
 
-export const getContainerStyleScaleOnly = (translateY: Animated.Value) => ({
-  transform: [
-    {
-      // Translate notification out of the screen to make sure it is not visible
-      translateY: translateY.interpolate({
-        inputRange: [-1000, -200, 0],
-        outputRange: [-1000, 0, 0],
-        extrapolate: 'clamp',
-      }),
-    },
-    {
-      scale: translateY.interpolate({
-        inputRange: [-200, 0],
-        // On android when scale to "0" notification didn't hide completely.
-        // Scaling to 0.1 and translating component out of the screen fixes the problem
-        outputRange: [0.1, 1],
-        extrapolate: 'clamp',
-      }),
-    },
-  ],
-});
+export const opacityTransformScaleAnimationFunction: AnimationFunction = (
+  param
+) => {
+  const { stateClamped, translateYClamped } =
+    getFinalAnimationStateAndTranslateY(param);
 
-export const getContainerStyleScaleAndRotation = (
-  translateY: Animated.Value
-) => ({
-  transform: [
-    {
-      // Translate notification out of the screen to make sure it is not visible
-      translateY: translateY.interpolate({
-        inputRange: [-1000, -200, 0],
-        outputRange: [-1000, 0, 0],
-        extrapolate: 'clamp',
-      }),
-    },
-    {
-      scale: translateY.interpolate({
-        inputRange: [-200, 0],
-        // On android when scale to "0" notification didn't hide completely.
-        // Scaling to 0.1 and translating component out of the screen fixes the problem
-        outputRange: [0.1, 1],
-        extrapolate: 'clamp',
-      }),
-    },
-    {
-      rotate: translateY.interpolate({
-        inputRange: [-200, 0],
-        outputRange: ['0deg', '360deg'],
-        extrapolate: 'clamp',
-      }),
-    },
-  ],
-});
+  return {
+    opacity: stateClamped.interpolate({
+      inputRange: [0, 0.5, 1],
+      outputRange: [0, 0, 1],
+      extrapolate: 'clamp',
+    }),
+    transform: [
+      {
+        translateY: translateYClamped.interpolate({
+          inputRange: [-1000, 0],
+          outputRange: [-1000, 0],
+          extrapolate: 'clamp',
+        }),
+      },
+      {
+        scale: stateClamped.interpolate({
+          // start with scale = 1, it's a trick to make correct height calculation
+          inputRange: [0, 0.01, 1],
+          outputRange: [1, 0, 1],
+          extrapolate: 'clamp',
+        }),
+      },
+    ],
+  };
+};
+
+export const classicWithOverSwipeAnimationFunction: AnimationFunction = (
+  param
+) => {
+  const { translateY } = getFinalAnimationStateAndTranslateY(param);
+  return {
+    transform: [
+      {
+        // from negative values to 0 it is dragging as usual, but dragging down is 20x slower.
+        translateY: translateY.interpolate({
+          inputRange: [-1, 0, 20],
+          outputRange: [-1, 0, 1],
+        }),
+      },
+    ],
+  };
+};
+
+export const opacityOnlyAnimationFunction: AnimationFunction = (param) => {
+  const { stateClamped } = getFinalAnimationStateAndTranslateY(param);
+  return {
+    opacity: stateClamped,
+  };
+};
+
+export const scaleOnlyAnimationFunction: AnimationFunction = (param) => {
+  const { stateClamped } = getFinalAnimationStateAndTranslateY(param);
+  return {
+    // use opacity to avoid flickering when scale = 1 while state = 0
+    opacity: stateClamped.interpolate({
+      inputRange: [0.01, 0.02],
+      outputRange: [0, 1],
+      extrapolate: 'clamp',
+    }),
+    transform: [
+      {
+        scale: stateClamped.interpolate({
+          inputRange: [0, 0.01, 1],
+          outputRange: [1, 0, 1],
+          extrapolate: 'clamp',
+        }),
+      },
+    ],
+  };
+};
+
+export const scaleAndRotationAnimationFunction: AnimationFunction = (param) => {
+  const { stateClamped } = getFinalAnimationStateAndTranslateY(param);
+  return {
+    // use opacity to avoid flickering when scale = 1 while state = 0
+    opacity: stateClamped.interpolate({
+      inputRange: [0.01, 0.02],
+      outputRange: [0, 1],
+      extrapolate: 'clamp',
+    }),
+    transform: [
+      {
+        scale: stateClamped.interpolate({
+          inputRange: [0, 0.01, 1],
+          outputRange: [1, 0, 1],
+          extrapolate: 'clamp',
+        }),
+      },
+      {
+        rotate: stateClamped.interpolate({
+          inputRange: [0, 1],
+          outputRange: ['0deg', '360deg'],
+          extrapolate: 'clamp',
+        }),
+      },
+    ],
+  };
+};
 
 // Code from README.md example
-export const getContainerStyleWithTranslateAndScale = (
-  translateY: Animated.Value
-) => ({
-  transform: [
-    {
-      // this interpolation is used just to "clamp" the value and didn't allow to drag the notification below "0"
-      translateY: translateY.interpolate({
-        inputRange: [-1000, 0],
-        outputRange: [-1000, 0],
-        extrapolate: 'clamp',
-      }),
-    },
-    {
-      // scaling from 0 to 0.5 when value is in range of -1000 and -200 because mostly it is still invisible,
-      // and from 0.5 to 1 in last 200 pixels to make the scaling effect more noticeable.
-      scale: translateY.interpolate({
-        inputRange: [-1000, -200, 0],
-        outputRange: [0, 0.5, 1],
-        extrapolate: 'clamp',
-      }),
-    },
-  ],
-});
-
-export const getContainerStyleBottomPosition = (
-  translateY: Animated.Value
-) => ({
-  // unset "top" property that was used in default styles
-  top: Platform.select({
-    web: 'unset' as unknown as number,
-    default: undefined,
-  }),
-  // add bottom margin
-  bottom: 10,
-  transform: [
-    {
-      // reverse translateY value
-      translateY: translateY.interpolate({
-        inputRange: [-1000, 0],
-        outputRange: [1000, 0],
-        extrapolate: 'clamp',
-      }),
-    },
-  ],
-});
+export const translateAndScaleAnimationFunction: AnimationFunction = (
+  param
+) => {
+  const { stateClamped, translateYClamped } =
+    getFinalAnimationStateAndTranslateY(param);
+  return {
+    opacity: stateClamped.interpolate({
+      inputRange: [0.01, 0.02],
+      outputRange: [0, 1],
+      extrapolate: 'clamp',
+    }),
+    transform: [
+      {
+        translateY: translateYClamped,
+      },
+      {
+        scale: stateClamped.interpolate({
+          inputRange: [0, 0.01, 1],
+          outputRange: [1, 0, 1],
+          extrapolate: 'clamp',
+        }),
+      },
+    ],
+  };
+};

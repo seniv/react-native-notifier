@@ -3,10 +3,10 @@ import {
   StyleSheet,
   View,
   Text,
-  SafeAreaView,
   type TextStyle,
   type StyleProp,
 } from 'react-native';
+import type { NotifierComponentProps } from '../types';
 
 type AlertTypes = 'error' | 'warn' | 'info' | 'success';
 
@@ -36,7 +36,7 @@ const s = StyleSheet.create({
   },
 });
 
-export interface AlertComponentProps {
+export interface AlertComponentProps extends NotifierComponentProps {
   /** Background color will be changed depending on the type. Available values: `error`(red), `success`(green), `warn`(orange) and `info`(blue).
    * @default 'success' */
   alertType: AlertTypes;
@@ -57,7 +57,7 @@ export interface AlertComponentProps {
    * @default null */
   maxDescriptionLines?: number;
 
-  /** A container of the component. Set it in case you use different SafeAreaView than the standard
+  /** A container of the component. Set it in case you use different SafeAreaView than the custom `ViewWithOffsets`
    * @default SafeAreaView */
   ContainerComponent?: React.ElementType;
 
@@ -70,12 +70,7 @@ export interface AlertComponentProps {
   descriptionStyle?: StyleProp<TextStyle>;
 }
 
-interface AlertComponentAllProps extends AlertComponentProps {
-  title?: string;
-  description?: string;
-}
-
-const AlertComponent: React.FunctionComponent<AlertComponentAllProps> = ({
+export const AlertComponent = ({
   title,
   titleStyle,
   description,
@@ -86,12 +81,15 @@ const AlertComponent: React.FunctionComponent<AlertComponentAllProps> = ({
   ContainerComponent,
   maxTitleLines,
   maxDescriptionLines,
-}) => {
-  const Container = ContainerComponent ?? SafeAreaView;
+  ViewWithOffsets,
+}: AlertComponentProps) => {
+  const Container = ContainerComponent ?? ViewWithOffsets;
   const textStyle = textColor ? { color: textColor } : null;
   return (
     <Container
-      style={{ backgroundColor: backgroundColor || bgColors[alertType] }}
+      style={{
+        backgroundColor: backgroundColor || bgColors[alertType],
+      }}
     >
       <View style={s.container}>
         {!!title && (
@@ -114,5 +112,3 @@ const AlertComponent: React.FunctionComponent<AlertComponentAllProps> = ({
     </Container>
   );
 };
-
-export default AlertComponent;

@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "react-native-notifier": ["./src/index"]
+      "react-native-notifier": ["./src/index"],
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,

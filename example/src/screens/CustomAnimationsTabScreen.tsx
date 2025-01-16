@@ -3,13 +3,12 @@ import Button from '../components/Button';
 import { ScrollView } from 'react-native';
 import { isAndroid } from '../constants';
 import {
-  getContainerStyleBottomPosition,
-  getContainerStyleClassicWithOverSwipe,
-  getContainerStyleOpacityOnly,
-  getContainerStyleOpacityTransformScale,
-  getContainerStyleScaleAndRotation,
-  getContainerStyleScaleOnly,
-  getContainerStyleWithTranslateAndScale,
+  classicWithOverSwipeAnimationFunction,
+  opacityOnlyAnimationFunction,
+  opacityTransformScaleAnimationFunction,
+  scaleAndRotationAnimationFunction,
+  scaleOnlyAnimationFunction,
+  translateAndScaleAnimationFunction,
 } from '../customAnimations';
 
 // "needsOffscreenAlphaCompositing" prop is needed to fix shadows on android when using "opacity" style in container
@@ -27,7 +26,7 @@ export const CustomAnimationsTabScreen = () => {
             title: 'Opacity, TranslateY and Scale animation',
             description:
               'This notification uses Opacity and Transformation of Scale and TranslateY',
-            containerStyle: getContainerStyleOpacityTransformScale,
+            animationFunction: opacityTransformScaleAnimationFunction,
             containerProps: animatedContainerProps,
             queueMode: 'standby',
           })
@@ -39,7 +38,7 @@ export const CustomAnimationsTabScreen = () => {
           Notifier.showNotification({
             title: 'Pull down',
             description: 'Notification can be slightly pulled down',
-            containerStyle: getContainerStyleClassicWithOverSwipe,
+            animationFunction: classicWithOverSwipeAnimationFunction,
             queueMode: 'standby',
           })
         }
@@ -51,7 +50,7 @@ export const CustomAnimationsTabScreen = () => {
             title: 'Fade In/Out Notification',
             description:
               'This notification is faded in using Animated opacity style',
-            containerStyle: getContainerStyleOpacityOnly,
+            animationFunction: opacityOnlyAnimationFunction,
             containerProps: animatedContainerProps,
             queueMode: 'standby',
           })
@@ -63,7 +62,7 @@ export const CustomAnimationsTabScreen = () => {
           Notifier.showNotification({
             title: 'Zoom In/Out Animation',
             description: 'Uses only Scale Transformation to zoom in',
-            containerStyle: getContainerStyleScaleOnly,
+            animationFunction: scaleOnlyAnimationFunction,
             queueMode: 'standby',
           })
         }
@@ -75,7 +74,7 @@ export const CustomAnimationsTabScreen = () => {
             title: 'Zoom + Rotation',
             description:
               'Scale and Rotate the notification. This is a MADNESS!',
-            containerStyle: getContainerStyleScaleAndRotation,
+            animationFunction: scaleAndRotationAnimationFunction,
             queueMode: 'standby',
           })
         }
@@ -86,19 +85,7 @@ export const CustomAnimationsTabScreen = () => {
           Notifier.showNotification({
             title: 'Animation from code example',
             description: 'Scale and Translate',
-            containerStyle: getContainerStyleWithTranslateAndScale,
-          })
-        }
-      />
-      <Button
-        title="Bottom Position"
-        onPress={() =>
-          Notifier.showNotification({
-            title: 'Bottom Position',
-            description: 'Moved to the bottom using containerStyle property',
-            containerStyle: getContainerStyleBottomPosition,
-            // Disable swipes because currently bottom position is not fully supported
-            swipeEnabled: false,
+            animationFunction: translateAndScaleAnimationFunction,
           })
         }
       />

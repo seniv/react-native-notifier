@@ -1,5 +1,11 @@
-import { Notifier } from 'react-native-notifier';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Notifier, NotifierRoot } from 'react-native-notifier';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Modal as RNModal,
+} from 'react-native';
 import Button from '../components/Button';
 import Modal from 'react-native-modal';
 import { useNavigation } from '@react-navigation/native';
@@ -10,6 +16,7 @@ import { isIos } from '../constants';
 export const ModalsTabScreen = () => {
   const navigation = useNavigation<any>();
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isRNModalVisible, setRNModalVisible] = useState(false);
   const useRNScreensOverlay = useAppStore((state) => state.useRNScreensOverlay);
   const toggleUseRNScreensOverlay = useAppStore(
     (state) => state.toggleUseRNScreensOverlay
@@ -18,6 +25,10 @@ export const ModalsTabScreen = () => {
   return (
     <>
       <ScrollView>
+        <Button
+          title="Open react-native Modal"
+          onPress={() => setRNModalVisible(true)}
+        />
         <Button
           title="Open react-native-modal"
           onPress={() => setModalVisible(true)}
@@ -61,6 +72,26 @@ export const ModalsTabScreen = () => {
           <Button title="Hide modal" onPress={() => setModalVisible(false)} />
         </View>
       </Modal>
+      <RNModal visible={isRNModalVisible}>
+        <View style={styles.modalContainer}>
+          <Text>
+            Property "coverScreen" set to "false" does the trick and
+            notification should be rendered above the modal!
+          </Text>
+
+          <Button
+            title="Show notification"
+            onPress={() =>
+              Notifier.showNotification({
+                title: 'Hello react-native-modal!',
+                description: 'Modal + Notifier = ❤️',
+              })
+            }
+          />
+          <Button title="Hide modal" onPress={() => setRNModalVisible(false)} />
+        </View>
+        <NotifierRoot />
+      </RNModal>
     </>
   );
 };

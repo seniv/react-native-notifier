@@ -11,6 +11,8 @@ import { CustomAnimationsTabScreen } from './screens/CustomAnimationsTabScreen';
 import { ModalsTabScreen } from './screens/ModalsTabScreen';
 import { ModalScreen } from './screens/ModalScreen';
 import { useAppStore } from './store';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { PositionsTabScreen } from './screens/PositionsTabScreen';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -27,6 +29,11 @@ const TabsNavigator = () => {
         name="CustomAnimationsTab"
         options={{ title: 'Custom Animations' }}
         component={CustomAnimationsTabScreen}
+      />
+      <BottomTab.Screen
+        name="PositionsTab"
+        options={{ title: 'Positions' }}
+        component={PositionsTabScreen}
       />
       <BottomTab.Screen
         name="ModalsTab"
@@ -70,15 +77,16 @@ export default function App() {
 
   return (
     <GestureHandlerRootView>
-      <NotifierWrapper
-        ref={notifierRef}
-        translucentStatusBar={statusBarTranslucent}
-        useRNScreensOverlay={useRNScreensOverlay}
-      >
-        <NavigationContainer>
-          <StackNavigator />
-        </NavigationContainer>
-      </NotifierWrapper>
+      <SafeAreaProvider>
+        <NotifierWrapper
+          ref={notifierRef}
+          useRNScreensOverlay={useRNScreensOverlay}
+        >
+          <NavigationContainer>
+            <StackNavigator />
+          </NavigationContainer>
+        </NotifierWrapper>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }
