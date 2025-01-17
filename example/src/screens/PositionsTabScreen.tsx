@@ -33,6 +33,7 @@ export const PositionsTabScreen = () => {
             description: 'Moved to the bottom using position parameter',
             position: 'bottom',
             duration: 5000,
+            additionalOffsets: { bottom: 45 },
           })
         }
       />
