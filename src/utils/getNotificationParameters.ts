@@ -68,7 +68,9 @@ export const getNotificationParameters = ({
     enterFrom,
     exitTo: params.exitTo ?? enterFrom ?? 'top',
     swipeDirection: params.swipeDirection ?? enterFrom ?? 'top',
-    ignoreKeyboard: params.ignoreKeyboard ?? Platform.OS !== 'ios',
+    ignoreKeyboard: params.ignoreKeyboard ?? Platform.OS === 'web',
+    ignoreKeyboardHeight:
+      params.ignoreKeyboardHeight ?? Platform.OS === 'android',
     additionalKeyboardOffset: params.additionalKeyboardOffset ?? 0,
     showAnimationConfig:
       params.showAnimationConfig ??

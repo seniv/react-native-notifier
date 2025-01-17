@@ -283,18 +283,29 @@ export interface ShowNotificationParams<
    * @default false */
   ignoreSafeAreaInsets?: boolean;
 
-  /** Ignores keyboard height offset (when use bottom positions)
+  /** Ignores the keyboard completely. Treats the keyboard as if it is always closed.
+   * - `true` - bottom offset will always equal to `safeAreaInsets.bottom + additionalOffsets.bottom`
    *
-   * On __iOS__ `false` by default, `true` on other platforms.
-   * @default true */
+   * By default `false` on all platforms except the `web`.
+   * @default false */
   ignoreKeyboard?: boolean;
+
+  /** Ignores keyboard height offset (when use bottom positions)
+   * - `false` - bottom offset will equal to `keyboardHeight + additionalKeyboardOffset` when keyboard is open.
+   * - `true` - bottom offset will equal to `additionalKeyboardOffset` when keyboard is open.
+   *
+   * When keyboard is closed, bottom offset will equal to `safeAreaInsets.bottom + additionalOffsets.bottom`.
+   *
+   * On __Android__ `true` by default, `false` on other platforms.
+   * @default false */
+  ignoreKeyboardHeight?: boolean;
 
   /** Additional bottom offset when keyboard is visible.
    * Works only when `ignoreKeyboard != true`.
    * @default 0 */
   additionalKeyboardOffset?: number;
 
-  /** Offsets in addition to the safeAreaInsets
+  /** Offsets in addition to the safeAreaInsets. When keyboard is open and `ignoreKeyboard != true`, `bottom` offset will be ignored and `additionalKeyboardOffset` will be used instead.
    * @default null */
   additionalOffsets?: Partial<Offsets>;
 
@@ -355,6 +366,7 @@ export type Notification = Omit<
       | 'exitTo'
       | 'swipeDirection'
       | 'ignoreKeyboard'
+      | 'ignoreKeyboardHeight'
       | 'additionalKeyboardOffset'
       | 'showAnimationConfig'
       | 'hideAnimationConfig'

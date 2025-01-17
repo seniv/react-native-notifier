@@ -7,12 +7,13 @@ export const useOffsets = ({
   position,
   ignoreSafeAreaInsets,
   ignoreKeyboard,
+  ignoreKeyboardHeight,
   additionalKeyboardOffset,
 }: Notification): Offsets => {
-  const { keyboardHeight } = useKeyboard({ ignoreKeyboard });
+  const { keyboardHeight, isKeyboardVisible } = useKeyboard({ ignoreKeyboard });
 
   const finalKeyboardOffset =
-    keyboardHeight > 0 ? keyboardHeight + additionalKeyboardOffset : 0;
+    (ignoreKeyboardHeight ? 0 : keyboardHeight) + additionalKeyboardOffset;
 
   let safeAreaInsets = useSafeAreaInsets();
   if (ignoreSafeAreaInsets) {
@@ -21,10 +22,9 @@ export const useOffsets = ({
 
   const top = safeAreaInsets.top + (additionalOffsets?.top ?? 0);
   const right = safeAreaInsets.right + (additionalOffsets?.right ?? 0);
-  const bottom = Math.max(
-    safeAreaInsets.bottom + (additionalOffsets?.bottom ?? 0),
-    finalKeyboardOffset
-  );
+  const bottom = isKeyboardVisible
+    ? finalKeyboardOffset
+    : safeAreaInsets.bottom + (additionalOffsets?.bottom ?? 0);
   const left = safeAreaInsets.left + (additionalOffsets?.left ?? 0);
 
   switch (position) {

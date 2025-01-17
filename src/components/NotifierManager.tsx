@@ -28,8 +28,8 @@ interface NotifierManagerProps {
 
 /** Component manages queue and exports methods to display/hide notification, and clear the queue
  * Responsibilities:
- * - manages queue
- * - export methods "showNotification", "updateNotification", "hideNotification", "clearQueue" via reference
+ * - manages queue and handle duplicates
+ * - export methods "showNotification", "updateNotification", "shakeNotification", "hideNotification", "clearQueue" via reference
  * - set currentNotification state and use default parameters passed via props
  * - mount NotifierRenderer when call "showNotification", and unmount it when NotifierRenderer calls onHidden.
  */
@@ -180,6 +180,8 @@ const NotifierManagerComponent = React.forwardRef<
     [hideNotification]
   );
 
+  // It is important that the methods below never change their reference
+  // because it will break the order of refs to the Component
   useImperativeHandle(
     ref,
     () => ({

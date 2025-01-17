@@ -8,13 +8,21 @@ export const useKeyboard = ({
   const [keyboardHeight, setKeyboardHeight] = useState(() =>
     ignoreKeyboard ? 0 : (Keyboard.metrics()?.height ?? 0)
   );
+  const [isKeyboardVisible, setKeyboardVisible] = useState(() =>
+    ignoreKeyboard ? false : Keyboard.isVisible()
+  );
 
   useEffect(() => {
     if (ignoreKeyboard) return;
 
-    const onShow: KeyboardEventListener = ({ endCoordinates }) =>
+    const onShow: KeyboardEventListener = ({ endCoordinates }) => {
       setKeyboardHeight(endCoordinates.height);
-    const onHide: KeyboardEventListener = () => setKeyboardHeight(0);
+      setKeyboardVisible(true);
+    };
+    const onHide: KeyboardEventListener = () => {
+      setKeyboardHeight(0);
+      setKeyboardVisible(false);
+    };
 
     const listeners = [
       Keyboard.addListener('keyboardDidShow', onShow),
@@ -35,5 +43,6 @@ export const useKeyboard = ({
 
   return {
     keyboardHeight,
+    isKeyboardVisible,
   };
 };
