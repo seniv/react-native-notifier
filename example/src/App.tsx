@@ -13,6 +13,7 @@ import { ModalScreen } from './screens/ModalScreen';
 import { useAppStore } from './store';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { PositionsTabScreen } from './screens/PositionsTabScreen';
+import { ComponentsTabScreen } from './screens/ComponentsTabScreen';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -26,8 +27,13 @@ const TabsNavigator = () => {
         component={HomeTabScreen}
       />
       <BottomTab.Screen
+        name="ComponentsTab"
+        options={{ title: 'Components' }}
+        component={ComponentsTabScreen}
+      />
+      <BottomTab.Screen
         name="CustomAnimationsTab"
-        options={{ title: 'Custom Animations' }}
+        options={{ title: 'Animations' }}
         component={CustomAnimationsTabScreen}
       />
       <BottomTab.Screen
