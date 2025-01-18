@@ -76,7 +76,7 @@ export const HomeTabScreen = () => {
             description: 'Check your internet connection, please',
             Component: NotifierComponents.Alert,
             componentProps: {
-              alertType: 'error',
+              type: 'error',
             },
           })
         }
@@ -88,7 +88,7 @@ export const HomeTabScreen = () => {
             title: 'Your profile was successfully saved!',
             Component: NotifierComponents.Alert,
             componentProps: {
-              alertType: 'success',
+              type: 'success',
             },
           })
         }
