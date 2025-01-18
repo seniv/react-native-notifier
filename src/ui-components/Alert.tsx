@@ -39,9 +39,14 @@ const s = StyleSheet.create({
 export interface AlertComponentProps extends NotifierComponentProps {
   /** Background color will be changed depending on the type. Available values: `error`(red), `success`(green), `warn`(orange) and `info`(blue).
    * @default 'success' */
-  alertType: AlertTypes;
+  type: AlertTypes;
 
-  /** While the background of the alert depends on `alertType`, you can also set the other color you want.
+  /**
+   * @deprecated use `type` instead
+   */
+  alertType?: AlertTypes;
+
+  /** While the background of the alert depends on `type`, you can also set the other color you want.
    * @default null */
   backgroundColor?: string;
 
@@ -58,7 +63,7 @@ export interface AlertComponentProps extends NotifierComponentProps {
   maxDescriptionLines?: number;
 
   /** A container of the component. Set it in case you use different SafeAreaView than the custom `ViewWithOffsets`
-   * @default SafeAreaView */
+   * @default ViewWithOffsets */
   ContainerComponent?: React.ElementType;
 
   /** The style to use for rendering title
@@ -75,6 +80,7 @@ export const AlertComponent = ({
   titleStyle,
   description,
   descriptionStyle,
+  type = 'success',
   alertType = 'success',
   backgroundColor,
   textColor,
@@ -88,7 +94,7 @@ export const AlertComponent = ({
   return (
     <Container
       style={{
-        backgroundColor: backgroundColor || bgColors[alertType],
+        backgroundColor: backgroundColor || bgColors[type ?? alertType],
       }}
     >
       <View style={s.container}>
