@@ -10,10 +10,10 @@ import {
 import type { NotifierComponentProps } from '../types';
 
 const s = StyleSheet.create({
-  container: {
+  safeArea: {
     alignItems: 'center',
   },
-  contentContainer: {
+  container: {
     backgroundColor: '#333333',
     borderRadius: 25,
     margin: 10,
@@ -42,14 +42,14 @@ export interface SimpleToastProps extends NotifierComponentProps {
    * @default null */
   titleStyle?: StyleProp<TextStyle>;
 
-  /** The style to use for toast container.
+  /** The style to use for safe area container.
    * @default null */
-  containerStyle?: StyleProp<ViewStyle>;
+  safeAreaStyle?: StyleProp<ViewStyle>;
 
   /** The style to use for toast content container.
    * Might be useful to change background color, shadows, paddings or margins
    * @default null */
-  contentContainerStyle?: StyleProp<ViewStyle>;
+  containerStyle?: StyleProp<ViewStyle>;
 }
 
 export const SimpleToastComponent = ({
@@ -57,14 +57,14 @@ export const SimpleToastComponent = ({
   titleStyle,
   ContainerComponent,
   maxTitleLines,
+  safeAreaStyle,
   containerStyle,
-  contentContainerStyle,
   ViewWithOffsets,
 }: SimpleToastProps) => {
   const Container = ContainerComponent ?? ViewWithOffsets;
   return (
-    <Container style={[s.container, containerStyle]}>
-      <View style={[s.contentContainer, contentContainerStyle]}>
+    <Container style={[s.safeArea, safeAreaStyle]}>
+      <View style={[s.container, containerStyle]}>
         {!!title && (
           <Text style={[s.title, titleStyle]} numberOfLines={maxTitleLines}>
             {title}

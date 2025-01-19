@@ -20,10 +20,10 @@ import {
 } from './common';
 
 const s = StyleSheet.create({
-  container: {
+  safeArea: {
     alignItems: 'center',
   },
-  contentContainer: {
+  container: {
     margin: 10,
     backgroundColor: '#ffffff',
     borderRadius: 33,
@@ -95,14 +95,14 @@ export interface ToastProps extends NotifierComponentProps {
    * @example iconSource: require('./icons/success.png') */
   iconSource?: ImageSourcePropType;
 
-  /** Style for the outermost container of the toast.
+  /** Style for the safe area container of the toast.
    * @default null */
-  containerStyle?: StyleProp<ViewStyle>;
+  safeAreaStyle?: StyleProp<ViewStyle>;
 
   /** Style for the toast content container, often used to modify background color,
    * shadows, padding, or margin.
    * @default null */
-  contentContainerStyle?: StyleProp<ViewStyle>;
+  containerStyle?: StyleProp<ViewStyle>;
 
   /** Style for the icon container, useful for adjusting background color or size.
    * @default null */
@@ -139,8 +139,8 @@ export const ToastComponent = ({
   maxTitleLines,
   maxDescriptionLines,
   iconSource,
+  safeAreaStyle,
   containerStyle,
-  contentContainerStyle,
   iconContainerStyle,
   iconStyle,
   textContainerStyle,
@@ -151,13 +151,13 @@ export const ToastComponent = ({
 }: ToastProps) => {
   const Container = ContainerComponent ?? ViewWithOffsets;
   return (
-    <Container style={[s.container, containerStyle]}>
+    <Container style={[s.safeArea, safeAreaStyle]}>
       <View
         style={[
-          s.contentContainer,
+          s.container,
           commonStyles.shadow,
           !type && !iconSource && s.contentContainerNoIcon,
-          contentContainerStyle,
+          containerStyle,
         ]}
       >
         {(!!type || !!iconSource) && (
