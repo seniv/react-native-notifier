@@ -35,7 +35,7 @@ export interface SimpleToastProps extends NotifierComponentProps {
   maxTitleLines?: number;
 
   /** A container of the component. Set it in case you use different SafeAreaView than the custom `ViewWithOffsets`
-   * @default SafeAreaView */
+   * @default ViewWithOffsets */
   ContainerComponent?: React.ElementType;
 
   /** The style to use for rendering title

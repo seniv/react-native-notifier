@@ -11,19 +11,10 @@ import {
   type StyleProp,
 } from 'react-native';
 import type { NotifierComponentProps } from '../types';
+import { commonStyles } from './common';
 
 const s = StyleSheet.create({
   container: {
-    shadowColor: '#000000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-
-    elevation: 10,
-
     backgroundColor: '#ffffff',
     borderRadius: 5,
     margin: 10,
@@ -70,7 +61,7 @@ export interface NotificationComponentProps extends NotifierComponentProps {
   maxDescriptionLines?: number;
 
   /** A container of the component. Set it in case you use different SafeAreaView than the custom `ViewWithOffsets`
-   * @default SafeAreaView */
+   * @default ViewWithOffsets */
   ContainerComponent?: React.ElementType;
 
   /** The style to use for rendering title
@@ -107,7 +98,7 @@ export const NotificationComponent = ({
   const Container = ContainerComponent ?? ViewWithOffsets;
   return (
     <Container>
-      <View style={[s.container, containerStyle]}>
+      <View style={[s.container, commonStyles.shadow, containerStyle]}>
         {!!imageSource && (
           <Image style={[s.image, imageStyle]} source={imageSource} />
         )}
