@@ -1,4 +1,4 @@
-import { Notifier } from 'react-native-notifier';
+import { Notifier, NotifierComponents } from 'react-native-notifier';
 import Button from '../components/Button';
 import { ScrollView, StyleSheet, TextInput } from 'react-native';
 
@@ -22,6 +22,9 @@ export const PositionsTabScreen = () => {
           Notifier.showNotification({
             title: 'Top Position',
             description: 'Default notification position',
+            componentProps: {
+              type: 'info',
+            },
           })
         }
       />
@@ -34,6 +37,10 @@ export const PositionsTabScreen = () => {
             position: 'bottom',
             duration: 5000,
             additionalOffsets: { bottom: 45 },
+            Component: NotifierComponents.Toast,
+            componentProps: {
+              type: 'info',
+            },
           })
         }
       />
@@ -45,6 +52,10 @@ export const PositionsTabScreen = () => {
             description:
               'Moved to the top left corner using position parameter',
             position: 'topLeft',
+            Component: NotifierComponents.Toast,
+            componentProps: {
+              type: 'info',
+            },
           })
         }
       />
@@ -56,6 +67,10 @@ export const PositionsTabScreen = () => {
             description:
               'Moved to the top right corner using position parameter',
             position: 'topRight',
+            Component: NotifierComponents.Toast,
+            componentProps: {
+              type: 'info',
+            },
           })
         }
       />
@@ -67,6 +82,10 @@ export const PositionsTabScreen = () => {
             description:
               'Moved to the bottom left corner using position parameter',
             position: 'bottomLeft',
+            Component: NotifierComponents.Toast,
+            componentProps: {
+              type: 'info',
+            },
           })
         }
       />
@@ -78,6 +97,10 @@ export const PositionsTabScreen = () => {
             description:
               'Moved to the bottom right corner using position parameter',
             position: 'bottomRight',
+            Component: NotifierComponents.Toast,
+            componentProps: {
+              type: 'info',
+            },
           })
         }
       />
