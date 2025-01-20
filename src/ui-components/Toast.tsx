@@ -188,8 +188,8 @@ export const ToastComponent = ({
             <Text
               style={[
                 s.title,
-                titleStyle,
                 type && useTypeColorForTitle && { color: iconColors[type] },
+                titleStyle,
               ]}
               numberOfLines={maxTitleLines}
             >
@@ -200,9 +200,9 @@ export const ToastComponent = ({
             <Text
               style={[
                 s.description,
-                descriptionStyle,
                 type &&
                   useTypeColorForDescription && { color: iconColors[type] },
+                descriptionStyle,
               ]}
               numberOfLines={maxDescriptionLines}
             >

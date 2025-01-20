@@ -220,10 +220,10 @@ export const NotificationComponent = ({
             <Text
               style={[
                 s.title,
-                titleStyle,
                 type !== 'classic' &&
                   useTypeColorForTitle && { color: iconColors[type] },
                 type === 'classic' && s.classicTitle,
+                titleStyle,
               ]}
               numberOfLines={maxTitleLines}
             >
@@ -234,10 +234,10 @@ export const NotificationComponent = ({
             <Text
               style={[
                 s.description,
-                descriptionStyle,
                 type !== 'classic' &&
                   useTypeColorForDescription && { color: iconColors[type] },
                 type === 'classic' && s.classicDescription,
+                descriptionStyle,
               ]}
               numberOfLines={maxDescriptionLines}
             >

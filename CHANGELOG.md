@@ -26,7 +26,7 @@
 - Custom handling for safe area insets (based on `react-native-safe-area-context`'s `useSafeAreaInsets` hook) in all built-in components, plus a simple API for using the same insets in custom components. It also handles keyboard offset when a notification is displayed at a bottom `position`. All components receive an `offsets` object and a `ViewWithOffsets` component as props. Related parameters: `ignoreSafeAreaInsets`, `ignoreKeyboard`, `ignoreKeyboardHeight`, `additionalKeyboardOffset`, `additionalOffsets`.
 - Using new `*AnimationConfig` parameters, it is now possible to run **Spring** animations with fully customizable configurations.
 - Additional TypeScript types have been exported, such as `NotifierComponentProps` (for base props in custom components), `AnimationFunction`, `AnimationFunctionParams`, `Position`, `Offsets`, `ViewWithOffsetsComponent`, `Direction`, `DuplicateBehavior`, and `SwipeDirection`.
-- New built-in component: `SimpleToast`.
+- New built-in components: `Toast` and `SimpleToast`.
 - All components receive a `hide` function and an `animationFunctionParams` object as props.
 
 ### Changed
