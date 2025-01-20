@@ -10,6 +10,7 @@ import { FABRIC_ENABLED, MAX_VALUE } from '../constants';
  */
 export const useLayout = ({ enterFrom }: Notification) => {
   const [isLayoutReady, setLayoutReady] = useState(false);
+  const isLayoutReadyRef = useRef(false);
   const ref = useRef<View>(null);
   // store current direction to handle the case when component dimensions changes (trigger onLayout)
   // while active direction != enterFrom (e.g. when exitTo is different than enterFrom, and notification started hiding animation).
@@ -66,7 +67,13 @@ export const useLayout = ({ enterFrom }: Notification) => {
       componentWidth.setValue(width);
 
       updateHiddenValueByDirection(currentDirection.current);
-      setLayoutReady(true);
+
+      // use ref to store the "isLayoutReady" value because calling setLayoutReady(true) more than once
+      // in the new architecture triggers render more than once.
+      if (!isLayoutReadyRef.current) {
+        setLayoutReady(true);
+        isLayoutReadyRef.current = true;
+      }
     },
     [componentHeight, componentWidth, updateHiddenValueByDirection]
   );
