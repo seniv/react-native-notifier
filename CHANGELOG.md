@@ -1,6 +1,6 @@
 # Changelog
 
-## v3.0.0-rc.0
+## v3.0.0-rc
 
 ### Breaking Changes
 - The library now internally uses `react-native-safe-area-context`. Make sure you have `react-native-safe-area-context` installed, and that `NotifierRoot/Wrapper` is wrapped by `SafeAreaProvider`.
@@ -23,11 +23,16 @@
 - Calling `showNotification` returns `update`, `hide`, `shake`, and `isVisible` functions for manipulating the notification.
 - You can mount multiple instances of `NotifierWrapper`/`NotifierRoot` and still control them using global `Notifier.*` methods. The most recently mounted instance is controlled first; if it unmounts, control reverts to the previously mounted instance.
 - It's possible to broadcast commands to all mounted instances of Notifier via `Notifier.broadcast.*`. This can be used, for example, to hide all notifications or clear the queue and hide them using `Notifier.broadcast.hideNotification()`.
-- Custom handling for safe area insets (based on `react-native-safe-area-context`'s `useSafeAreaInsets` hook) in all built-in components, plus a simple API for using the same insets in custom components. It also handles keyboard offset when a notification is displayed at a bottom `position`. All components receive an `offsets` object and a `ViewWithOffsets` component as props. Related parameters: `ignoreSafeAreaInsets`, `ignoreKeyboard`, `additionalKeyboardOffset`, `additionalOffsets`.
+- Custom handling for safe area insets (based on `react-native-safe-area-context`'s `useSafeAreaInsets` hook) in all built-in components, plus a simple API for using the same insets in custom components. It also handles keyboard offset when a notification is displayed at a bottom `position`. All components receive an `offsets` object and a `ViewWithOffsets` component as props. Related parameters: `ignoreSafeAreaInsets`, `ignoreKeyboard`, `ignoreKeyboardHeight`, `additionalKeyboardOffset`, `additionalOffsets`.
 - Using new `*AnimationConfig` parameters, it is now possible to run **Spring** animations with fully customizable configurations.
 - Additional TypeScript types have been exported, such as `NotifierComponentProps` (for base props in custom components), `AnimationFunction`, `AnimationFunctionParams`, `Position`, `Offsets`, `ViewWithOffsetsComponent`, `Direction`, `DuplicateBehavior`, and `SwipeDirection`.
 - New built-in component: `SimpleToast`.
 - All components receive a `hide` function and an `animationFunctionParams` object as props.
+
+### Changed
+- **Alert component:** Renamed `alertType` prop to `type` for consistency with other components. The `alertType` prop remains available but will be deprecated, so please migrate to `type`.
+- **Notification component:** Changed default `borderRadius` from `5` to `8` and "description" `fontSize` from `14` to `15`.
+- **Notification component:** Introduced a `type` prop. When set to anything other than `'classic'`, an icon and left border will be displayed.
 
 ### Bug Fixes
 - When you mount `NotifierWrapper`/`NotifierRoot` with `omitGlobalMethodsHookup={true}` and then switch it to `false`, global methods now hook up correctly.
@@ -43,3 +48,4 @@ rnScreensOverlayViewStyle={{
   bottom: 0,
 }}
 ```
+- When `useRNScreensOverlay` is `true`, `SafeAreaView` might not work correctly. Use `ViewWithOffsets` component that is coming though props into all **Custom Components**.
