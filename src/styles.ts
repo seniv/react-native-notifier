@@ -21,17 +21,21 @@ export const positionStyles = StyleSheet.create({
   topLeft: {
     top: 0,
     left: 0,
+    maxWidth: '100%',
   },
   topRight: {
     top: 0,
     right: 0,
+    maxWidth: '100%',
   },
   bottomLeft: {
     bottom: 0,
     left: 0,
+    maxWidth: '100%',
   },
   bottomRight: {
     bottom: 0,
     right: 0,
+    maxWidth: '100%',
   },
 });
