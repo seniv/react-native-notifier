@@ -115,6 +115,9 @@ const NotifierRendererComponent = forwardRef<
   }));
 
   useEffect(() => {
+    // if "hideNotification" method was called before show notification animation started - ignore it.
+    if (isHidingRef.current) return;
+
     Animated[notification.showAnimationConfig.method](animationState, {
       useNativeDriver: true,
       ...notification.showAnimationConfig.config,
