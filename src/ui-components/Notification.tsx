@@ -48,7 +48,6 @@ const s = StyleSheet.create({
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    alignSelf: 'flex-start',
   },
   icon: {
     width: 35,
