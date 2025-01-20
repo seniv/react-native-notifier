@@ -20,6 +20,8 @@
 - New `idStrategy` parameter, which defines how a default ID is generated if none is provided.
 - New `updateNotification` method that updates a _currently visible_ notification.
 - New `shakeNotification` method that shakes a _currently visible_ notification to attract the user's attention and optionally resets the `duration` timer.
+- New `isNotificationVisible` method: Returns a boolean indicating if any notification is currently visible.
+- New methods: `updateById`, `shakeById`, `isVisibleById`, and `hideById`. These methods only affect a notification if the provided ID matches the one of the currently visible notification.
 - Calling `showNotification` returns `update`, `hide`, `shake`, and `isVisible` functions for manipulating the notification.
 - You can mount multiple instances of `NotifierWrapper`/`NotifierRoot` and still control them using global `Notifier.*` methods. The most recently mounted instance is controlled first; if it unmounts, control reverts to the previously mounted instance.
 - It's possible to broadcast commands to all mounted instances of Notifier via `Notifier.broadcast.*`. This can be used, for example, to hide all notifications or clear the queue and hide them using `Notifier.broadcast.hideNotification()`.

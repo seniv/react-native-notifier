@@ -440,6 +440,9 @@ export interface NotifierInterface {
   /** Shakes currently visible notification to attract the user's attention. If pass true as the first parameter, the `duration` timer will reset(prolong) */
   shakeNotification(resetTimer?: boolean): void;
 
+  /** Is any notification currently visible. */
+  isNotificationVisible(): boolean;
+
   /** Hide currently visible notification and run callback function when notification completely hidden. */
   hideNotification(onHidden?: Animated.EndCallback): void;
 
@@ -447,23 +450,34 @@ export interface NotifierInterface {
    *
    * Might be useful to run after logout, after which queued notifications should not be displayed. */
   clearQueue(hideDisplayedNotification?: boolean): void;
+
+  /** Update notification by ID, if visible - will be updated immediately,
+   * if it waits in the queue - it will be updated in the queue and will be displayed with updated parameters.
+   *
+   * Returns true if notification was updated */
+  updateById<ComponentType extends ElementType = typeof NotificationComponent>(
+    id: string | number,
+    params: UpdateNotificationParams<ComponentType>
+  ): boolean;
+
+  /** Shakes notification by ID to attract the user's attention. If pass true as the second parameter, the `duration` timer will reset(prolong) */
+  shakeById(id: string | number, resetTimer?: boolean): void;
+
+  /** Is notification with provided ID currently visible */
+  isVisibleById(id: string | number): boolean;
+
+  /** Hide notification by ID */
+  hideById(id: string | number, onHidden?: Animated.EndCallback): void;
 }
 
 export interface GlobalNotifierInterface
-  extends Omit<NotifierInterface, 'showNotification' | 'updateNotification'> {
+  extends Omit<NotifierInterface, 'showNotification'> {
   /** Show notification with params. Returns `update`, `hide`, `shake`, `isVisible` functions and `id` field if at least one Notifier is mounted. */
   showNotification<
     ComponentType extends ElementType = typeof NotificationComponent,
   >(
     params: ShowNotificationParams<ComponentType>
   ): ShowNotificationReturnType<ComponentType> | undefined;
-
-  /** Update currently visible notification. Returns true if notification was updated */
-  updateNotification<
-    ComponentType extends ElementType = typeof NotificationComponent,
-  >(
-    params: UpdateNotificationParams<ComponentType>
-  ): boolean | undefined;
 
   /** Broadcasts the command to all currently mounted instances of Notifier, not only to the last one.
    *

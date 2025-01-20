@@ -106,23 +106,40 @@ const broadcast = (fn: (ref: NotifierInterface) => void) => {
 
 export const Notifier: GlobalNotifierInterface = {
   showNotification: (params) => getLastRef()?.showNotification(params),
-  updateNotification: (params) => getLastRef()?.updateNotification(params),
+  updateNotification: (params) =>
+    getLastRef()?.updateNotification(params) ?? false,
   shakeNotification: (resetTimer) =>
     getLastRef()?.shakeNotification(resetTimer),
+  isNotificationVisible: () => getLastRef()?.isNotificationVisible() ?? false,
   hideNotification: (onHidden) => getLastRef()?.hideNotification(onHidden),
   clearQueue: (hideDisplayedNotification) =>
     getLastRef()?.clearQueue(hideDisplayedNotification),
+
+  hideById: (id, onHidden) => getLastRef()?.hideById(id, onHidden),
+  isVisibleById: (id) => getLastRef()?.isVisibleById(id) ?? false,
+  shakeById: (id, resetTimer) => getLastRef()?.shakeById(id, resetTimer),
+  updateById: (id, params) => getLastRef()?.updateById(id, params) ?? false,
+
   broadcast: {
     showNotification: (params) =>
       broadcast((ref) => ref.showNotification(params)),
     updateNotification: (params) =>
-      broadcast((ref) => ref.updateNotification(params)),
+      refs.some((ref) => ref.current?.updateNotification(params)),
     shakeNotification: (resetTimer) =>
       broadcast((ref) => ref.shakeNotification(resetTimer)),
+    isNotificationVisible: () =>
+      refs.some((ref) => ref.current?.isNotificationVisible()),
     hideNotification: (onHidden) =>
       broadcast((ref) => ref.hideNotification(onHidden)),
     clearQueue: (hideDisplayedNotification) =>
       broadcast((ref) => ref.clearQueue(hideDisplayedNotification)),
+
+    hideById: (id, onHidden) => broadcast((ref) => ref.hideById(id, onHidden)),
+    isVisibleById: (id) => refs.some((ref) => ref.current?.isVisibleById(id)),
+    shakeById: (id, resetTimer) =>
+      broadcast((ref) => ref.shakeById(id, resetTimer)),
+    updateById: (id, params) =>
+      refs.some((ref) => ref.current?.updateById(id, params)),
   },
 };
 

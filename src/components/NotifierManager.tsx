@@ -29,7 +29,7 @@ interface NotifierManagerProps {
 /** Component manages queue and exports methods to display/hide notification, and clear the queue
  * Responsibilities:
  * - manages queue and handle duplicates
- * - export methods "showNotification", "updateNotification", "shakeNotification", "hideNotification", "clearQueue" via reference
+ * - export methods "showNotification", "updateNotification", "shakeNotification", "isNotificationVisible", "hideNotification", "clearQueue", "updateById", "shakeById", "isVisibleById", "hideById", via reference
  * - set currentNotification state and use default parameters passed via props
  * - mount NotifierRenderer when call "showNotification", and unmount it when NotifierRenderer calls onHidden.
  */
@@ -83,32 +83,55 @@ const NotifierManagerComponent = React.forwardRef<
     []
   );
 
+  const isNotificationVisible = useCallback(
+    () => !!currentNotificationId.current,
+    []
+  );
+
+  const hideById = useCallback(
+    (id: string | number, callback?: Animated.EndCallback) => {
+      if (id !== currentNotificationId.current) return;
+      return hideNotification(callback);
+    },
+    [hideNotification]
+  );
+
+  const updateById = useCallback(
+    (id: string | number, params: UpdateNotificationParams<any>) => {
+      if (id !== currentNotificationId.current) {
+        const callStackItem = callStack.current.find((item) => item.id === id);
+        if (callStackItem) {
+          Object.assign(callStackItem, params);
+        }
+        return !!callStackItem;
+      }
+      return updateNotification(params);
+    },
+    [updateNotification]
+  );
+
+  const shakeById = useCallback(
+    (id: string | number, resetTimerParam?: boolean) => {
+      if (id !== currentNotificationId.current) return;
+      return shakeNotification(resetTimerParam);
+    },
+    [shakeNotification]
+  );
+
+  const isVisibleById = useCallback(
+    (id: string | number) => id === currentNotificationId.current,
+    []
+  );
+
   const getNotificationMethodsForId = useCallback(
     (id: string | number): ShowNotificationReturnType<any> => ({
-      hide: (callback?: Animated.EndCallback) => {
-        if (id !== currentNotificationId.current) return;
-        return hideNotification(callback);
-      },
-      update: (params: UpdateNotificationParams<any>) => {
-        if (id !== currentNotificationId.current) {
-          const callStackItem = callStack.current.find(
-            (item) => item.id === id
-          );
-          if (callStackItem) {
-            Object.assign(callStackItem, params);
-          }
-          return !!callStackItem;
-        }
-        return updateNotification(params);
-      },
-      shake: (resetTimerParam?: boolean) => {
-        if (id !== currentNotificationId.current) return;
-        return shakeNotification(resetTimerParam);
-      },
-      isVisible: () => id === currentNotificationId.current,
+      hide: (callback?: Animated.EndCallback) => hideById(id, callback),
+      update: (params: UpdateNotificationParams<any>) => updateById(id, params),
+      shake: (resetTimerParam?: boolean) => shakeById(id, resetTimerParam),
+      isVisible: () => isVisibleById(id),
       id,
     }),
-    [hideNotification, shakeNotification, updateNotification]
+    [hideById, isVisibleById, shakeById, updateById]
   );
 
   const showNotification = useCallback(
@@ -188,15 +211,25 @@ const NotifierManagerComponent = React.forwardRef<
       showNotification,
       updateNotification,
       shakeNotification,
+      isNotificationVisible,
       hideNotification,
       clearQueue,
+      updateById,
+      shakeById,
+      isVisibleById,
+      hideById,
     }),
     [
       showNotification,
       updateNotification,
       shakeNotification,
+      isNotificationVisible,
       hideNotification,
       clearQueue,
+      updateById,
+      shakeById,
+      isVisibleById,
+      hideById,
     ]
   );
 
