@@ -1,6 +1,6 @@
 {
   "name": "react-native-notifier",
-  "version": "3.0.0-rc.2",
+  "version": "3.0.0-rc.3",
   "description": "Fast and simple in-app notifications for React Native",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",
