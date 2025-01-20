@@ -45,8 +45,13 @@ const NotifierRendererComponent = forwardRef<
   NotifierRendererMethods,
   NotifierRendererProps
 >(({ notification, onHiddenCallback }, notificationRef) => {
-  const { layoutAnimationValues, onLayout, updateHiddenValueByDirection, ref } =
-    useLayout(notification);
+  const {
+    layoutAnimationValues,
+    onLayout,
+    updateHiddenValueByDirection,
+    ref,
+    isLayoutReady,
+  } = useLayout(notification);
   const { shake, shakingAnimationValues } = useShaking(notification);
 
   const { onGestureEvent, resetSwipeAnimation, swipeAnimationValues } =
@@ -115,8 +120,9 @@ const NotifierRendererComponent = forwardRef<
   }));
 
   useEffect(() => {
-    // if "hideNotification" method was called before show notification animation started - ignore it.
-    if (isHidingRef.current) return;
+    // Don't start the animation if layout still not ready (width / height of the component)
+    // or if "hideNotification" method was called before show notification animation started.
+    if (isHidingRef.current || !isLayoutReady) return;
 
     Animated[notification.showAnimationConfig.method](animationState, {
       useNativeDriver: true,
@@ -131,6 +137,12 @@ const NotifierRendererComponent = forwardRef<
       clearTimeout(hideTimerRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLayoutReady]);
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(hideTimerRef.current);
+    };
   }, []);
 
   const onHandlerStateChange = ({

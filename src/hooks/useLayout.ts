@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useRef } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Animated, View } from 'react-native';
 import { getHiddenTranslateValues } from '../utils/animationDirection';
 import type { Direction, Notification } from '../types';
@@ -9,6 +9,7 @@ import { FABRIC_ENABLED, MAX_VALUE } from '../constants';
  * Also, can update hiddenTranslate* values by using updateHiddenValueByDirection function depending on the direction
  */
 export const useLayout = ({ enterFrom }: Notification) => {
+  const [isLayoutReady, setLayoutReady] = useState(false);
   const ref = useRef<View>(null);
   // store current direction to handle the case when component dimensions changes (trigger onLayout)
   // while active direction != enterFrom (e.g. when exitTo is different than enterFrom, and notification started hiding animation).
@@ -65,6 +66,7 @@ export const useLayout = ({ enterFrom }: Notification) => {
       componentWidth.setValue(width);
 
       updateHiddenValueByDirection(currentDirection.current);
+      setLayoutReady(true);
     },
     [componentHeight, componentWidth, updateHiddenValueByDirection]
   );
@@ -112,5 +114,6 @@ export const useLayout = ({ enterFrom }: Notification) => {
     ref,
     onLayout,
     updateHiddenValueByDirection,
+    isLayoutReady,
   };
 };
