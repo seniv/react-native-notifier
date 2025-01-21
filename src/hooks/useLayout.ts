@@ -43,6 +43,12 @@ export const useLayout = ({ enterFrom }: Notification) => {
     (direction: Direction) => {
       currentDirection.current = direction;
 
+      // Sometimes "updateHiddenValueByDirection" is called before the layout is fully calculated on the old arch
+      // if the notification is hidden immediately after showing, which can cause an animation glitch.
+      if (!componentHeightRef.current || !componentWidthRef.current) {
+        return;
+      }
+
       const hiddenTranslateValues = getHiddenTranslateValues({
         direction,
         componentHeight: componentHeightRef.current,
