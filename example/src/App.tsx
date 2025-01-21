@@ -14,6 +14,10 @@ import { useAppStore } from './store';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { PositionsTabScreen } from './screens/PositionsTabScreen';
 import { ComponentsTabScreen } from './screens/ComponentsTabScreen';
+import { ToastComponentScreen } from './screens/componentScreens/ToastComponentScreen';
+import { NotificationComponentScreen } from './screens/componentScreens/NotificationComponentScreen';
+import { AlertComponentScreen } from './screens/componentScreens/AlertComponentScreen';
+import { SimpleToastComponentScreen } from './screens/componentScreens/SimpleToastComponentScreen';
 
 const Stack = createNativeStackNavigator();
 const BottomTab = createBottomTabNavigator();
@@ -62,6 +66,26 @@ const StackNavigator = () => {
         name="Modal"
         options={{ presentation: 'modal' }}
         component={ModalScreen}
+      />
+      <Stack.Screen
+        name="ToastComponent"
+        component={ToastComponentScreen}
+        options={{ title: 'Toast', headerBackTitle: 'Components' }}
+      />
+      <Stack.Screen
+        name="NotificationComponent"
+        component={NotificationComponentScreen}
+        options={{ title: 'Notification', headerBackTitle: 'Components' }}
+      />
+      <Stack.Screen
+        name="AlertComponent"
+        component={AlertComponentScreen}
+        options={{ title: 'Alert', headerBackTitle: 'Components' }}
+      />
+      <Stack.Screen
+        name="SimpleToastComponent"
+        component={SimpleToastComponentScreen}
+        options={{ title: 'SimpleToast', headerBackTitle: 'Components' }}
       />
     </Stack.Navigator>
   );
