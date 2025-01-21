@@ -20,6 +20,7 @@ import { RenderComponentWithOffsets } from './RenderComponentWithOffsets';
 import { useShaking } from '../hooks/useShaking';
 import { useLayout } from '../hooks/useLayout';
 import { useSwipeAnimationValues } from '../hooks/useSwipeAnimationValues';
+import { FullWindowOverlay } from './FullWindowOverlay';
 
 export interface NotifierRendererMethods {
   hideNotification(callback?: Animated.EndCallback): void;
@@ -209,32 +210,38 @@ const NotifierRendererComponent = forwardRef<
   );
 
   return (
-    <PanGestureHandler
-      enabled={notification.swipeDirection !== 'none'}
-      onGestureEvent={onGestureEvent}
-      onHandlerStateChange={onHandlerStateChange}
+    <FullWindowOverlay
+      position={notification.position}
+      useOverlay={notification.useRNScreensOverlay}
+      viewStyle={notification.rnScreensOverlayViewStyle}
     >
-      <Animated.View
-        {...notification.containerProps}
-        ref={ref}
-        style={[
-          styles.container,
-          positionStyles[notification.position],
-          notification.containerStyle,
-          animationStyle,
-        ]}
+      <PanGestureHandler
+        enabled={notification.swipeDirection !== 'none'}
+        onGestureEvent={onGestureEvent}
+        onHandlerStateChange={onHandlerStateChange}
       >
-        <TouchableWithoutFeedback onPress={onPress}>
-          <View ref={ref} onLayout={onLayout}>
-            <RenderComponentWithOffsets
-              notification={notification}
-              hide={hideNotification}
-              animationFunctionParams={animationFunctionParams}
-            />
-          </View>
-        </TouchableWithoutFeedback>
-      </Animated.View>
-    </PanGestureHandler>
+        <Animated.View
+          {...notification.containerProps}
+          ref={ref}
+          style={[
+            styles.container,
+            positionStyles[notification.position],
+            notification.containerStyle,
+            animationStyle,
+          ]}
+        >
+          <TouchableWithoutFeedback onPress={onPress}>
+            <View ref={ref} onLayout={onLayout}>
+              <RenderComponentWithOffsets
+                notification={notification}
+                hide={hideNotification}
+                animationFunctionParams={animationFunctionParams}
+              />
+            </View>
+          </TouchableWithoutFeedback>
+        </Animated.View>
+      </PanGestureHandler>
+    </FullWindowOverlay>
   );
 });
 

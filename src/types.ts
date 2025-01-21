@@ -349,6 +349,18 @@ export interface ShowNotificationParams<
    * }
    * */
   shakingConfig?: ShakingConfig;
+
+  /** use FullWindowOverlay component from react-native-screens library
+   * If true, Notifier will be rendered above NativeStackNavigation modals and RN Modal on iOS.
+   * This Option will work only if react-native-screens library is installed.
+   * @platform iOS
+   * @default false */
+  useRNScreensOverlay?: boolean;
+
+  /** Style that will be used for RN View that is inside of FullWindowOverlay
+   * @platform iOS
+   * @default null */
+  rnScreensOverlayViewStyle?: StyleProp<ViewStyle>;
 }
 
 export enum AnimationState {
@@ -389,18 +401,6 @@ export interface NotifierProps extends ShowNotificationParams {
    * If enabled, the only way to display notifications is using refs.
    * @default false */
   omitGlobalMethodsHookup?: boolean;
-  /** use FullWindowOverlay component from react-native-screens library
-   * If true, Notifier will be rendered above NativeStackNavigation modals and RN Modal on iOS.
-   * This Option will work only if react-native-screens library is installed.
-   * It's recommended to not change this value on the fly as FullWindowOverlay might not work correctly
-   * @platform iOS
-   * @default false */
-  useRNScreensOverlay?: boolean;
-
-  /** Style that will be used for RN View that is inside of FullWindowOverlay
-   * @platform iOS
-   * @default null */
-  rnScreensOverlayViewStyle?: StyleProp<ViewStyle>;
 }
 
 export type UpdateNotificationParams<

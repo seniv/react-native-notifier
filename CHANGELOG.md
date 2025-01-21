@@ -35,19 +35,11 @@
 - **Alert component:** Renamed `alertType` prop to `type` for consistency with other components. The `alertType` prop remains available but will be deprecated, so please migrate to `type`.
 - **Notification component:** Changed default `borderRadius` from `5` to `8` and "description" `fontSize` from `14` to `15`.
 - **Notification component:** Introduced a `type` prop. When set to anything other than `'classic'`, an icon and left border will be displayed.
+- `useRNScreensOverlay` and `rnScreensOverlayViewStyle` accepted not only as props, but also as parameters of the `showNotification` method.
 
 ### Bug Fixes
 - When you mount `NotifierWrapper`/`NotifierRoot` with `omitGlobalMethodsHookup={true}` and then switch it to `false`, global methods now hook up correctly.
 - Fixed a jump in the appearing animation when very large notifications appear.
 
 ### Known Issues
-- When `useRNScreensOverlay` is `true`, the bottom `position` will not work. If you need a bottom position with `useRNScreensOverlay`, you can adjust the container style using the `rnScreensOverlayViewStyle` parameter, for example:
-
-```typescript
-rnScreensOverlayViewStyle={{
-  width: '100%',
-  position: 'absolute',
-  bottom: 0,
-}}
-```
 - When `useRNScreensOverlay` is `true`, `SafeAreaView` might not work correctly. Use `ViewWithOffsets` component that is coming though props into all **Custom Components**.

@@ -5,6 +5,11 @@ export const styles = StyleSheet.create({
     zIndex: 2,
     position: 'absolute',
   },
+  bottomFullWindowOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+  },
 });
 
 export const positionStyles = StyleSheet.create({

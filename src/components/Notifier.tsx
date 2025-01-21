@@ -11,7 +11,6 @@ import type {
   NotifierProps,
   ShowNotificationParams,
 } from '../types';
-import { FullWindowOverlay } from './FullWindowOverlay';
 import { NotifierManager } from './NotifierManager';
 
 // we store references to all currently mounted instances of NotifierRoot / NotifierWrapper where omitGlobalMethodsHookup != true
@@ -32,19 +31,13 @@ const removeRef = (ref: NotifierInterface | null) => {
 
 /** Responsibilities:
  * - manages refs to display last mounted notification, or broadcast to all
- * - render FullWindowOverlay when useRNScreensOverlay is true
  * - collects default params from props and stores them in the ref to avoid re-renders of the NotifierManager.
  */
 const NotifierRootComponent = React.forwardRef<
   NotifierInterface,
   NotifierProps
 >((props, ref) => {
-  const {
-    omitGlobalMethodsHookup,
-    useRNScreensOverlay,
-    rnScreensOverlayViewStyle,
-    ...defaultParamsProps
-  } = props;
+  const { omitGlobalMethodsHookup, ...defaultParamsProps } = props;
   const localRef = useRef<NotifierInterface | null>(null);
 
   // since we don't rely on defaultParamsProps during the render, and access it only during "showNotification" call
@@ -80,14 +73,7 @@ const NotifierRootComponent = React.forwardRef<
     [ref, omitGlobalMethodsHookup]
   );
 
-  return (
-    <FullWindowOverlay
-      useOverlay={useRNScreensOverlay}
-      viewStyle={rnScreensOverlayViewStyle}
-    >
-      <NotifierManager ref={setRef} defaultParams={defaultParams} />
-    </FullWindowOverlay>
-  );
+  return <NotifierManager ref={setRef} defaultParams={defaultParams} />;
 });
 
 const getLastRef = () => {
