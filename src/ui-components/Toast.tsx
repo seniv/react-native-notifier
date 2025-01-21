@@ -10,7 +10,7 @@ import {
   type ImageSourcePropType,
   type ImageStyle,
 } from 'react-native';
-import type { NotifierComponentProps } from '../types';
+import type { InternalNotifierComponentProps } from '../types';
 import {
   backgroundColors,
   commonStyles,
@@ -68,7 +68,7 @@ const s = StyleSheet.create({
   },
 });
 
-export interface ToastProps extends NotifierComponentProps {
+export interface ToastProps extends InternalNotifierComponentProps {
   /** If set, the icon and icon background color will be determined by the provided type.
    * @default null */
   type?: Types;

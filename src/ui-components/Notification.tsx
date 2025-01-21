@@ -10,7 +10,7 @@ import {
   type ViewStyle,
   type StyleProp,
 } from 'react-native';
-import type { NotifierComponentProps } from '../types';
+import type { InternalNotifierComponentProps } from '../types';
 import {
   backgroundColors,
   commonStyles,
@@ -79,7 +79,8 @@ const s = StyleSheet.create({
   },
 });
 
-export interface NotificationComponentProps extends NotifierComponentProps {
+export interface NotificationComponentProps
+  extends InternalNotifierComponentProps {
   /** If set, the icon, icon background color, and border color will be determined by the provided type.
    * - classic - uses the same style as it was in v2 and lower
    * - other value - adds icon, and border on the left side

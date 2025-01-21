@@ -6,7 +6,7 @@ import {
   type TextStyle,
   type StyleProp,
 } from 'react-native';
-import type { NotifierComponentProps } from '../types';
+import type { InternalNotifierComponentProps } from '../types';
 
 type AlertTypes = 'error' | 'warn' | 'info' | 'success';
 
@@ -36,7 +36,7 @@ const s = StyleSheet.create({
   },
 });
 
-export interface AlertComponentProps extends NotifierComponentProps {
+export interface AlertComponentProps extends InternalNotifierComponentProps {
   /** Background color will be changed depending on the type. Available values: `error`(red), `success`(green), `warn`(orange) and `info`(blue).
    * @default 'success' */
   type: AlertTypes;

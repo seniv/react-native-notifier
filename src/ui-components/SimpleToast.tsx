@@ -7,7 +7,7 @@ import {
   type ViewStyle,
   type StyleProp,
 } from 'react-native';
-import type { NotifierComponentProps } from '../types';
+import type { InternalNotifierComponentProps } from '../types';
 
 const s = StyleSheet.create({
   safeArea: {
@@ -29,7 +29,7 @@ const s = StyleSheet.create({
   },
 });
 
-export interface SimpleToastProps extends NotifierComponentProps {
+export interface SimpleToastProps extends InternalNotifierComponentProps {
   /** The maximum number of lines to use for rendering title.
    * @default null */
   maxTitleLines?: number;

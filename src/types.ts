@@ -139,6 +139,12 @@ export interface NotifierComponentProps {
   animationFunctionParams: AnimationFunctionParams;
 }
 
+// Only declare the parameters actually used by the components
+export interface InternalNotifierComponentProps
+  extends Pick<NotifierComponentProps, 'title' | 'description'> {
+  ViewWithOffsets: (props: Pick<ViewProps, 'style'>) => JSX.Element;
+}
+
 export type DuplicateBehavior =
   | 'ignore'
   | 'shake'
