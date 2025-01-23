@@ -1,10 +1,10 @@
 # Migration Guide (to v3.0.0)
 
+> There is a lot of text, but don't worry, [only point **#1**](#1-install-react-native-safe-area-context) is required for everyone, all other points are necessary only if you use some specific parameters.
+
 Below you’ll find the key changes introduced in **v3.0.0** and how to update your existing code.
 
-There is a lot of text, but don't worry, only point **#1** is required for everyone, all other points are necessary only if you use some specific parameters.
-
-For a full list of changes, see the **Changelog** in the repository.
+For a full list of changes, see the [**Changelog**](https://github.com/seniv/react-native-notifier/blob/main/CHANGELOG.md) in the repository.
 
 ---
 
@@ -43,8 +43,7 @@ const App = () => (
 
 **What Changed?**
 
-- **Alert** now uses `type` prop instead of `alertType`.
-- The `alertType` prop is still available but deprecated.
+- **Alert** now uses `type` prop instead of `alertType`. The `alertType` prop is still available but deprecated.
 
 **Action Required:**
 
@@ -81,28 +80,17 @@ Notifier.showNotification({
 
 - If `Component !== NotifierComponents.Alert`, `showAnimationConfig` defaults to a **spring** animation.
 
-### 4. Hide Timer Behavior (`duration`)
-
-**What Changed?**  
-The `duration` timer now begins **after** the “appearing” animation finishes (instead of at animation start). If you use a **long** appear animation, your notification remains on screen longer than before.
-
-**Action Required:**
-
-- Lower `duration` if you want the on-screen time to match previous behavior.
-
-### 5. Swiping & Removed `swipeEnabled`
+### 4. Swiping & Removed `swipeEnabled`
 
 **What Changed?**
 
-- `swipeEnabled` has been **removed**.
-- To disable swiping, set `swipeDirection: 'none'`.
+- `swipeEnabled` has been **removed**. To disable swiping, set `swipeDirection: 'none'`.
 
 **Action Required:**
 
-- Remove `swipeEnabled` usage.
-- Use `swipeDirection: 'none'` to disable swipe-to-dismiss.
+- Remove `swipeEnabled` usage. Use `swipeDirection: 'none'` to disable swipe-to-dismiss.
 
-### 6. `containerStyle` & New `animationFunction` (only Custom Animation)
+### 5. `containerStyle` & New `animationFunction` (only Custom Animation)
 
 **What Changed?**
 
@@ -139,6 +127,15 @@ Notifier.showNotification({
   },
 });
 ```
+
+### 6. Hide Timer Behavior (`duration`)
+
+**What Changed?**  
+The `duration` timer now begins **after** the “appearing” animation finishes (instead of at animation start). If you use a **long** appear animation, your notification remains on screen longer than before.
+
+**Action Required:**
+
+- Lower `duration` if you want the on-screen time to match previous behavior.
 
 ### 7. Unmounting of Component (only for Custom Components)
 
@@ -210,7 +207,7 @@ Notifier.showNotification({
 
 - Explore these new props to see new variations of the Notification component.
 
-### 5. `useRNScreensOverlay` & `rnScreensOverlayViewStyle`
+### 6. `useRNScreensOverlay` & `rnScreensOverlayViewStyle`
 
 **What Changed?**
 
