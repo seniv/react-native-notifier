@@ -5,72 +5,99 @@
 ![platforms: ios, android, web](https://img.shields.io/badge/platform-ios%2C%20android%2C%20web%2C%20expo-orange)
 [![license MIT](https://img.shields.io/badge/license-MIT-brightgreen)](https://github.com/seniv/react-native-notifier/blob/master/LICENSE)
 
-Fast, simple, and customizable in-app notifications for React Native
+Performant, simple to use, and **highly customizable** in-app notifications for React Native.
 
 ![Demo of package](https://raw.githubusercontent.com/seniv/react-native-notifier/master/demo.gif)
 
+## Features
+
+- ⚙️ **Highly customizable**: All default animations, styles and behaviors can be changed.
+- 📍 **Flexible Positioning**: Place notifications at `top`, `bottom`, or any other corner.
+- 🧩 [**4 UI Components out-of-the-box**](#components): Includes `Notification`, `Alert`, `Toast`, `SimpleToast`.
+- 🔄 **Duplicate Handling**: Configure how to handle notifications with the same ID.
+- 📚 [**Queue Management**](#queue-mode): Choose how notifications queue up.
+- 🖐️ **Swipe Control**: Customize swipe directions or disable it.
+- 🫨 **Shaking**: Don't show same error twice, just shake it!
+- 🎨 [**Custom Animation**](#custom-animations): Customize animation config, or completely change the animation.
+- 🦄 **Always on top of native iOS modals**: Works the same as with JS based navigators.
+- ⌨️ **Keyboard-aware**: Notification is always visible, even when keyboard is open.
+- 🕸️ **Web Support**: Works as good as on iOS and Android.
+
 ## Requirements
 
-This library uses [react-native-gesture-handler](https://github.com/software-mansion/react-native-gesture-handler), a perfect library for swipes, and other gesture events.
+1. **[react-native-gesture-handler](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/installation)**  
+   Required for handling swipes and other gesture events.
 
-Please check their installation guide to install it properly: https://docs.swmansion.com/react-native-gesture-handler/docs/installation
+2. **[react-native-safe-area-context](https://github.com/AppAndFlow/react-native-safe-area-context?tab=readme-ov-file#getting-started)**  
+   Used internally for safe area insets, especially on iOS and devices with notches.
+
+Please follow each library’s official installation guide.
 
 ## Installation
-```sh
+
+```bash
 yarn add react-native-notifier
 ```
-Or
-```sh
+
+**or**
+
+```bash
 npm install --save react-native-notifier
 ```
 
 ## Usage
 
-Wrap your app with `NotifierWrapper`
-```js
+Wrap your app with `NotifierWrapper` at the top level, but inside `GestureHandlerRootView` and `SafeAreaProvider`:
+
+```tsx
 import { NotifierWrapper } from 'react-native-notifier';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const App = () => (
-  <NotifierWrapper>
-    <Navigation />
-  </NotifierWrapper>
+  <GestureHandlerRootView> {/* <-- or use "gestureHandlerRootHOC" */}
+    <SafeAreaProvider> {/* <-- required for correct work */}
+      <NotifierWrapper>
+        <Navigation />
+      </NotifierWrapper>
+    </SafeAreaProvider>
+  </GestureHandlerRootView>
 );
 ```
-Then call `Notifier.showNotification()` anywhere in code
-```js
-import { Notifier, Easing } from 'react-native-notifier';
+
+Then call `Notifier.showNotification()` anywhere in your code:
+
+```ts
+import { Notifier } from 'react-native-notifier';
 
 Notifier.showNotification({
-  title: 'John Doe',
-  description: 'Hello! Can you help me with notifications?',
-  duration: 0,
-  showAnimationDuration: 800,
-  showEasing: Easing.bounce,
-  onHidden: () => console.log('Hidden'),
-  onPress: () => console.log('Press'),
-  hideOnPress: false,
+  title: 'Congratulations!',
+  description: 'react-native-notifier successfully installed!',
+  componentProps: {
+    type: 'success',
+  },
 });
 ```
+
+![Screenshot of the notification opened by the code above](/demo/installed.png)
+
 ---
 
-Or add `NotifierRoot` at end of your App.js component. With this approach you can show notification using reference to the `NotifierRoot`.
+Alternatively, add `NotifierRoot` at the end of your `App.tsx` or any root component:
 
-Note that `NotifierRoot` should be the last component to display notifications correctly. `Notifier.showNotification` is also available.
-```js
+```tsx
 import { NotifierRoot } from 'react-native-notifier';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-function App() {
-  const notifierRef = useRef();
-  return (
-    <>
-      <Button
-        title="Show Notification"
-        onPress={() => notifierRef.current?.showNotification({ title: 'Using refs' })}
-      />
-      <NotifierRoot ref={notifierRef} />
-    </>
-  );
-}
+const App = () => (
+  <GestureHandlerRootView>
+    <SafeAreaProvider>
+      <Navigation />
+      <NotifierRoot /> {/* <-- It must be at the very bottom to be displayed above other components */}
+    </SafeAreaProvider>
+  </GestureHandlerRootView>
+);
 ```
 
 ## Props
@@ -80,8 +107,6 @@ Both `NotifierWrapper` and `NotifierRoot` receive the same props.
 Name                  | Type             | Default                       | Description
 ----------------------|------------------|-------------------------------|-------------
 omitGlobalMethodsHookup| Boolean         | false                         | If set to `true`, global `Notifier` methods will not control this component. It's useful in case you have more than one `NotifierWrapper` or `NotifierRoot` rendered. If enabled, the only way to display notifications is using refs.
-useRNScreensOverlay   | Boolean          | false                         | use `FullWindowOverlay` component from `react-native-screens` library. If `true`, Notifier will be rendered above NativeStackNavigation modals and RN Modal on iOS. This Option will work only if `react-native-screens` library is installed. iOS Only.
-rnScreensOverlayViewStyle| ViewStyle     | null                          | Style that will be used for RN View that is inside of FullWindowOverlay. iOS Only.
 
 All parameters of the [`showNotification`](#showNotification) function can be passed as props to `NotifierWrapper` or `NotifierRoot`. In this case, they will be used as default parameters when calling the [`showNotification`](#showNotification) function. This can be useful for setting default [`Component`](#custom-component) parameter.
 
