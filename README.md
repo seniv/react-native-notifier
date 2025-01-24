@@ -192,16 +192,31 @@ componentProps.maxDescriptionLines | number    | null         | The maximum numb
 
 ## Custom Component
 
-To customize look of the notification you can pass your own `Component` to [`showNotification`](#showNotification) function.
+To customize the appearance of notifications, you can pass your own `Component` to the [`showNotification`](#shownotification) function.
 
-This makes customization much simpler than passing "style" params. With custom components you can make notification look exactly like you want.
+This approach simplifies customization compared to adjusting multiple "style" parameters. With custom components, you can design notifications that perfectly match your application's design and functionality requirements.
 
-This component will receive props `title`, `description` and anything else that you pass to `componentProps` object when calling [`showNotification`](#showNotification).
+### Props Received by the Custom Component
+
+Your custom component will receive the following props:
+
+- **`title`** (`string`): The title text of the notification.
+- **`description`** (`string`): The description text of the notification.
+- **`ViewWithOffsets`** (`Component`): Utilizes the `useSafeAreaInsets` hook and custom keyboard handling based on the notification's `position` to ensure proper layout and positioning. Use this component instead of a standard `SafeAreaView` for optimal notification rendering.
+- **`hide`** (`Function`): A function to hide the notification programmatically.
+- **`animationFunctionParams`** (`Object`): Parameters for additional animations.
+- **`offsets`** (`Object`): An object used internally by `ViewWithOffsets` for managing offsets.
+- **Additional Props:** Any additional properties you pass within the `componentProps` object when calling [`showNotification`](#shownotification) are passed directly as individual props to your custom component.
+
+> **🔍 Tip:** Utilize the `NotifierComponentProps` TypeScript type for convenient and accurate typing of your custom component's props.
 
 ### Example
-```js
-import React from 'react';
-import { StyleSheet, View, Text, SafeAreaView } from 'react-native';
+
+Below is an example of how to create a custom notification component:
+
+```tsx
+import { StyleSheet, View, Text } from 'react-native';
+import type { NotifierComponentProps } from 'react-native-notifier'; // Import the NotifierComponentProps type for accurate TypeScript typing of custom components
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -210,30 +225,70 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
   },
-  title: { color: 'white', fontWeight: 'bold' },
-  description: { color: 'white' },
+  title: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  description: {
+    color: 'white',
+    fontSize: 14,
+    marginTop: 5,
+  },
 });
 
-const CustomComponent = ({ title, description }) => (
-  <SafeAreaView style={styles.safeArea}>
+// Define an interface for the custom component's props, extending NotifierComponentProps
+interface CustomComponentProps extends NotifierComponentProps {
+  extraInfo?: string; // Additional property from "componentProps"
+}
+
+export const CustomComponent = ({
+  title,
+  description,
+  ViewWithOffsets,
+  // Additional props passed via componentProps are received here
+  extraInfo,
+}: CustomComponentProps) => (
+  <ViewWithOffsets style={styles.safeArea}>
     <View style={styles.container}>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.description}>{description}</Text>
+      {!!extraInfo && <Text style={{ color: 'white' }}>{extraInfo}</Text>}
     </View>
-  </SafeAreaView>
+  </ViewWithOffsets>
 );
+```
 
-// ...
+### How to Use the Custom Component
 
-// Then show notification with the component
+To use your custom component with `showNotification`, pass it via the `Component` property and provide any additional props through the `componentProps` object:
+
+```tsx
+import React from 'react';
+import { Notifier } from 'react-native-notifier';
+import { CustomComponent } from './CustomComponent';
 
 Notifier.showNotification({
-  title: 'Custom',
-  description: 'Example of custom component',
+  title: 'Custom Notification',
+  description: 'This is a custom-styled notification.',
   Component: CustomComponent,
+  componentProps: {
+    extraInfo: 'Additional information here',
+  },
 });
 ```
-![Demo of custom component](https://raw.githubusercontent.com/seniv/react-native-notifier/master/custom-component.jpg)
+
+![Demo of custom component](/demo/custom-component.png)
+
+### Benefits of Using Custom Components
+
+- **🎨 Full Control Over Design:** Tailor the notification's appearance to align with your app's theme and design language.
+- **🔧 Enhanced Functionality:** Incorporate additional features or interactive elements as needed.
+- **🔁 Reusability:** Create standardized notification components that can be reused across different parts of your application.
+
+---
+
+By leveraging custom components, you ensure that your in-app notifications not only convey the necessary information but also seamlessly integrate with the overall user experience of your application.
 
 ## Custom Animations
 

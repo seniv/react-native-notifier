@@ -27,15 +27,19 @@ npm install --save react-native-safe-area-context
 
 3. Wrap the **root** of your app (or the `NotifierRoot` / `NotifierWrapper`) with `<SafeAreaProvider>`:
 
-```ts
+```tsx
+import { NotifierWrapper } from 'react-native-notifier';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const App = () => (
-  <SafeAreaProvider>
-    <NotifierWrapper>
-      {/* ... your app code ... */}
-    </NotifierWrapper>
-  </SafeAreaProvider>
+  <GestureHandlerRootView> {/* <-- also required to be above notifier */}
+    <SafeAreaProvider> {/* <-- this line */}
+      <NotifierWrapper>
+        <Navigation />
+      </NotifierWrapper>
+    </SafeAreaProvider>
+  </GestureHandlerRootView>
 );
 ```
 
