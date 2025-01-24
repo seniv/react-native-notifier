@@ -11,7 +11,7 @@ Performant, simple to use, and **highly customizable** in-app notifications for 
 
 ## Features
 
-- ⚙️ **Highly customizable**: All default animations, styles and behaviors can be changed.
+- ⚙️ [**Highly customizable**](#shownotification): All default animations, styles and behaviors can be changed.
 - 📍 **Flexible Positioning**: Place notifications at `top`, `bottom`, or any other corner.
 - 🧩 [**4 UI Components out-of-the-box**](#components): Includes `Notification`, `Alert`, `Toast`, `SimpleToast`.
 - 🔄 **Duplicate Handling**: Configure how to handle notifications with the same ID.
@@ -23,13 +23,15 @@ Performant, simple to use, and **highly customizable** in-app notifications for 
 - ⌨️ **Keyboard-aware**: Notification is always visible, even when keyboard is open.
 - 🕸️ **Web Support**: Works as good as on iOS and Android.
 
+> 📢 You are viewing the documentation for **v3** of react-native-notifier. If you're currently using **v2** or earlier, we highly recommend [migrating to v3](https://github.com/seniv/react-native-notifier/blob/main/MIGRATION.md) to take advantage of the latest features and improvements. Alternatively, you can access the [v2 documentation here](https://github.com/seniv/react-native-notifier/blob/v2.0.0/README.md).
+
 ## Requirements
 
 1. **[react-native-gesture-handler](https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/installation)**  
    Required for handling swipes and other gesture events.
 
 2. **[react-native-safe-area-context](https://github.com/AppAndFlow/react-native-safe-area-context?tab=readme-ov-file#getting-started)**  
-   Used internally for safe area insets, especially on iOS and devices with notches.
+   Used internally for safe area insets.
 
 Please follow each library’s official installation guide.
 
@@ -117,36 +119,54 @@ All parameters of the [`showNotification`](#showNotification) function can be pa
 ```
 Notifier.showNotification(params: object);
 ```
-Show notification with params.
 
-`params`
+Displays a new notification. Available parameters:
 
 Name                  | Type             | Default                       | Description
 ----------------------|------------------|-------------------------------|-------------
-title                 | String           | null                          | Title of notification. __Passed to `Component`.__
-description           | String           | null                          | Description of notification. __Passed to `Component`.__
-duration              | Number           | 3000                          | Time after notification will disappear. Set to `0` to not hide notification automatically
+title                 | String           | null                          | Title text, passed to the notification component.
+description           | String           | null                          | Description text, passed to the notification component.
+duration              | Number           | 3000                          | Time (in ms) after which the notification hides automatically. Set `0` to keep it visible until manually hidden.
 Component             | Component        | NotifierComponents.Notification | Component of the notification body. You can use one of the [built-in components](#components), or your [custom component](#custom-component).
 componentProps        | Object           | {}                            | Additional props that are passed to `Component`. See all available props of built-in components in the [components section](#components).
-containerStyle        | Object\|Function | null                          | Styles Object or a Function that will receive `translateY: Animated.Value` as first parameter and should return Styles that will be used in container. Using this parameter it is possible to create [your own animations of the notification](#custom-animations).
+queueMode             | String           | 'reset'                       | Determines how this notification is queued relative to others. (See [Queue Mode](#queue-mode).) 
+duplicateBehavior     | String           | 'shakeAndResetTimer'          | Controls what happens if another notification with the same ID is already visible.
+idStrategy            | String           | 'hash'                        | `'hash'` or `'random'` for auto-generated IDs, if no `id` is provided.
+id                    | Number/String    | auto-generated                | Manually specify an ID. If a matching ID is currently visible, `duplicateBehavior` decides what to do.
+onShown               | () => void       | null                          | Called when the entering animation finishes.
+onStartHiding         | () => void       | null                          | Called when the notification starts hiding.
+onHidden              | () => void       | null                          | Called when the notification has completely hidden.
+onPress               | () => void       | null                          | Called when the user presses the notification.
+hideOnPress           | Boolean          | true                          | Should the notification hide when user press on it.
+position              | String           | 'top'                         | Place the notification at `top`, `bottom`, or any corner (`topLeft`, `topRight`, etc.).
+enterFrom             | String           | 'top' (based on `position`)   | Direction from which the notification animates in.
+exitTo                | String           | (same as `enterFrom`)         | Direction to which the notification slides out.
+swipeDirection        | String           | (same as `enterFrom`)         | Which direction(s) the notification can be swiped. E.g., `'none'`, `'horizontal'`, `'bottom'`, etc.
+swipePixelsToClose    | Number           | 20                            | How many pixels the user must swipe the notification to trigger a dismissal.
+ignoreSafeAreaInsets  | Boolean          | false                         | If true, doesn't apply safe area offsets (top/bottom notches).
+ignoreKeyboard        | Boolean          | false (true on web)           | Treat the keyboard as always closed.
+ignoreKeyboardHeight  | Boolean          | false (true on Android)       | If `true`, ignore the actual keyboard height offset for bottom positions.
+additionalOffsets     | Object           | null                          | Extra offsets to apply in addition to safe area.
+additionalKeyboardOffset | Number        | 0                             | Additional bottom offset when keyboard is visible. Works only when `ignoreKeyboard != true`.
 containerProps        | Object           | {}                            | Props of Animated Container
-queueMode             | String           | 'reset'                       | Determines the order in which notifications are shown. Read more in the [Queue Mode](#queue-mode) section.
-swipeEnabled          | Boolean          | true                          | Can notification be hidden by swiping it out
-animationDuration     | Number           | 300                           | How fast notification will appear/disappear
-showAnimationDuration | Number           | animationDuration \|\| 300    | How fast notification will appear.
-hideAnimationDuration | Number           | animationDuration \|\| 300    | How fast notification will disappear.
-easing                | Easing           | null                          | Animation easing. Details: https://reactnative.dev/docs/easing
-showEasing            | Easing           | easing \|\| null              | Show Animation easing.
-hideEasing            | Easing           | easing \|\| null              | Hide Animation easing.
-onShown               | () => void       | null                          | Function called when entering animation is finished
-onStartHiding         | () => void       | null                          | Function called when notification started hiding
-onHidden              | () => void       | null                          | Function called when notification completely hidden
-onPress               | () => void       | null                          | Function called when user press on notification
-hideOnPress           | Boolean          | true                          | Should notification hide when user press on it
-swipePixelsToClose    | Number           | 20                            | How many pixels user should swipe-up notification to dismiss it
-swipeEasing           | Easing           | null                          | Animation easing after user finished swiping
-swipeAnimationDuration| Number           | 200                           | How fast should be animation after user finished swiping
-translucentStatusBar  | Boolean          | false                         | Add additional top padding that equals to `StatusBar.currentHeight`. Android Only.
+containerStyle        | Object           | null                          | Styles Object that will be used in container.
+animationFunction     | Function         | animationFunctions.slide      | A function that returns animated styles using various `Animated.Value` provided as parameters. Overrides the default animation. [Read More](#custom-animations).
+showAnimationConfig   | Object           | animationConfigs.spring or animationConfigs.timing300 for **Alert** component | Config for the **show** animation (timing or spring).
+hideAnimationConfig   | Object           | animationConfigs.timing300    | Config for the **hide** animation.
+swipeOutAnimationConfig | Object         | animationConfigs.timing200    | Config for the **swipe-out** animation.
+resetSwipeAnimationConfig | Object       | animationConfigs.timing200    | Animation config for returning the notification to its position if the user partially swipes and releases.
+shakingConfig         | Object           | shakingConfigs.horizontal or shakingConfigs.onlyUp for **Alert** component | Config of the shaking animation. Moves the notification from `minValue` to `maxValue` `numberOfRepeats` times in horizontal or vertical direction.
+useRNScreensOverlay   | Boolean          | false                         | use `FullWindowOverlay` component from `react-native-screens` library. If `true`, Notifier will be rendered above NativeStackNavigation modals and RN Modal on iOS. This Option will work only if `react-native-screens` library is installed. iOS Only.
+rnScreensOverlayViewStyle| ViewStyle     | null                          | Style that will be used for RN View that is inside of FullWindowOverlay. iOS Only.
+
+Returns an object that allows you to control the displayed notification programmatically. This object includes the following properties and methods:
+
+| Property | Type       | Description                                                                                    |
+|----------|------------|------------------------------------------------------------------------------------------------|
+| `id`     | `string/number`| A unique identifier for the notification instance. Useful for targeting specific notifications.|
+| `hide`   | `Function` | Hides the notification programmatically before its `duration` expires.                         |
+| `update` | `Function` | Updates the notification's content and properties dynamically.                                 |
+| `shake`  | `Function` | Triggers a shake animation to attract the user's attention. Can optionally reset the timer.    |
 
 ### `hideNotification`
 
