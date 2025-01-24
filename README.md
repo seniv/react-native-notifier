@@ -83,6 +83,8 @@ Notifier.showNotification({
 
 ![Screenshot of the notification opened by the code above](/demo/installed.png)
 
+> **ℹ️ Note:** If you want to see all available parameters of the `showNotification` method or other available methods, please refer to the [API section](#api).
+
 ---
 
 Alternatively, add `NotifierRoot` at the end of your `App.tsx` or any root component:
@@ -101,87 +103,6 @@ const App = () => (
   </GestureHandlerRootView>
 );
 ```
-
-## Props
-
-Both `NotifierWrapper` and `NotifierRoot` receive the same props.
-
-Name                  | Type             | Default                       | Description
-----------------------|------------------|-------------------------------|-------------
-omitGlobalMethodsHookup| Boolean         | false                         | If set to `true`, global `Notifier` methods will not control this component. It's useful in case you have more than one `NotifierWrapper` or `NotifierRoot` rendered. If enabled, the only way to display notifications is using refs.
-
-All parameters of the [`showNotification`](#showNotification) function can be passed as props to `NotifierWrapper` or `NotifierRoot`. In this case, they will be used as default parameters when calling the [`showNotification`](#showNotification) function. This can be useful for setting default [`Component`](#custom-component) parameter.
-
-## API
-
-### `showNotification`
-
-```
-Notifier.showNotification(params: object);
-```
-
-Displays a new notification. Available parameters:
-
-Name                  | Type             | Default                       | Description
-----------------------|------------------|-------------------------------|-------------
-title                 | String           | null                          | Title text, passed to the notification component.
-description           | String           | null                          | Description text, passed to the notification component.
-duration              | Number           | 3000                          | Time (in ms) after which the notification hides automatically. Set `0` to keep it visible until manually hidden.
-Component             | Component        | NotifierComponents.Notification | Component of the notification body. You can use one of the [built-in components](#components), or your [custom component](#custom-component).
-componentProps        | Object           | {}                            | Additional props that are passed to `Component`. See all available props of built-in components in the [components section](#components).
-queueMode             | String           | 'reset'                       | Determines how this notification is queued relative to others. (See [Queue Mode](#queue-mode).) 
-duplicateBehavior     | String           | 'shakeAndResetTimer'          | Controls what happens if another notification with the same ID is already visible.
-idStrategy            | String           | 'hash'                        | `'hash'` or `'random'` for auto-generated IDs, if no `id` is provided.
-id                    | Number/String    | auto-generated                | Manually specify an ID. If a matching ID is currently visible, `duplicateBehavior` decides what to do.
-onShown               | () => void       | null                          | Called when the entering animation finishes.
-onStartHiding         | () => void       | null                          | Called when the notification starts hiding.
-onHidden              | () => void       | null                          | Called when the notification has completely hidden.
-onPress               | () => void       | null                          | Called when the user presses the notification.
-hideOnPress           | Boolean          | true                          | Should the notification hide when user press on it.
-position              | String           | 'top'                         | Place the notification at `top`, `bottom`, or any corner (`topLeft`, `topRight`, etc.).
-enterFrom             | String           | 'top' (based on `position`)   | Direction from which the notification animates in.
-exitTo                | String           | (same as `enterFrom`)         | Direction to which the notification slides out.
-swipeDirection        | String           | (same as `enterFrom`)         | Which direction(s) the notification can be swiped. E.g., `'none'`, `'horizontal'`, `'bottom'`, etc.
-swipePixelsToClose    | Number           | 20                            | How many pixels the user must swipe the notification to trigger a dismissal.
-ignoreSafeAreaInsets  | Boolean          | false                         | If true, doesn't apply safe area offsets (top/bottom notches).
-ignoreKeyboard        | Boolean          | false (true on web)           | Treat the keyboard as always closed.
-ignoreKeyboardHeight  | Boolean          | false (true on Android)       | If `true`, ignore the actual keyboard height offset for bottom positions.
-additionalOffsets     | Object           | null                          | Extra offsets to apply in addition to safe area.
-additionalKeyboardOffset | Number        | 0                             | Additional bottom offset when keyboard is visible. Works only when `ignoreKeyboard != true`.
-containerProps        | Object           | {}                            | Props of Animated Container
-containerStyle        | Object           | null                          | Styles Object that will be used in container.
-animationFunction     | Function         | animationFunctions.slide      | A function that returns animated styles using various `Animated.Value` provided as parameters. Overrides the default animation. [Read More](#custom-animations).
-showAnimationConfig   | Object           | animationConfigs.spring or animationConfigs.timing300 for **Alert** component | Config for the **show** animation (timing or spring).
-hideAnimationConfig   | Object           | animationConfigs.timing300    | Config for the **hide** animation.
-swipeOutAnimationConfig | Object         | animationConfigs.timing200    | Config for the **swipe-out** animation.
-resetSwipeAnimationConfig | Object       | animationConfigs.timing200    | Animation config for returning the notification to its position if the user partially swipes and releases.
-shakingConfig         | Object           | shakingConfigs.horizontal or shakingConfigs.onlyUp for **Alert** component | Config of the shaking animation. Moves the notification from `minValue` to `maxValue` `numberOfRepeats` times in horizontal or vertical direction.
-useRNScreensOverlay   | Boolean          | false                         | use `FullWindowOverlay` component from `react-native-screens` library. If `true`, Notifier will be rendered above NativeStackNavigation modals and RN Modal on iOS. This Option will work only if `react-native-screens` library is installed. iOS Only.
-rnScreensOverlayViewStyle| ViewStyle     | null                          | Style that will be used for RN View that is inside of FullWindowOverlay. iOS Only.
-
-Returns an object that allows you to control the displayed notification programmatically. This object includes the following properties and methods:
-
-| Property | Type       | Description                                                                                    |
-|----------|------------|------------------------------------------------------------------------------------------------|
-| `id`     | `string/number`| A unique identifier for the notification instance. Useful for targeting specific notifications.|
-| `hide`   | `Function` | Hides the notification programmatically before its `duration` expires.                         |
-| `update` | `Function` | Updates the notification's content and properties dynamically.                                 |
-| `shake`  | `Function` | Triggers a shake animation to attract the user's attention. Can optionally reset the timer.    |
-
-### `hideNotification`
-
-```
-Notifier.hideNotification(onHiddenCallback?: (result: Animated.EndResult) => void);
-```
-
-Hide notification and run callback function when notification completely hidden.
-### `clearQueue`
-
-```
-Notifier.clearQueue(hideDisplayedNotification?: boolean);
-```
-
-Clear [notifications queue](#queue-mode) and optionally hide currently displayed notification. Might be useful to run after logout, after which queued notifications should not be displayed.
 
 ## Queue Mode
 
@@ -401,6 +322,143 @@ Notifier.showNotification({
 })
 ```
 This behavior will be fixed in feature releases.
+
+## Props
+
+Both `NotifierWrapper` and `NotifierRoot` receive the same props.
+
+Name                  | Type             | Default                       | Description
+----------------------|------------------|-------------------------------|-------------
+omitGlobalMethodsHookup| Boolean         | false                         | If set to `true`, global `Notifier` methods will not control this component. It's useful in case you have more than one `NotifierWrapper` or `NotifierRoot` rendered. If enabled, the only way to display notifications is using refs.
+
+All parameters of the [`showNotification`](#showNotification) function can be passed as props to `NotifierWrapper` or `NotifierRoot`. In this case, they will be used as default parameters when calling the [`showNotification`](#showNotification) function. This can be useful for setting default [`Component`](#custom-component) parameter.
+
+## API
+
+### `showNotification`
+
+```ts
+Notifier.showNotification(params: object);
+```
+
+Displays a new notification. Available parameters:
+
+Name                  | Type             | Default                       | Description
+----------------------|------------------|-------------------------------|-------------
+title                 | String           | null                          | Title text, passed to the notification component.
+description           | String           | null                          | Description text, passed to the notification component.
+duration              | Number           | 3000                          | Time (in ms) after which the notification hides automatically. Set `0` to keep it visible until manually hidden.
+Component             | Component        | NotifierComponents.Notification | Component of the notification body. You can use one of the [built-in components](#components), or your [custom component](#custom-component).
+componentProps        | Object           | {}                            | Additional props that are passed to `Component`. See all available props of built-in components in the [components section](#components).
+queueMode             | String           | 'reset'                       | Determines how this notification is queued relative to others. (See [Queue Mode](#queue-mode).) 
+duplicateBehavior     | String           | 'shakeAndResetTimer'          | Controls what happens if another notification with the same ID is already visible.
+idStrategy            | String           | 'hash'                        | `'hash'` or `'random'` for auto-generated IDs, if no `id` is provided.
+id                    | Number/String    | auto-generated                | Manually specify an ID. If a matching ID is currently visible, `duplicateBehavior` decides what to do.
+onShown               | () => void       | null                          | Called when the entering animation finishes.
+onStartHiding         | () => void       | null                          | Called when the notification starts hiding.
+onHidden              | () => void       | null                          | Called when the notification has completely hidden.
+onPress               | () => void       | null                          | Called when the user presses the notification.
+hideOnPress           | Boolean          | true                          | Should the notification hide when user press on it.
+position              | String           | 'top'                         | Place the notification at `top`, `bottom`, or any corner (`topLeft`, `topRight`, etc.).
+enterFrom             | String           | 'top' (based on `position`)   | Direction from which the notification animates in.
+exitTo                | String           | (same as `enterFrom`)         | Direction to which the notification slides out.
+swipeDirection        | String           | (same as `enterFrom`)         | Which direction(s) the notification can be swiped. E.g., `'none'`, `'horizontal'`, `'bottom'`, etc.
+swipePixelsToClose    | Number           | 20                            | How many pixels the user must swipe the notification to trigger a dismissal.
+ignoreSafeAreaInsets  | Boolean          | false                         | If true, doesn't apply safe area offsets (top/bottom notches).
+ignoreKeyboard        | Boolean          | false (true on web)           | Treat the keyboard as always closed.
+ignoreKeyboardHeight  | Boolean          | false (true on Android)       | If `true`, ignore the actual keyboard height offset for bottom positions.
+additionalOffsets     | Object           | null                          | Extra offsets to apply in addition to safe area.
+additionalKeyboardOffset | Number        | 0                             | Additional bottom offset when keyboard is visible. Works only when `ignoreKeyboard != true`.
+containerProps        | Object           | {}                            | Props of Animated Container
+containerStyle        | Object           | null                          | Styles Object that will be used in container.
+animationFunction     | Function         | animationFunctions.slide      | A function that returns animated styles using various `Animated.Value` provided as parameters. Overrides the default animation. [Read More](#custom-animations).
+showAnimationConfig   | Object           | animationConfigs.spring or animationConfigs.timing300 for **Alert** component | Config for the **show** animation (timing or spring).
+hideAnimationConfig   | Object           | animationConfigs.timing300    | Config for the **hide** animation.
+swipeOutAnimationConfig | Object         | animationConfigs.timing200    | Config for the **swipe-out** animation.
+resetSwipeAnimationConfig | Object       | animationConfigs.timing200    | Animation config for returning the notification to its position if the user partially swipes and releases.
+shakingConfig         | Object           | shakingConfigs.horizontal or shakingConfigs.onlyUp for **Alert** component | Config of the shaking animation. Moves the notification from `minValue` to `maxValue` `numberOfRepeats` times in horizontal or vertical direction.
+useRNScreensOverlay   | Boolean          | false                         | use `FullWindowOverlay` component from `react-native-screens` library. If `true`, Notifier will be rendered above NativeStackNavigation modals and RN Modal on iOS. This Option will work only if `react-native-screens` library is installed. iOS Only.
+rnScreensOverlayViewStyle| ViewStyle     | null                          | Style that will be used for RN View that is inside of FullWindowOverlay. iOS Only.
+
+Returns an object that allows you to control the displayed notification programmatically. This object includes the following properties and methods:
+
+| Property | Type       | Description                                                                                    |
+|----------|------------|------------------------------------------------------------------------------------------------|
+| `id`     | `string/number`| A unique identifier for the notification instance. Useful for targeting specific notifications.|
+| `hide`   | `Function` | Hides the notification programmatically before its `duration` expires.                         |
+| `update` | `Function` | Updates the notification's content and properties dynamically.                                 |
+| `shake`  | `Function` | Triggers a shake animation to attract the user's attention. Can optionally reset the timer.    |
+
+### Other Global Methods
+
+- **hideNotification**  
+  Hide notification and run callback function when notification completely hidden.
+  ```ts
+  Notifier.hideNotification(onHiddenCallback?: (result: Animated.EndResult) => void);
+  ```
+
+- **clearQueue**  
+  Clear [notifications queue](#queue-mode) and optionally hide currently displayed notification. Might be useful to run after logout, after which queued notifications should not be displayed.
+  ```ts
+  Notifier.clearQueue(hideDisplayedNotification?: boolean);
+  ```
+
+- **updateNotification**  
+  Updates the currently visible notification’s params (e.g., change `title`):  
+  ```ts
+  Notifier.updateNotification({ title: 'Updated Title' });
+  ```
+
+- **shakeNotification**  
+  Shakes the currently visible notification. If you pass `true`, it also resets the `duration` timer:  
+  ```ts
+  Notifier.shakeNotification(/* resetTimer?: boolean */);
+  ```
+
+- **isNotificationVisible**  
+  Returns `true` if **any** notification is currently displayed:  
+  ```ts
+  const visible = Notifier.isNotificationVisible();
+  ```
+
+- **updateById**  
+  Updates a queued or currently visible notification **only if** it has the specified ID:  
+  ```ts
+  Notifier.updateById('my-id', { description: 'Hello again' });
+  ```
+
+- **shakeById**  
+  Shakes a notification **only if** its ID matches:  
+  ```ts
+  Notifier.shakeById('my-id', true /* optional resetTimer */);
+  ```
+
+- **isVisibleById**  
+  Checks if a notification with a specific ID is currently visible:  
+  ```ts
+  const isMyToastVisible = Notifier.isVisibleById('my-id');
+  ```
+
+- **hideById**  
+  Hides a notification if its ID matches the currently visible one:  
+  ```ts
+  Notifier.hideById('my-id', onHiddenCallback?);
+  ```
+
+> **📢 Note:** All `Notifier.*` methods are also available as `Notifier.broadcast.*` methods. The `Notifier.broadcast.*` methods broadcast commands to **all** currently mounted instances of `Notifier` where `omitGlobalMethodsHookup` is not equal `true`. This allows you to manage notifications globally across multiple notifiers in your application.
+>
+> **Available `Notifier.broadcast.*` Methods:**
+>
+> - `Notifier.broadcast.showNotification(params)`
+> - `Notifier.broadcast.updateNotification(params)`
+> - `Notifier.broadcast.shakeNotification(resetTimer)`
+> - `Notifier.broadcast.isNotificationVisible()`
+> - `Notifier.broadcast.hideNotification(onHidden)`
+> - `Notifier.broadcast.clearQueue(hideDisplayedNotification)`
+> - `Notifier.broadcast.hideById(id, onHidden)`
+> - `Notifier.broadcast.isVisibleById(id)`
+> - `Notifier.broadcast.shakeById(id, resetTimer)`
+> - `Notifier.broadcast.updateById(id, params)`
 
 ## Using with `react-native-navigation`
 If you are using `react-native-navigation`, this issue might be helpful to use notifier with native-navigation: https://github.com/seniv/react-native-notifier/issues/16
