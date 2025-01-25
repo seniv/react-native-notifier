@@ -132,9 +132,26 @@ Currently, there are 4 components available out of the box. If none of them fits
 
 The `NotifierComponents.Notification` component is highly versatile—use it for success/error alerts, chat message notifications, or internet-connection warnings. By design, it stretches to the full width of the screen, providing ample space for your content while maintaining a clean layout.
 
-All elements receive custom styles via props (passed through `componentProps`), so you can easily customize them:
+### Example Usage
+
+```tsx
+import React from 'react';
+import { Notifier, NotifierComponents } from 'react-native-notifier';
+
+Notifier.showNotification({
+  title: 'Success!',
+  description: 'Your operation was completed successfully.',
+  Component: NotifierComponents.Notification,
+  componentProps: {
+    type: 'success', // Use 'success', 'error', 'info', 'warn', or 'classic'
+    // more props like imageSource, titleStyle, etc. go here
+  },
+});
+```
 
 ### Props
+
+All elements receive custom styles via props (passed through `componentProps`), so you can easily customize them:
 
 Name                               | Type                    | Default      | Description
 -----------------------------------|-------------------------|--------------|-------------
@@ -157,6 +174,12 @@ Name                               | Type                    | Default      | De
 `componentProps.descriptionStyle`  | `StyleProp<TextStyle>`  | `null`       | Style for the description text.
 `componentProps.imageStyle`        | `StyleProp<ImageStyle>` | `null`       | Style for rendering the image.
 
+## NotifierComponents.Toast
+
+![Demo of Toast component](/demo/toast.png)
+
+The `NotifierComponents.Toast` component is similar to `NotifierComponents.Notification`, but its width adjusts based on content size rather than spanning the full width of the screen. This makes it particularly useful for compact error/success messages or quick status alerts (e.g., network connection updates).
+
 ### Example Usage
 
 ```tsx
@@ -164,15 +187,37 @@ import React from 'react';
 import { Notifier, NotifierComponents } from 'react-native-notifier';
 
 Notifier.showNotification({
-  title: 'Success!',
-  description: 'Your operation was completed successfully.',
-  Component: NotifierComponents.Notification,
+  title: 'Operation Successful!',
+  description: 'Everything went smoothly.',
+  Component: NotifierComponents.Toast,
   componentProps: {
-    type: 'success', // Use 'success', 'error', 'info', 'warn', or 'classic'
-    // more props like imageSource, titleStyle, etc. go here
+    type: 'success',
   },
-});
+})
 ```
+
+### Props
+
+All elements receive custom styles via props (passed through `componentProps`), so you can easily customize them:
+
+Name                               | Type                    | Default      | Description
+-----------------------------------|-------------------------|--------------|-------------
+`title`                            | `string`                | `null`       | The title text of the toast.
+`description`                      | `string`                | `null`       | The description text of the toast.
+`componentProps.type`              | `string`                | `null`       | Defines the toast type (`info`, `success`, `error`, `warn`). Determines icon.
+`componentProps.useTypeColorForTitle` | `boolean`            | `false`      | If `true`, the title color is derived from the `type` prop.
+`componentProps.useTypeColorForDescription` | `boolean`      | `false`      | If `true`, the description color is derived from the `type` prop.
+`componentProps.maxTitleLines`     | `number`                | `null`       | Maximum number of lines for the title text.
+`componentProps.maxDescriptionLines` | `number`              | `null`       | Maximum number of lines for the description text.
+`componentProps.iconSource`        | `ImageSourcePropType`   | Depends on `type` | Icon image source. If not specified, a default icon based on `type` is used.
+`componentProps.ContainerComponent` | `React.ElementType`    | `ViewWithOffsets` | Custom container component replacing the default `ViewWithOffsets`.
+`componentProps.safeAreaStyle`     | `StyleProp<ViewStyle>`  | `null`       | Style for the outermost container of the toast.
+`componentProps.containerStyle`    | `StyleProp<ViewStyle>`  | `null`       | Style for the toast content container, such as background color, shadows, padding, or margin.
+`componentProps.iconContainerStyle` | `StyleProp<TextStyle>` | `null`       | Style for the icon container, useful for adjusting background color or size.
+`componentProps.iconStyle`         | `StyleProp<ImageStyle>` | `null`       | Style for the icon `<Image />`, useful for adjusting icon color or size.
+`componentProps.textContainerStyle` | `StyleProp<TextStyle>` | `null`       | Style for the text container wrapping both title and description.
+`componentProps.titleStyle`        | `StyleProp<TextStyle>`  | `null`       | Style for the title text.
+`componentProps.descriptionStyle`  | `StyleProp<TextStyle>`  | `null`       | Style for the description text.
 
 ### `NotifierComponents.Alert`
 
