@@ -124,39 +124,55 @@ immediate  | Similar to `next`, but also it will hide currently displayed notifi
 
 ## Components
 
-Currently, there are 2 components out of the box. If none of them fits your needs, then you can easily create your [Custom Component](#custom-component).
+Currently, there are 4 components available out of the box. If none of them fits your needs, then you can easily create your [Custom Component](#custom-component).
 
-### `NotifierComponents.Notification`
+## NotifierComponents.Notification
 
-![Demo of Notification component](https://raw.githubusercontent.com/seniv/react-native-notifier/master/notification-component.png)
+![Demo of Notification component](/demo/notification.png)
 
-Perfect for something like chat messages and notifications like "Someone left a comment". This component is used by default.
+The `NotifierComponents.Notification` component is highly versatile—use it for success/error alerts, chat message notifications, or internet-connection warnings. By design, it stretches to the full width of the screen, providing ample space for your content while maintaining a clean layout.
 
-```js
+All elements receive custom styles via props (passed through `componentProps`), so you can easily customize them:
+
+### Props
+
+Name                               | Type                    | Default      | Description
+-----------------------------------|-------------------------|--------------|-------------
+`title`                            | `string`                | `null`       | The title text of the notification.
+`description`                      | `string`                | `null`       | The description text of the notification.
+`componentProps.type`              | `string`                | `null`       | Defines the notification type (`info`, `success`, `error`, `warn`, `classic`). Determines icon and border color.
+`componentProps.useTypeColorForTitle` | `boolean`            | `false`      | If `true`, the title color is derived from the `type` prop.
+`componentProps.useTypeColorForDescription` | `boolean`      | `false`      | If `true`, the description color is derived from the `type` prop.
+`componentProps.maxTitleLines`     | `number`                | `null`       | Maximum number of lines for the title text.
+`componentProps.maxDescriptionLines` | `number`              | `null`       | Maximum number of lines for the description text.
+`componentProps.imageSource`       | `ImageSourcePropType`   | `null`       | An image to display, such as an avatar or icon. Passed to the `<Image />` component as the `source` prop.
+`componentProps.iconSource`        | `ImageSourcePropType`   | Depends on `type` | Icon image source. If not specified, a default icon based on `type` is used.
+`componentProps.ContainerComponent` | `React.ElementType`    | `ViewWithOffsets` | Custom container component replacing the default `ViewWithOffsets`.
+`componentProps.safeAreaStyle`     | `StyleProp<ViewStyle>`  | `null`       | Style for the outermost container of the notification.
+`componentProps.containerStyle`    | `StyleProp<ViewStyle>`  | `null`       | Style for the notification content container, such as background color, shadows, padding, or margin.
+`componentProps.iconContainerStyle` | `StyleProp<TextStyle>` | `null`       | Style for the icon container, useful for adjusting background color or size.
+`componentProps.iconStyle`         | `StyleProp<ImageStyle>` | `null`       | Style for the icon `<Image />`, useful for adjusting icon color or size.
+`componentProps.textContainerStyle` | `StyleProp<TextStyle>` | `null`       | Style for the text container wrapping both title and description.
+`componentProps.titleStyle`        | `StyleProp<TextStyle>`  | `null`       | Style for the title text.
+`componentProps.descriptionStyle`  | `StyleProp<TextStyle>`  | `null`       | Style for the description text.
+`componentProps.imageStyle`        | `StyleProp<ImageStyle>` | `null`       | Style for rendering the image.
+
+### Example Usage
+
+```tsx
+import React from 'react';
 import { Notifier, NotifierComponents } from 'react-native-notifier';
 
 Notifier.showNotification({
-  title: 'Check this image!',
-  description: 'Cool, right?',
+  title: 'Success!',
+  description: 'Your operation was completed successfully.',
   Component: NotifierComponents.Notification,
   componentProps: {
-    imageSource: require('./react.jpg'),
+    type: 'success', // Use 'success', 'error', 'info', 'warn', or 'classic'
+    // more props like imageSource, titleStyle, etc. go here
   },
 });
 ```
-Available params:
-Name                               | Type       | Default      | Description
------------------------------------|------------|--------------|-------------
-title                              | String     | null         | Title of notification.
-description                        | String     | null         | Description of notification.
-componentProps.titleStyle          | TextStyle  | null         | The style to use for rendering title.
-componentProps.descriptionStyle    | TextStyle  | null         | The style to use for rendering description.
-componentProps.imageSource         | Object     | null         | Passed to `<Image />` as `source` param.
-componentProps.imageStyle          | ImageStyle | null         | The style to use for rendering image.
-componentProps.containerStyle      | ViewStyle  | null         | The style to use for notification container.
-componentProps.ContainerComponent  | Component  | SafeAreaView | A container of the component. Set it in case you use different SafeAreaView than the standard
-componentProps.maxTitleLines       | number     | null         | The maximum number of lines to use for rendering title.
-componentProps.maxDescriptionLines | number     | null         | The maximum number of lines to use for rendering description.
 
 ### `NotifierComponents.Alert`
 
