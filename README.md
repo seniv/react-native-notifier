@@ -219,13 +219,14 @@ Name                               | Type                    | Default      | De
 `componentProps.titleStyle`        | `StyleProp<TextStyle>`  | `null`       | Style for the title text.
 `componentProps.descriptionStyle`  | `StyleProp<TextStyle>`  | `null`       | Style for the description text.
 
-### `NotifierComponents.Alert`
+## `NotifierComponents.Alert`
 
-![Demo of Alert component](https://raw.githubusercontent.com/seniv/react-native-notifier/master/alert-component.png)
+![Demo of Alert component](/demo/alert.png)
 
-Perfect to use as a system alerts, like "Something went wrong" or "Operation was succeed".
+Perfect to use as a system alerts, like "Something went wrong" or "Operation was successful".
 
-```js
+### Example Usage
+```tsx
 import { Notifier, NotifierComponents } from 'react-native-notifier';
 
 Notifier.showNotification({
@@ -233,23 +234,55 @@ Notifier.showNotification({
   description: 'Check your internet connection, please',
   Component: NotifierComponents.Alert,
   componentProps: {
-    alertType: 'error',
+    type: 'error',
   },
 });
 ```
-Available params:
-Name                               | Type      | Default      | Description
------------------------------------|-----------|--------------|-------------
-title                              | String    | null         | Title of notification.
-description                        | String    | null         | Description of notification.
-componentProps.titleStyle          | TextStyle | null         | The style to use for rendering title.
-componentProps.descriptionStyle    | TextStyle | null         | The style to use for rendering description.
-componentProps.alertType           | String    | 'success'    | Background color will be changed depending on the type. Available values: `error`(red), `success`(green), `warn`(orange) and `info`(blue).
-componentProps.backgroundColor     | String    | null         | While the background of the alert depends on `alertType`, you can also set the other color you want.
-componentProps.textColor           | String    | 'white'      | Color of `title` and `description`.
-componentProps.ContainerComponent  | Component | SafeAreaView | A container of the component. Set it in case you use different SafeAreaView than the standard
-componentProps.maxTitleLines       | number    | null         | The maximum number of lines to use for rendering title.
-componentProps.maxDescriptionLines | number    | null         | The maximum number of lines to use for rendering description.
+
+### Props
+Name                                 | Type                   | Default           | Description
+-------------------------------------|------------------------|-------------------|-------------
+`title`                              | `string`               | `null`            | Title of notification.
+`description`                        | `string`               | `null`            | Description of notification.
+`componentProps.type`                | `string`               | `'success'`       | Background color will be changed depending on the type. Available values: `error`(red), `success`(green), `warn`(orange) and `info`(blue).
+`componentProps.titleStyle`          | `StyleProp<TextStyle>` | `null`            | The style to use for rendering title.
+`componentProps.descriptionStyle`    | `StyleProp<TextStyle>` | `null`            | The style to use for rendering description.
+`componentProps.backgroundColor`     | `string`               | Depends on `type` | While the background of the alert depends on `type`, you can also set the other color you want.
+`componentProps.textColor`           | `string`               | `'white'`         | Color of `title` and `description`.
+`componentProps.ContainerComponent`  | `React.ElementType`    | `ViewWithOffsets` | Custom container component replacing the default `ViewWithOffsets`.
+`componentProps.maxTitleLines`       | `number`               | `null`            | The maximum number of lines to use for rendering title.
+`componentProps.maxDescriptionLines` | `number`               | `null`            | The maximum number of lines to use for rendering description.
+
+## NotifierComponents.SimpleToast
+
+![Demo of SimpleToast](/demo/simple-toast.png)
+
+The `NotifierComponents.SimpleToast` component is a **minimalistic** option for displaying **short, single-line messages** (e.g., “Text has been copied!”). Unlike other notifier components, **it does not accept a `type` field** (meaning no icon or type-based styling) and **only displays a `title`**. `description` property will be ignored.
+
+This makes `SimpleToast` ideal for quick feedback messages that don’t require additional details or icons.
+
+### Example Usage
+
+```tsx
+import React from 'react';
+import { Notifier, NotifierComponents } from 'react-native-notifier';
+
+Notifier.showNotification({
+  title: 'Copied to clipboard!',
+  Component: NotifierComponents.SimpleToast,
+});
+```
+
+### Props
+
+Name                               | Type                   | Default           | Description
+-----------------------------------|------------------------|-------------------|-------------
+`title`                            | `string`               | `null`            | The title text of the toast.
+`componentProps.maxTitleLines`     | `number`               | `null`            | Maximum number of lines for the title text.
+`componentProps.ContainerComponent`| `React.ElementType`    | `ViewWithOffsets` | Custom container component replacing the default `ViewWithOffsets`.
+`componentProps.titleStyle`        | `StyleProp<TextStyle>` | `null`            | Style for the title text.
+`componentProps.safeAreaStyle`     | `StyleProp<ViewStyle>` | `null`            | Style for the outermost container of the toast.
+`componentProps.containerStyle`    | `StyleProp<ViewStyle>` | `null`            | Style for the toast content container, such as background color, shadows, padding, or margin.
 
 ## Custom Component
 
