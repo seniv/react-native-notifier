@@ -124,7 +124,9 @@ immediate  | Similar to `next`, but also it will hide currently displayed notifi
 
 ## Components
 
-Currently, there are 4 components available out of the box. If none of them fits your needs, then you can easily create your [Custom Component](#custom-component).
+![Demo of All component](/demo/all-components.png)
+
+There are **four** built-in components — [`Notification`](#notifiercomponentsnotification), [`Toast`](#notifiercomponentstoast), [`Alert`](#notifiercomponentsalert), and [`SimpleToast`](#notifiercomponentssimpletoast). You can use them as-is, customize them through props (e.g., styling, icons), or if your application requires a unique design, create your [own custom component](#custom-component). Each built-in component offers a different layout style and level of detail, ensuring that most common notification scenarios are covered right out of the box.
 
 ## NotifierComponents.Notification
 
