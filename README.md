@@ -13,7 +13,7 @@ Fast, simple, and customizable in-app notifications for React Native
 
 This library uses [react-native-gesture-handler](https://github.com/software-mansion/react-native-gesture-handler), a perfect library for swipes, and other gesture events.
 
-Please check their installation guide to install it properly: https://docs.swmansion.com/react-native-gesture-handler/docs/installation
+Please check their installation guide to install it properly: [https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/installation]
 
 ## Installation
 ```sh
