@@ -50,6 +50,8 @@ export class NotifierRoot extends React.PureComponent<
   private readonly translateY: Animated.Value;
   private readonly translateYInterpolated: Animated.AnimatedInterpolation<number>;
   private readonly onGestureEvent: (...args: any[]) => void;
+  private gestureOffset: number;
+  private wasHidingWhenGestureStarted: boolean;
 
   constructor(props: ShowNotificationParams) {
     super(props);
@@ -73,14 +75,11 @@ export class NotifierRoot extends React.PureComponent<
       extrapolate: 'clamp',
     });
 
-    this.onGestureEvent = Animated.event(
-      [
-        {
-          nativeEvent: { translationY: this.translateY },
-        },
-      ],
-      { useNativeDriver: true }
-    );
+    this.gestureOffset = 0;
+    this.wasHidingWhenGestureStarted = false;
+    this.onGestureEvent = ({ nativeEvent }) => {
+      this.translateY.setValue(this.gestureOffset + nativeEvent.translationY);
+    };
 
     this.onPress = this.onPress.bind(this);
     this.onHandlerStateChange = this.onHandlerStateChange.bind(this);
@@ -112,7 +111,9 @@ export class NotifierRoot extends React.PureComponent<
         DEFAULT_ANIMATION_DURATION,
       useNativeDriver: true,
     }).start((result) => {
-      this.onHidden();
+      if (result?.finished) {
+        this.onHidden();
+      }
       callback?.(result);
     });
 
@@ -219,6 +220,7 @@ export class NotifierRoot extends React.PureComponent<
   }
 
   private onHidden() {
+    this.gestureOffset = 0;
     this.showParams?.onHidden?.();
     this.isShown = false;
     this.isHiding = false;
@@ -236,32 +238,60 @@ export class NotifierRoot extends React.PureComponent<
   }: PanGestureHandlerStateChangeEvent) {
     if (nativeEvent.state === State.ACTIVE) {
       clearTimeout(this.hideTimer);
+
+      this.wasHidingWhenGestureStarted = this.isHiding;
+      this.translateY.stopAnimation((currentValue) => {
+        this.gestureOffset = currentValue;
+      });
+      this.isHiding = false;
+      return;
     }
+
     if (nativeEvent.oldState !== State.ACTIVE) {
       return;
     }
-    this.setHideTimer();
+    this.gestureOffset = 0;
 
     const swipePixelsToClose = -(
       this.showParams?.swipePixelsToClose ?? SWIPE_PIXELS_TO_CLOSE
     );
-    const isSwipedOut = nativeEvent.translationY < swipePixelsToClose;
 
-    Animated.timing(this.translateY, {
-      toValue: isSwipedOut ? this.hiddenComponentValue : MAX_TRANSLATE_Y,
-      easing: this.showParams?.swipeEasing,
-      duration:
-        this.showParams?.swipeAnimationDuration ?? SWIPE_ANIMATION_DURATION,
-      useNativeDriver: true,
-    }).start(() => {
+    this.translateY.stopAnimation((currentValue) => {
+      if (this.wasHidingWhenGestureStarted) {
+        this.wasHidingWhenGestureStarted = false;
+
+        Animated.timing(this.translateY, {
+          toValue: MAX_TRANSLATE_Y,
+          easing: this.showParams?.swipeEasing,
+          duration:
+            this.showParams?.swipeAnimationDuration ?? SWIPE_ANIMATION_DURATION,
+          useNativeDriver: true,
+        }).start(() => {
+          this.hideNotification();
+        });
+
+        return;
+      }
+      this.setHideTimer();
+
+      const isSwipedOut = currentValue < swipePixelsToClose;
+
+      Animated.timing(this.translateY, {
+        toValue: isSwipedOut ? this.hiddenComponentValue : MAX_TRANSLATE_Y,
+        easing: this.showParams?.swipeEasing,
+        duration:
+          this.showParams?.swipeAnimationDuration ?? SWIPE_ANIMATION_DURATION,
+        useNativeDriver: true,
+      }).start((result) => {
+        if (isSwipedOut && result?.finished) {
+          this.onHidden();
+        }
+      });
+
       if (isSwipedOut) {
-        this.onHidden();
+        this.onStartHiding();
       }
     });
-
-    if (isSwipedOut) {
-      this.onStartHiding();
-    }
   }
 
   private onPress() {
